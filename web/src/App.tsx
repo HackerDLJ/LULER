@@ -16,6 +16,7 @@ import { scoreSite } from './score';
 import { Preloader } from './fx';
 import Companion from './Companion';
 import LiveNasa from './LiveNasa';
+import MoonVsEarth from './MoonVsEarth';
 import { spaceWeatherNow } from './nasa';
 import SettingsPage from './SettingsPage';
 import { getSettings, useSettings } from './settings';
@@ -199,6 +200,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
     <>
       <SitePicker sites={sites} value={s.a} onPick={pickSite} />
       <input type="date" aria-label="Date (UTC)" min="2027-01-01" max="2028-12-31" value={fmtDay(day)} onChange={(e) => e.target.value && set({ day: Math.min(dateToDay(e.target.value), N_DAYS - s.len), scrub: 0 })} />
+      <input type="time" step={3600} aria-label="Time (UTC)" title="Time of day (UTC, hourly NASA SPICE data)" value={hourToDate(start + scrub).toISOString().slice(11, 16)} onChange={(e) => { const hh = Number(e.target.value.slice(0, 2)); if (Number.isFinite(hh)) set({ scrub: Math.min(end - start - 1, Math.floor(scrub / 24) * 24 + hh) }); }} />
       <div className="hdr-clock" title={`Simulated time. Your local time: ${hourToDate(start + scrub).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`}>
         <span className="hc-dot" aria-hidden="true" /><b>{hourToDate(start + scrub).toISOString().slice(11, 16)}</b><span>UTC · {hourToDate(start + scrub).toUTCString().slice(5, 16)}</span>
       </div>
@@ -308,6 +310,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
       )}
       {view !== 'settings' && view !== 'ai' && <div className="below">
       <Compare3 sites={sites} picks={pick3} scores={scores3} onPick={(slot, i) => setPick3((p) => p.map((v, k) => (k === slot ? i : v)))} onOpen={(i) => { pickSite(i); setView('orbit'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+      <MoonVsEarth stats={sa.center} mastM={manifest.masts_m[s.mast]} lat={sites[s.a].lat} />
       <LiveNasa site={sites[s.a]} />
       <h2 className="below-h">Two sites side by side, and the best dates</h2>
       <p className="below-note">Change the dates, stay length, array height, Earth margin or the second site in <button type="button" className="linkish" onClick={() => openSettings('general')}>Settings</button>.</p>

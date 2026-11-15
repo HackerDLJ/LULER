@@ -24,6 +24,9 @@ Built by **Team JATABELS** for the **NASA Space Apps Challenge 2026**.
 | ⚖️ | **Your point vs. the two nearest sites**: comparison updates for any point you click | Below the 3D view |
 | 📅 | **Calendar of sunlight and Earth contact** for every day of 2027–2028 | **Dates** |
 | ✦ | **LULER Intelligence**: an AI companion (free with Google Gemini) with **live voice**; it reads the live mission data and can drive the app | **AI** button (top right) |
+| 🛰️ | **Live from NASA**: DONKI space weather (radiation storms), latest EPIC Earth photo, NASA photos of the site | Below the 3D view |
+| 🌗 | **Here vs on Earth**: longest night, sunlight share, Sun speed, horizon distance, Earth in the sky | Below the 3D view |
+| 🕒 | **Date and time**: date + hour pickers, mission clock, hourly time slider with play | Header and bottom of every view |
 | ⚙️ | **Settings** for graphics, visibility, dates, sunlight, radio link, data and AI | **⚙** button (top right) |
 
 ### The safety score
@@ -42,6 +45,25 @@ Rule-based and fully explainable. Open "Why this score" on any card to see each 
 **Good** ≥ 75 · **Fair** ≥ 50 · **Poor** below 50.
 
 ---
+
+## How LULER meets the challenge
+
+| Objective (NASA Space Apps 2026) | In LULER |
+|---|---|
+| Curated sites + custom coordinates | 25 sites: Apollo, CLPS / commercial, other agencies (Luna, Chang'e, Chandrayaan, SLIM), Artemis south-pole regions. Custom points from the map, typed coordinates (live preview pin) or a double-click on the 3D Moon |
+| Side-by-side comparison | "Your point vs. the two nearest sites" score cards; two-site sky charts and power/link timelines; best-dates ranking |
+| Date and time flexibility | Date and hour pickers, 7 to 365-day windows, calendar of every day in 2027–2028, Next sunrise |
+| Sun and Earth vs the horizon | Sky chart per site: Sun and Earth tracks over the real LOLA horizon, in-view vs blocked, with hover times |
+| Time to sunset / Earthset | "Sun sets in 7.0 days", "Earth rises in 4.4 days" on every view and chart |
+| Power and communication metrics | Solar elevation (prominent), share of sunlit hours, longest night, Earth-in-view share, longest comms gap, solar array / antenna height and Earth margin settings |
+| Multiple visualizations | 3D globe, 2D map, 3D Cesium terrain with hazards and craters, surface walk mode, sky charts, timelines, calendar, mission animation |
+| Temporal dynamics | Play button animates Sun, Earth, shadows and charts hour by hour; mission timeline |
+| Accessibility across skill levels | Plain-language status lines, explainable safety score, Here vs on Earth, AI companion with voice, responsive on phones |
+| Ephemeris | NAIF SPICE DE440 hourly, checked against JPL Horizons (docs/validation.md) |
+| LOLA topography and airless horizon | Horizon masks from LOLA / PGDA 5 m DEMs on the curved lunar sphere, no refraction, Sun as a disc |
+| Libration and orbital variation | Included through SPICE; the Earth's libration wobble is visible in the sky charts |
+| South-pole terrain | 5 m and 20 m polar DEMs, slope hazard layer, crater detection, hazard-avoiding landing |
+| Why small changes matter | Results shown with ranges for touchdowns up to 100 m away; array height and date changes update every number |
 
 ## NASA data
 

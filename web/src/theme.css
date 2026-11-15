@@ -462,3 +462,14 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .zoom-hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:120;padding:12px 20px;border-radius:999px;background:rgba(8,12,22,.9);border:1px solid rgba(150,185,255,.3);color:#eaf1ff;font:500 14px var(--sans);box-shadow:0 12px 30px rgba(0,0,0,.5);pointer-events:none;animation:zhIn .2s ease-out}
 .zoom-hint b{display:inline-block;padding:1px 7px;margin:0 2px;border-radius:6px;background:rgba(150,185,255,.18)}
 @keyframes zhIn{from{opacity:0;transform:translate(-50%,-44%)}}
+
+/* Here vs on Earth */
+.mve{margin:40px 0}.mve h2{margin:0 0 6px}.mve-lede{margin:0 0 18px;color:#9fb0cf}
+.mve-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:14px}
+.mve-card{border-radius:18px;background:rgba(14,19,33,.92);border:1px solid rgba(150,185,255,.16);padding:16px;display:flex;flex-direction:column;gap:10px}
+.mve-k{font-size:12px;color:#8fa1c3;letter-spacing:.02em}
+.mve-v{display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:2px 8px}
+.mve-v b{font-size:22px;font-weight:600;color:#fff}.mve-v em{font-style:normal;font-size:15px;color:#b9c7e2}.mve-v i{font-style:normal;font-size:11.5px;color:#7f91b4}
+.mve-card p{margin:0;font-size:13px;line-height:1.5;color:#9fb0cf}
+.pickers input[type=time]{height:40px;padding:0 12px;border-radius:999px!important;border:1px solid rgba(150,185,255,.24)!important;background:rgba(20,28,48,.92)!important;color:#eaf1ff!important;font:500 13px var(--sans)!important;color-scheme:dark}
+@media (max-width:1200px){.pickers .hdr-clock{display:none}}
