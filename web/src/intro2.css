@@ -1,0 +1,40 @@
+/* ===== intro2 (React Bits) ===== */
+.intro2{position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden;background:#000;color:#fff}
+.intro2-stars{position:fixed;inset:0;pointer-events:none;background:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 70% 20%,#fff9,transparent),radial-gradient(1.5px 1.5px at 40% 80%,#fff,transparent),radial-gradient(1px 1px at 85% 65%,#fff9,transparent),radial-gradient(1px 1px at 10% 70%,#fff8,transparent),radial-gradient(1px 1px at 55% 50%,#fff6,transparent);background-size:420px 420px;opacity:.7}
+.i2-hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:40px 20px;text-align:center;overflow:hidden}
+.i2-moon{position:absolute;left:50%;top:58%;width:min(120vh,1100px);height:min(120vh,1100px);transform:translate(-50%,0);border-radius:50%;background:url(./map/moon.jpg) center/cover;box-shadow:inset 0 60px 120px #000,inset -80px -40px 160px #000,0 0 140px #0b1a3a;opacity:.55;animation:spin 300s linear infinite}
+.i2-hero>*{position:relative;z-index:1}.i2-hero>.i2-moon{position:absolute;z-index:0}
+.i2-eyebrow{font-size:12px;letter-spacing:.3em;color:#ffffff99;margin:0}
+.i2-logo{width:min(1000px,94vw);height:clamp(200px,34vw,340px)}
+.i2-logo .particle-text{min-height:0}
+.i2-tag{color:#e6edf8;max-width:92vw;line-height:1.3}
+.i2-scroll{margin-top:30px;font-size:12px;letter-spacing:.3em;color:#ffffff88}
+.i2-sec{position:relative;max-width:980px;margin:0 auto;padding:18vh 24px;z-index:1}
+.i2-sec .scroll-reveal-text{font-size:clamp(1.8rem,4.6vw,3.4rem);line-height:1.3;font-weight:500}
+.i2-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px;padding-top:6vh;padding-bottom:12vh}
+.i2-card{border-top:1px solid #ffffff2a;padding-top:18px}
+.i2-card .scroll-reveal-text{font-size:1.15rem;font-weight:400;color:#c5cfdf}
+.i2-end{text-align:center;padding-bottom:10vh}.i2-end .intro-src{margin:30px auto 0}
+.i2-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:24px;padding-top:6vh;padding-bottom:6vh}
+.i2-stat{border-left:2px solid #7fb4ff;padding-left:16px}.i2-stat b{display:block;font-size:clamp(2rem,4vw,3.2rem);font-weight:500}.i2-stat span{font-size:13px;color:#aab6c8}
+.i2-data{text-align:center;padding-top:6vh;padding-bottom:10vh}.i2-data-l{font-size:clamp(1.1rem,2.2vw,1.6rem);color:#dbe6f5;margin:14px 0 0;line-height:1.6}
+.sitepick{position:relative}
+.sitepick>button{background:#172033;color:var(--text);border:1px solid #ffffff30;border-radius:999px;padding:8px 16px;font:inherit;font-size:14px;min-height:40px;cursor:pointer}
+.sitepick-pop{position:absolute;top:48px;left:0;z-index:30;max-height:70vh;overflow:auto;background:#0b1220f2;border:1px solid #ffffff22;border-radius:14px;padding:12px 16px 12px 8px;min-width:260px;backdrop-filter:blur(10px)}
+.intro2-grid{position:fixed;inset:0;z-index:0}.intro2-stars{display:none}
+.i2-team{margin:0;font-size:14px;letter-spacing:.08em;color:#c5cfdf}.i2-team b{color:#fff;font-weight:600}.i2-end .scroll-reveal-text{font-size:clamp(1.4rem,3vw,2.2rem)}
+.i2-crew{position:relative;z-index:1;text-align:center;padding:4vh 0 10vh;overflow:hidden}.i2-crew .curved-loop-jacket{min-height:0}
+.intro2-grid{filter:blur(var(--blur,0px));opacity:var(--dim,1);transition:filter .15s linear,opacity .15s linear}
+.i2-hero .i2-team{font-size:17px;letter-spacing:.14em;margin-top:-6px}
+.i2-vp{line-height:1.3;color:#fff}.i2-vp .variable-proximity{display:inline}.i2-lead{margin-top:-4px}.i2-card .i2-vp{color:#c5cfdf}
+.i2-end .i2-vp{margin:0}.i2-end .cta.big{display:block;margin:34px auto 34px}.i2-end .intro-src{margin:0 auto}
+.i2-hero .cta.big{margin:0 0 14px}.i2-hero .i2-lead{margin-top:0}
+/* end section + crew: clean vertical rhythm */
+.i2-end{display:flex;flex-direction:column;align-items:center;gap:0;padding:12vh 24px 8vh}
+.i2-end .i2-vp{margin:0}
+.i2-end > div:nth-child(2) .i2-vp{max-width:none;margin-top:14px;font-size:.92em;color:#c5cfdf}
+.i2-end .cta-glass{margin:48px auto 0 !important}
+.i2-end .intro-src{margin:28px auto 0 !important;max-width:640px;font-size:13px;line-height:1.6;color:#ffffff73}
+.i2-crew{padding:6vh 0 14vh;display:flex;flex-direction:column;align-items:center;gap:20px}
+.i2-crew .i2-metal{width:min(1100px,88vw);margin:0 auto}
+.i2-crew .curved-loop-jacket{width:100%;margin-top:8px}
