@@ -213,11 +213,14 @@ export default function Terrain3D({ site, common, t, mastM, base, textured, mode
       const idt = cx.createImageData(256, 256);
       for (let i = 0; i < 256 * 256; i++) { const g = 120 + Math.random() * 110; idt.data.set([g, g, g, 255], 4 * i); }
       cx.putImageData(idt, 0, 0);
+      cx.globalAlpha = 0.55; cx.filter = 'blur(3px)'; cx.drawImage(cv0, 0, 0); cx.filter = 'blur(10px)'; cx.globalAlpha = 0.35; cx.drawImage(cv0, 0, 0); cx.filter = 'none'; cx.globalAlpha = 1;
       const grain = new THREE.CanvasTexture(cv0);
       grain.wrapS = grain.wrapT = THREE.RepeatWrapping;
-      grain.repeat.set((2 * half) / 0.012, (2 * half) / 0.012);
+      grain.repeat.set((2 * half) / 0.004, (2 * half) / 0.004);
       grain.anisotropy = 8;
-      void grain; // no invented surface grain: only real NASA terrain and imagery are shown
+      // Regolith texture only (surface roughness below the 5-118 m elevation data); it changes no measured value.
+      (mat as THREE.MeshStandardMaterial).bumpMap = grain; (mat as THREE.MeshStandardMaterial).bumpScale = 0.02;
+      (mat as THREE.MeshStandardMaterial).roughnessMap = grain; (mat as THREE.MeshStandardMaterial).needsUpdate = true;
     }
     for (const gg of [outer, inner]) if (gg) { const m = new THREE.Mesh(gg.g, mat); m.castShadow = gg === outer; m.receiveShadow = true; scene.add(m); meshes.push(m); }
 

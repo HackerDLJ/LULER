@@ -18,7 +18,7 @@ export const TEAM: Member[] = [
   { name: 'Jachin Gnanaraj I', role: 'Team Member', photo: 'team/jachin.jpg' },
   { name: 'Alfreda Jenilyn N', role: 'Team Member', photo: 'team/alfreda.jpg' },
   { name: 'Jerry Daniel P', role: 'Team Member', photo: 'team/jerry.jpg' },
-  { name: 'Ananth M', role: 'Team Member' },
+  { name: 'Ananth M', role: 'Team Member', photo: 'team/ananth.jpg' },
   { name: 'Jaziya S', role: 'Team Member', photo: 'team/jaziya.jpg' },
 ];
 
