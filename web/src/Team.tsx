@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 // @ts-expect-error untyped JS component
 import Lanyard from './rb/Lanyard';
 // @ts-expect-error untyped JS component
@@ -97,10 +97,13 @@ const hasGL = (() => { try { const c = document.createElement('canvas'); return 
 
 export default function Team() {
   const [sel, setSel] = useState(0);
+  const seen = useRef(new Set<number>([0]));
+  const [drop, setDrop] = useState(0); // replays the swing-in the first time each member is shown
+  const pick = (i: number) => setSel(i);
   const [front, setFront] = useState<string>();
   const back = useMemo(backCard, []);
   const band = useMemo(strap, []);
-  useEffect(() => { let on = true; frontCard(TEAM[sel], sel).then((u) => on && setFront(u)); return () => { on = false; }; }, [sel]);
+  useEffect(() => { let on = true; frontCard(TEAM[sel], sel).then((u) => { if (!on) return; if (!seen.current.has(sel)) { seen.current.add(sel); setDrop((d) => d + 1); } setFront(u); }); return () => { on = false; }; }, [sel]);
   const m = TEAM[sel];
   return (
     <section className="team-page" aria-label="Team JATABELS">
@@ -109,7 +112,7 @@ export default function Team() {
         <p className="team-k">Team JATABELS</p>
         <h1 className="team-h">The people behind LULER</h1>
         <div className="team-wheel">
-          <OptionWheel items={TEAM.map((t) => t.name)} defaultSelected={0} onChange={(i: number) => setSel(i)}
+          <OptionWheel items={TEAM.map((t) => t.name)} defaultSelected={0} onChange={(i: number) => pick(i)}
             fontSize={2.4} spacing={1.45} tilt={6} blur={2} fade={0.25} inset={4} textColor="#a6a6a6" activeColor="#ffffff" />
           <GradualBlur position="top" height="5rem" strength={1.6} layers={8} zIndex={3} />
           <GradualBlur position="bottom" height="5rem" strength={1.6} layers={8} zIndex={3} />
@@ -119,7 +122,7 @@ export default function Team() {
       </div>
       <div className="team-card">
         {front && !hasGL && <img className="team-flat" src={front} alt={`ID card of ${m.name}`} />}
-        {front && hasGL && <Lanyard frontImage={front} backImage={back} strapImage={band} cardColor="#070b18" finish="glossy" metal="silver" anchor="right" size={0.46} strapLength={0.55} breeze={0.35} />}
+        {front && hasGL && <Lanyard key={drop} frontImage={front} backImage={back} strapImage={band} cardColor="#070b18" finish="glossy" metal="silver" anchor="right" size={0.46} strapLength={0.55} breeze={0.35} />}
       </div>
     </section>
   );
