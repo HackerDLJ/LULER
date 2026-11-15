@@ -230,7 +230,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
         {!lines.length && (
           <div className="ai-empty">
             {!ready ? (
-              <div className="ai-setup"><h2>Connect a model to start</h2><p>Choose Anthropic, OpenAI, a local Ollama or any OpenAI-compatible server, add a key if it needs one, and fetch the models.</p><button type="button" className="ai-cta" onClick={onOpenSettings}>Open AI settings</button></div>
+              <div className="ai-setup"><h2>Connect a model to start</h2><p>Use Google Gemini for free (key from Google AI Studio, also enables live voice), or Anthropic, OpenAI, a local Ollama or any OpenAI-compatible server. Add the key and fetch the models.</p><button type="button" className="ai-cta" onClick={onOpenSettings}>Open AI settings</button></div>
             ) : (<><h2>Ask anything about landing on the Moon</h2><p>I can read every site, date and score in LULER, and I can move the app for you.</p></>)}
             <div className="ai-sugs">{suggestions.map((s) => <button type="button" key={s} onClick={() => send(s)} disabled={!ready}>{s}</button>)}</div>
           </div>

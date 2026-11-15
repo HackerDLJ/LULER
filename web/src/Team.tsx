@@ -84,6 +84,8 @@ function strap() {
   return c.toDataURL('image/png');
 }
 
+const hasGL = (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } })();
+
 export default function Team() {
   const [sel, setSel] = useState(0);
   const [front, setFront] = useState<string>();
@@ -104,7 +106,8 @@ export default function Team() {
         <p className="team-tip">Scroll or drag the list to switch members · drag the card to swing it, click to flip</p>
       </div>
       <div className="team-card">
-        {front && <Lanyard key={sel} frontImage={front} backImage={back} strapImage={band} cardColor="#070b18" finish="glossy" metal="silver" size={0.64} strapLength={0.36} breeze={0.35} />}
+        {front && !hasGL && <img className="team-flat" src={front} alt={`ID card of ${m.name}`} />}
+        {front && hasGL && <Lanyard key={sel} frontImage={front} backImage={back} strapImage={band} cardColor="#070b18" finish="glossy" metal="silver" size={0.64} strapLength={0.36} breeze={0.35} />}
       </div>
     </section>
   );
