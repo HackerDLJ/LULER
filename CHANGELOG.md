@@ -2,7 +2,7 @@
 
 All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
-> **About the history:** versions 1 to 6 were built before this project was under version control. Their code was not kept separately, so the entries below describe what each milestone added; the code for all of it is in **v7.0.0**. From v7.0.0 on, every change is its own commit and every release its own tag.
+> **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
 ## v7.1.0 · 2026-11-15 · Free Gemini and live voice
 - **Google Gemini** provider (free key from Google AI Studio), now the default: native Gemini API with function calling, so it can drive the app.
@@ -23,25 +23,26 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 - SF Pro / Google Sans Flex typography; rounded blue glass UI; SpecularButton primary actions.
 - Faster far-side terrain loading (no more endless "Loading…").
 
-## v6 · Explainable safety score and checklist features
+## v6.0.0 · 2026-11-15 · Explainable safety score
 - Rule-based safety score (0–100) with "Why this score" breakdowns.
 - Three-site comparison cards; terrain hazard layer; landing verdict card.
 
-## v5 · React Bits UI pass
+## v5.0.0 · 2026-11-15 · React Bits interface
 - Preloader, depth ribbon mission timeline, drafting cursor for measuring, option wheel, credits loop, About section.
 - Blue liquid-glass buttons; removal of orange accents and grain.
 
-## v4 · Realistic surface and lighting
+## v4.0.0 · 2026-11-15 · Realistic Sun lighting
 - Cesium Moon terrain in every 3D tab, custom lighting shader with derivative normals.
 - True Sun direction with soft shadows; NASA Trek LRO WAC imagery.
 
-## v3 · Mission from launch to landing
+## v3.0.0 · 2026-11-15 · Mission from launch to landing
 - Saturn V from NASA 3D Resources, split into stages with real separation events.
 - One tab from launch to touchdown, with controllable stages, bloom and event log.
 
-## v2 · 3D globe and terrain
-- three.js Moon globe with every landing and candidate site; flat map; site terrain in 3D; surface walk mode.
+## v2.0.0 · 2026-11-15 · Cesium Moon terrain everywhere
+- Cesium Moon terrain (NASA LOLA/LROC) in every 3D tab, NASA Trek LRO WAC imagery, first rocket stage-separation work.
 
-## v1 · Data engine
+## v1.0.0 · 2026-11-14 · First web app
+- three.js Moon globe with every landing and candidate site; flat map; site terrain in 3D; surface walk mode.
 - Python engine: SPICE DE440 Sun/Earth ephemeris, LOLA terrain, horizon masks, sunlight and Earth-visibility metrics.
 - Data pipeline from NASA sources to compact web datasets; calendar of the best dates.

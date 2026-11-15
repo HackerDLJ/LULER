@@ -115,7 +115,18 @@ docs/      Notes
 
 ## Versions
 
-See [CHANGELOG.md](CHANGELOG.md). Each release is a git tag (`git tag -l`).
+| Version | What it brought | Where |
+|---|---|---|
+| **v7.1.0** | Free Google Gemini, live voice (Gemini Live API) | `main` |
+| **v7.0.0** | LULER Intelligence, Settings, crater detection, hazard-avoiding landing | `main` |
+| v6.0.0 | Explainable safety score, hazard layer, comparison cards | `history` branch |
+| v5.0.0 | React Bits interface, preloader, glass buttons | `history` branch |
+| v4.0.0 | Realistic Sun lighting on the terrain | `history` branch |
+| v3.0.0 | Saturn V mission from launch to landing | `history` branch |
+| v2.0.0 | Cesium Moon terrain in every 3D view | `history` branch |
+| v1.0.0 | First web app: globe, map, terrain, sunlight data | `history` branch |
+
+Every version is a git tag. v1 to v6 are the real compiled websites from each milestone (`git checkout v3.0.0 && python3 -m http.server 8080`). Details in [CHANGELOG.md](CHANGELOG.md).
 
 ## Team JATABELS
 
