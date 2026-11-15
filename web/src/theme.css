@@ -479,3 +479,13 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .app .hdr-clock select option{background:#121a2e;color:#fff}
 @media (max-width:1200px){.pickers .hdr-clock{display:inline-flex!important}.pickers .hdr-clock>span:last-child{display:none}}
 .app .pickers .hdr-clock select{border:0!important;box-shadow:none!important;background-color:transparent!important;height:auto!important;min-height:0!important;width:auto!important;border-radius:0!important}
+.app .hdr-team{all:unset;cursor:pointer;display:inline-flex;align-items:center;height:40px;padding:0 18px;border-radius:999px;font:600 14px var(--sans);color:#eaf1ff;background:rgba(18,26,48,.72);border:1px solid rgba(140,180,255,.22);backdrop-filter:blur(14px)}
+.app .hdr-team.on,.app .hdr-team:hover{background:rgba(60,100,200,.35)}
+.team-page{display:grid;grid-template-columns:minmax(260px,420px) 1fr;gap:24px;min-height:calc(100dvh - 180px);padding:24px clamp(16px,4vw,56px);align-items:center}
+.team-k{margin:0;color:#9cc2ff;font:600 13px var(--sans);letter-spacing:.14em;text-transform:uppercase}
+.team-h{margin:8px 0 18px;font:600 clamp(28px,3.2vw,44px)/1.1 var(--sans);color:#fff}
+.team-wheel{height:240px;border-radius:20px;background:rgba(14,20,38,.55);border:1px solid rgba(140,180,255,.14)}
+.team-now{margin:16px 0 4px;color:#cfd8ee;font:500 16px var(--sans)}.team-now b{color:#fff}
+.team-tip{margin:0;color:#7f8cab;font:400 13px var(--sans)}
+.team-card{height:min(78dvh,760px);min-height:460px}
+@media (max-width:860px){.team-page{grid-template-columns:1fr}.team-card{height:70dvh}}

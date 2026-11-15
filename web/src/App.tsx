@@ -18,6 +18,7 @@ import Companion from './Companion';
 import LiveNasa from './LiveNasa';
 import MoonVsEarth from './MoonVsEarth';
 import { spaceWeatherNow } from './nasa';
+import Team from './Team';
 import SettingsPage from './SettingsPage';
 import { getSettings, useSettings } from './settings';
 import OptionWheel from './rb/OptionWheel.jsx';
@@ -91,7 +92,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
   // Stable identity so Hud's playback interval isn't torn down and recreated on every tick.
   const onScrub = useCallback((v: number) => setS((o) => ({ ...o, scrub: v })), []);
   const [cesiumFail, setCesiumFail] = useState(false);
-  const [view, setViewRaw] = useState<'globe' | 'orbit' | 'lander' | 'descent' | 'map' | 'calendar' | 'craft' | 'cesium' | 'mission' | 'timeline' | 'settings' | 'ai'>('globe');
+  const [view, setViewRaw] = useState<'globe' | 'orbit' | 'lander' | 'descent' | 'map' | 'calendar' | 'craft' | 'cesium' | 'mission' | 'timeline' | 'settings' | 'ai' | 'team'>('globe');
   useGSAP(() => { // smooth GSAP entrance for panels on every view change
     const els = gsap.utils.toArray<HTMLElement>('.app .subtabs, .app .hud2, .app .drive, .app .viewpanel, .app .sitepanel, .app .site-wheel, .app .hud-bottom, .app .below > *');
     gsap.fromTo(els, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: 'power2.out', stagger: 0.03, clearProps: 'transform,opacity,visibility' });
@@ -200,6 +201,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
     <>
       <SitePicker sites={sites} value={s.a} onPick={pickSite} />
       <input type="date" aria-label="Date (UTC)" min="2027-01-01" max="2028-12-31" value={fmtDay(day)} onChange={(e) => e.target.value && set({ day: Math.min(dateToDay(e.target.value), N_DAYS - s.len), scrub: 0 })} />
+      <button type="button" className={`hdr-team${view === 'team' ? ' on' : ''}`} title="Team JATABELS" onClick={() => { setViewRaw('team'); window.scrollTo({ top: 0 }); }}>Team</button>
       <label className="hdr-clock" title={`Mission time in UTC (hourly NASA SPICE data). Your local time: ${hourToDate(start + scrub).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`}>
         <span className="hc-dot" aria-hidden="true" />
         <select aria-label="Hour of day (UTC)" value={hourToDate(start + scrub).getUTCHours()} onChange={(e) => { const hh = Number(e.target.value); set({ scrub: Math.min(end - start - 1, Math.max(0, Math.floor(scrub / 24) * 24 + hh)) }); }}>
@@ -254,7 +256,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
   return (
     <>
       {zoomHint && <div className="zoom-hint" role="status">Pinch or hold <b>{/Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent) ? '⌘' : 'Ctrl'}</b> + scroll to zoom · scroll to move down the page</div>}
-      {view === 'settings' || view === 'ai' ? (
+      {view === 'settings' || view === 'ai' || view === 'team' ? (
         <div className="stage page-stage">
           {chrome}
           <div className="page-body">
@@ -266,7 +268,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
                 earth: s.earth, earthMins: EARTH_MINS, onEarth: (m) => set({ earth: m }),
                 siteB: s.b, sites, onSiteB: (i) => set({ b: i }),
               }} />
-            ) : COMPANION}
+            ) : view === 'team' ? <Team /> : COMPANION}
           </div>
         </div>
       ) : view === 'globe' ? (
@@ -311,7 +313,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
   
         )
       )}
-      {view !== 'settings' && view !== 'ai' && <div className="below">
+      {view !== 'settings' && view !== 'ai' && view !== 'team' && <div className="below">
       <Compare3 sites={sites} picks={pick3} scores={scores3} onPick={(slot, i) => setPick3((p) => p.map((v, k) => (k === slot ? i : v)))} onOpen={(i) => { pickSite(i); setView('orbit'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
       <MoonVsEarth stats={sa.center} mastM={manifest.masts_m[s.mast]} lat={sites[s.a].lat} />
       <LiveNasa site={sites[s.a]} />
