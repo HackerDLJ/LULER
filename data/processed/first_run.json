@@ -1,0 +1,184 @@
+[
+ {
+  "site": "Connecting ridge",
+  "lat": -89.4632,
+  "lon": -137.49,
+  "mast_m": 2.0,
+  "metrics": {
+   "power_index_pct": 45.750532508571865,
+   "sun_up_pct": 45.89033287733698,
+   "earth_up_pct": 42.20246238030096,
+   "both_pct": 19.699042407660738,
+   "longest_dark_h": 498.0,
+   "longest_sunlit_h": 565.0,
+   "longest_comm_gap_h": 398.0
+  },
+  "sensitivity_80m_only": {
+   "power_index_pct": 45.97817599690888,
+   "sun_up_pct": 46.06703146374829,
+   "earth_up_pct": 42.20246238030096,
+   "both_pct": 19.83014135886913,
+   "longest_dark_h": 498.0,
+   "longest_sunlit_h": 565.0,
+   "longest_comm_gap_h": 398.0
+  },
+  "max_horizon_deg": 2.4189493130232553,
+  "edge_hit_80m_pct": 0.0
+ },
+ {
+  "site": "Shackleton rim",
+  "lat": -89.7668,
+  "lon": -171.87,
+  "mast_m": 2.0,
+  "metrics": {
+   "power_index_pct": 8.95384352482892,
+   "sun_up_pct": 9.011627906976743,
+   "earth_up_pct": 0.0,
+   "both_pct": 0.0,
+   "longest_dark_h": 4901.0,
+   "longest_sunlit_h": 209.0,
+   "longest_comm_gap_h": 17544.0
+  },
+  "sensitivity_80m_only": {
+   "power_index_pct": 9.078699353191805,
+   "sun_up_pct": 9.119927040583676,
+   "earth_up_pct": 0.0,
+   "both_pct": 0.0,
+   "longest_dark_h": 4901.0,
+   "longest_sunlit_h": 210.0,
+   "longest_comm_gap_h": 17544.0
+  },
+  "max_horizon_deg": 32.79155925167978,
+  "edge_hit_80m_pct": 0.0
+ },
+ {
+  "site": "Peak near Shackleton",
+  "lat": -88.811,
+  "lon": 123.6901,
+  "mast_m": 2.0,
+  "metrics": {
+   "power_index_pct": 64.54294611552794,
+   "sun_up_pct": 64.70588235294117,
+   "earth_up_pct": 46.83652530779754,
+   "both_pct": 30.568855449156406,
+   "longest_dark_h": 606.0,
+   "longest_sunlit_h": 3508.0,
+   "longest_comm_gap_h": 369.0
+  },
+  "sensitivity_80m_only": {
+   "power_index_pct": 78.38345951486045,
+   "sun_up_pct": 78.50547195622435,
+   "earth_up_pct": 46.83652530779754,
+   "both_pct": 36.11491108071135,
+   "longest_dark_h": 240.0,
+   "longest_sunlit_h": 4101.0,
+   "longest_comm_gap_h": 369.0
+  },
+  "max_horizon_deg": 2.061087273002151,
+  "edge_hit_80m_pct": 0.0
+ },
+ {
+  "site": "de Gerlache rim",
+  "lat": -88.6834,
+  "lon": -67.9321,
+  "mast_m": 2.0,
+  "metrics": {
+   "power_index_pct": 59.57409412523476,
+   "sun_up_pct": 59.63292293661651,
+   "earth_up_pct": 52.38828089375285,
+   "both_pct": 28.368673050615595,
+   "longest_dark_h": 437.0,
+   "longest_sunlit_h": 666.0,
+   "longest_comm_gap_h": 334.0
+  },
+  "sensitivity_80m_only": {
+   "power_index_pct": 69.21605864953641,
+   "sun_up_pct": 69.30574555403557,
+   "earth_up_pct": 52.38828089375285,
+   "both_pct": 32.0109439124487,
+   "longest_dark_h": 404.0,
+   "longest_sunlit_h": 3448.0,
+   "longest_comm_gap_h": 334.0
+  },
+  "max_horizon_deg": 2.932024738314085,
+  "edge_hit_80m_pct": 0.0
+ },
+ {
+  "site": "Nobile rim 1",
+  "lat": -85.4381,
+  "lon": 37.36667,
+  "mast_m": 2.0,
+  "metrics": {
+   "power_index_pct": 31.021629160591036,
+   "sun_up_pct": 31.013451892384865,
+   "earth_up_pct": 35.44801641586867,
+   "both_pct": 11.776105791153672,
+   "longest_dark_h": 513.0,
+   "longest_sunlit_h": 227.0,
+   "longest_comm_gap_h": 437.0
+  },
+  "sensitivity_80m_only": {
+   "power_index_pct": 31.02387932582032,
+   "sun_up_pct": 31.013451892384865,
+   "earth_up_pct": 35.44801641586867,
+   "both_pct": 11.776105791153672,
+   "longest_dark_h": 513.0,
+   "longest_sunlit_h": 227.0,
+   "longest_comm_gap_h": 437.0
+  },
+  "max_horizon_deg": 13.354143740116772,
+  "edge_hit_80m_pct": 0.0
+ },
+ {
+  "site": "Leibnitz beta plateau",
+  "lat": -85.4266,
+  "lon": 31.74276,
+  "mast_m": 2.0,
+  "metrics": {
+   "power_index_pct": 19.90493039888924,
+   "sun_up_pct": 19.875740994072046,
+   "earth_up_pct": 38.206794345645235,
+   "both_pct": 5.06155950752394,
+   "longest_dark_h": 3334.0,
+   "longest_sunlit_h": 376.0,
+   "longest_comm_gap_h": 422.0
+  },
+  "sensitivity_80m_only": {
+   "power_index_pct": 21.350356134475224,
+   "sun_up_pct": 21.391928864569085,
+   "earth_up_pct": 38.90218878248974,
+   "both_pct": 5.853853169174647,
+   "longest_dark_h": 2805.0,
+   "longest_sunlit_h": 394.0,
+   "longest_comm_gap_h": 417.0
+  },
+  "max_horizon_deg": 8.332555838262719,
+  "edge_hit_80m_pct": 0.0
+ },
+ {
+  "site": "Malapert massif",
+  "lat": -85.9948,
+  "lon": -0.23578,
+  "mast_m": 2.0,
+  "metrics": {
+   "power_index_pct": 20.972748044629657,
+   "sun_up_pct": 21.10123119015048,
+   "earth_up_pct": 49.28180574555404,
+   "both_pct": 10.442316461468309,
+   "longest_dark_h": 2773.0,
+   "longest_sunlit_h": 184.0,
+   "longest_comm_gap_h": 354.0
+  },
+  "sensitivity_80m_only": {
+   "power_index_pct": 35.83715239810134,
+   "sun_up_pct": 35.744414044687645,
+   "earth_up_pct": 50.83219334245326,
+   "both_pct": 18.279753761969904,
+   "longest_dark_h": 667.0,
+   "longest_sunlit_h": 285.0,
+   "longest_comm_gap_h": 344.0
+  },
+  "max_horizon_deg": 5.213279272039755,
+  "edge_hit_80m_pct": 0.0
+ }
+]
