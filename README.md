@@ -23,7 +23,7 @@ Built by **Team JATABELS** for the **NASA Space Apps Challenge 2026**.
 | ✅ | **Explainable safety score (0–100)** from measured inputs, never a black box | Score chip on every view |
 | ⚖️ | **Your point vs. the two nearest sites**: comparison updates for any point you click | Below the 3D view |
 | 📅 | **Calendar of sunlight and Earth contact** for every day of 2027–2028 | **Dates** |
-| ✦ | **LULER Intelligence**: an AI companion that reads the live mission data and can drive the app | **AI** button (top right) |
+| ✦ | **LULER Intelligence**: an AI companion (free with Google Gemini) with **live voice**; it reads the live mission data and can drive the app | **AI** button (top right) |
 | ⚙️ | **Settings** for graphics, visibility, dates, sunlight, radio link, data and AI | **⚙** button (top right) |
 
 ### The safety score
@@ -63,6 +63,7 @@ Open **⚙ Settings → LULER Intelligence** and connect any model:
 
 | Provider | Base URL | Key |
 |---|---|---|
+| **Google Gemini (free)** | `https://generativelanguage.googleapis.com/v1beta` | free key from [Google AI Studio](https://aistudio.google.com) |
 | Anthropic | `https://api.anthropic.com/v1` | required |
 | OpenAI | `https://api.openai.com/v1` | required |
 | Ollama (local) | `http://localhost:11434/v1` | not needed (start Ollama with `OLLAMA_ORIGINS=*`) |
@@ -70,6 +71,10 @@ Open **⚙ Settings → LULER Intelligence** and connect any model:
 
 Press **Fetch models** to list the models that key can use at that URL, pick one, then open the **AI** page.
 Keys are stored only in your browser (localStorage) and are sent only to the URL you entered.
+
+### Live voice
+
+With Google Gemini connected, press the **microphone** on the AI page to talk to LULER. It uses the **Gemini Live API** (default model `gemini-3.1-flash-live-preview`, voice selectable in Settings). You can interrupt it at any time; both sides of the conversation are transcribed into the chat, and voice commands such as "set the date to June first" or "take me to Shackleton rim" drive the app.
 
 The companion sees the selected site, date, safety score, sunlight and Earth numbers, and every site's score. It can **select sites, open views and change dates** for you.
 

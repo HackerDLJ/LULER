@@ -4,6 +4,11 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **About the history:** versions 1 to 6 were built before this project was under version control. Their code was not kept separately, so the entries below describe what each milestone added; the code for all of it is in **v7.0.0**. From v7.0.0 on, every change is its own commit and every release its own tag.
 
+## v7.1.0 · 2026-11-15 · Free Gemini and live voice
+- **Google Gemini** provider (free key from Google AI Studio), now the default: native Gemini API with function calling, so it can drive the app.
+- **Live voice** through the **Gemini Live API** (`gemini-3.1-flash-live-preview` by default). Talk with the microphone, interrupt at any time, and get spoken answers; both sides are transcribed into the chat, and voice commands run app actions.
+- Settings: "Free" badge, live voice model and voice selection; Fetch models lists Gemini chat and live models separately.
+
 ## v7.0.0 · 2026-11-15 · Intelligence and settings
 - **LULER Intelligence**: a full-page AI companion. It works with Anthropic, OpenAI, Ollama (local) or any OpenAI-compatible URL. **Fetch models** lists the models available to a key; the companion reads live mission data and can select sites, open views and set dates.
 - **Settings page** with General, 3D & graphics, Visibility, Dates & window, Sunlight & power, Earth & radio, Data & calibration, LULER Intelligence, and About & reset. Settings persist in the browser.

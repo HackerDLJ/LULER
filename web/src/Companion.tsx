@@ -69,6 +69,25 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
     }
   }
 
+  async function googleTurn() {
+    for (let round = 0; round < 5; round++) {
+      const r = await fetch(`${trim(st.aiBaseUrl)}/models/${st.aiModel}:generateContent?key=${encodeURIComponent(st.aiKey.trim())}`, {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM(getContext()) }] }, contents: hist.current, tools: [{ functionDeclarations: TOOLS.map((t) => ({ name: t.name, description: t.description, parameters: t.params })) }] }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j?.error?.message ?? `HTTP ${r.status}`);
+      const parts: any[] = j.candidates?.[0]?.content?.parts ?? [];
+      if (!parts.length) throw new Error(j.promptFeedback?.blockReason ? `The model declined (${j.promptFeedback.blockReason}).` : 'The model returned an empty reply.');
+      hist.current.push({ role: 'model', parts });
+      const text = parts.filter((p) => p.text && !p.thought).map((p) => p.text).join('').trim();
+      if (text) add({ role: 'assistant', text });
+      const calls = parts.filter((p) => p.functionCall);
+      if (!calls.length) return;
+      hist.current.push({ role: 'user', parts: calls.map((p) => { const out = run(p.functionCall.name, p.functionCall.args); add({ role: 'tool', text: out }); return { functionResponse: { name: p.functionCall.name, response: { result: out } } }; }) });
+    }
+  }
+
   async function openaiTurn() {
     let tools = true;
     for (let round = 0; round < 5; round++) {
@@ -97,9 +116,9 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
     const q = text.trim(); if (!q || busy) return;
     if (!ready) { onOpenSettings(); return; }
     setInput(''); add({ role: 'user', text: q });
-    hist.current.push({ role: 'user', content: q });
+    hist.current.push(st.aiProvider === 'google' ? { role: 'user', parts: [{ text: q }] } : { role: 'user', content: q });
     setBusy(true);
-    try { await (st.aiProvider === 'anthropic' ? anthropicTurn() : openaiTurn()); }
+    try { await (st.aiProvider === 'anthropic' ? anthropicTurn() : st.aiProvider === 'google' ? googleTurn() : openaiTurn()); }
     catch (e) {
       const m = (e as Error).message;
       add({ role: 'error', text: /Failed to fetch|NetworkError|Load failed/i.test(m) ? `Could not reach ${st.aiBaseUrl}. Is the server running and allowing browser requests (CORS)?` : m });
@@ -107,6 +126,80 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
     }
     setBusy(false);
   };
+
+  /* ---- Live voice: Gemini Live API (bidirectional WebSocket audio) ---- */
+  const [voice, setVoice] = useState<'off' | 'connecting' | 'listening' | 'speaking'>('off');
+  const live = useRef<any>(null);
+  useEffect(() => () => stopVoice(), []);
+  const b64 = (u8: Uint8Array) => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode(...u8.subarray(i, i + 0x8000)); return btoa(s); };
+  function stopVoice() {
+    const L = live.current; if (!L) return; live.current = null;
+    if (L.inT.trim()) add({ role: 'user', text: `🎙 ${L.inT.trim()}` }); if (L.outT.trim()) add({ role: 'assistant', text: L.outT.trim() });
+    try { L.proc?.disconnect(); L.src?.disconnect(); } catch { /* */ }
+    L.stream?.getTracks().forEach((t: MediaStreamTrack) => t.stop());
+    try { L.ws?.close(1000); } catch { /* */ }
+    L.ac?.close().catch(() => {}); L.out?.close().catch(() => {});
+    setVoice('off');
+  }
+  function playPcm(L: any, data: string) {
+    const bin = atob(data); const n = bin.length >> 1; const buf = L.out.createBuffer(1, n, 24000); const ch = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) { const v = bin.charCodeAt(2 * i) | (bin.charCodeAt(2 * i + 1) << 8); ch[i] = (v >= 32768 ? v - 65536 : v) / 32768; }
+    const src = L.out.createBufferSource(); src.buffer = buf; src.connect(L.out.destination);
+    const at = Math.max(L.out.currentTime + 0.02, L.t); src.start(at); L.t = at + buf.duration; L.srcs.push(src); setVoice('speaking');
+    src.onended = () => { L.srcs = L.srcs.filter((x: any) => x !== src); if (!L.srcs.length && live.current === L) setVoice('listening'); };
+  }
+  async function startVoice() {
+    if (live.current) { stopVoice(); return; }
+    if (st.aiProvider !== 'google' || !st.aiKey.trim()) { add({ role: 'error', text: 'Live voice uses Google Gemini. Choose Google Gemini in AI settings and add your free key.' }); return; }
+    setVoice('connecting');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });
+      const ws = new WebSocket(`wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${encodeURIComponent(st.aiKey.trim())}`);
+      const L: any = { ws, stream, ac: new AudioContext(), out: new AudioContext({ sampleRate: 24000 }), t: 0, srcs: [], inT: '', outT: '' };
+      live.current = L;
+      ws.onopen = () => ws.send(JSON.stringify({ setup: {
+        model: `models/${st.liveModel}`,
+        generationConfig: { responseModalities: ['AUDIO'], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: st.voice } } } },
+        systemInstruction: { parts: [{ text: SYSTEM(getContext()) + '\nYou are speaking out loud: answer in short, natural spoken sentences.' }] },
+        tools: [{ functionDeclarations: TOOLS.map((t) => ({ name: t.name, description: t.description, parameters: t.params })) }],
+        inputAudioTranscription: {}, outputAudioTranscription: {},
+      } }));
+      ws.onmessage = async (ev) => {
+        if (live.current !== L) return;
+        const m = JSON.parse(typeof ev.data === 'string' ? ev.data : await (ev.data as Blob).text());
+        if (m.setupComplete) { // start streaming the microphone as 16 kHz 16-bit PCM
+          L.src = L.ac.createMediaStreamSource(stream); L.proc = L.ac.createScriptProcessor(4096, 1, 1);
+          const ratio = L.ac.sampleRate / 16000;
+          L.proc.onaudioprocess = (e: AudioProcessingEvent) => {
+            if (ws.readyState !== 1) return;
+            const f = e.inputBuffer.getChannelData(0); const n = Math.floor(f.length / ratio); const pcm = new Int16Array(n);
+            for (let i = 0; i < n; i++) { let acc = 0, c = 0; for (let k = Math.floor(i * ratio); k < Math.floor((i + 1) * ratio); k++) { acc += f[k]; c++; } const v = Math.max(-1, Math.min(1, acc / (c || 1))); pcm[i] = v < 0 ? v * 32768 : v * 32767; }
+            ws.send(JSON.stringify({ realtimeInput: { audio: { data: b64(new Uint8Array(pcm.buffer)), mimeType: 'audio/pcm;rate=16000' } } }));
+          };
+          L.src.connect(L.proc); L.proc.connect(L.ac.destination); setVoice('listening');
+        }
+        const sc = m.serverContent;
+        if (sc) {
+          if (sc.interrupted) { L.srcs.forEach((x: any) => { try { x.stop(); } catch { /* */ } }); L.srcs = []; L.t = 0; setVoice('listening'); }
+          for (const p of sc.modelTurn?.parts ?? []) if (p.inlineData?.data) playPcm(L, p.inlineData.data);
+          if (sc.inputTranscription?.text) L.inT += sc.inputTranscription.text;
+          if (sc.outputTranscription?.text) L.outT += sc.outputTranscription.text;
+          if (sc.turnComplete || sc.generationComplete) {
+            if (L.inT.trim()) add({ role: 'user', text: `🎙 ${L.inT.trim()}` }); if (L.outT.trim()) add({ role: 'assistant', text: L.outT.trim() });
+            L.inT = ''; L.outT = '';
+          }
+        }
+        if (m.toolCall?.functionCalls?.length) {
+          const responses = m.toolCall.functionCalls.map((c: any) => { const out = run(c.name, c.args); add({ role: 'tool', text: out }); return { id: c.id, name: c.name, response: { result: out } }; });
+          ws.send(JSON.stringify({ toolResponse: { functionResponses: responses } }));
+        }
+      };
+      ws.onclose = (e) => { if (live.current === L) { if (e.code !== 1000) add({ role: 'error', text: `Voice session ended${e.reason ? `: ${e.reason}` : ` (code ${e.code})`}.` }); stopVoice(); } };
+    } catch (e) {
+      add({ role: 'error', text: /Permission|NotAllowed/i.test(String((e as Error).name) + (e as Error).message) ? 'Microphone access was blocked. Allow the microphone for this site to talk to LULER.' : (e as Error).message });
+      stopVoice(); setVoice('off');
+    }
+  }
 
   const sc = ctx.score as { total?: number; grade?: string } | undefined;
   const best = [...ctx.sites].filter((x) => typeof x.score === 'number').sort((a, b) => (b.score ?? 0) - (a.score ?? 0))[0];
@@ -146,8 +239,10 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
         {busy && <div className="ai-msg assistant ai-typing"><i /><i /><i /></div>}
         <div ref={endRef} />
       </div>
+      {voice !== 'off' && <div className={`ai-voice ${voice}`} role="status"><span className="ai-wave"><i /><i /><i /><i /><i /></span>{voice === 'connecting' ? 'Connecting to Gemini Live…' : voice === 'speaking' ? 'LULER is speaking… (just talk to interrupt)' : 'Listening… ask about any site, date or score'}<button type="button" onClick={stopVoice}>End</button></div>}
       <form className="ai-input" onSubmit={(e) => { e.preventDefault(); send(input); }}>
         <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={ready ? `Message LULER Intelligence about ${ctx.site.name}…` : 'Connect a model in AI settings to start'} aria-label="Message" />
+        <button type="button" className={`ai-mic ${voice}`} onClick={startVoice} aria-label={voice === 'off' ? 'Talk to LULER (live voice)' : 'Stop voice'} title={voice === 'off' ? 'Talk (Gemini Live voice)' : 'Stop voice'}>{voice === 'off' ? <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1A7 7 0 0 0 19 12z"/></svg> : <i />}</button>
         <button type="submit" disabled={busy || !input.trim()} aria-label="Send">↑</button>
       </form>
     </div>

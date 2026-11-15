@@ -38,9 +38,10 @@ export default function SettingsPage({ plan, initial = 'general' }: { plan: Plan
   const doFetch = async () => {
     setBusy(true); setMsg(null);
     try {
-      const list = await fetchModels(st.aiProvider, st.aiBaseUrl, st.aiKey.trim());
-      setSettings({ aiModels: list, aiModel: list.includes(st.aiModel) ? st.aiModel : list[0] });
-      setMsg({ ok: true, text: `Connected · ${list.length} model${list.length === 1 ? '' : 's'} available` });
+      const { chat: list, live } = await fetchModels(st.aiProvider, st.aiBaseUrl, st.aiKey.trim());
+      const pref = list.find((m) => /flash/i.test(m) && !/lite|preview|exp/i.test(m)) ?? list[0];
+      setSettings({ aiModels: list, aiModel: list.includes(st.aiModel) ? st.aiModel : st.aiProvider === 'google' ? pref : list[0], ...(live.length ? { liveModels: live, liveModel: live.includes(st.liveModel) ? st.liveModel : live[0] } : {}) });
+      setMsg({ ok: true, text: `Connected · ${list.length} chat model${list.length === 1 ? '' : 's'}${live.length ? ` · ${live.length} live voice model${live.length === 1 ? '' : 's'}` : ''}` });
     } catch (e) {
       const m = (e as Error).message;
       setMsg({ ok: false, text: /Failed to fetch|NetworkError|Load failed/i.test(m) ? `Could not reach ${st.aiBaseUrl}. Check the URL, that the server is running, and that it allows browser requests (CORS).` : m });
@@ -120,10 +121,10 @@ export default function SettingsPage({ plan, initial = 'general' }: { plan: Plan
         </>)}
 
         {sec === 'ai' && (<>
-          <h2>LULER Intelligence</h2><p className="st-lede">Connect any AI model to power the companion. Keys stay in this browser and are sent only to the URL below.</p>
+          <h2>LULER Intelligence</h2><p className="st-lede">Connect any AI model to power the companion. <b>Google Gemini is free</b> with a key from Google AI Studio and also enables live voice. Keys stay in this browser and are sent only to the URL below.</p>
           <div className="st-card">
             <div className="st-prov">{(Object.keys(PROVIDERS) as Provider[]).map((p) => (
-              <button type="button" key={p} className={st.aiProvider === p ? 'on' : ''} onClick={() => pickProvider(p)}><b>{PROVIDERS[p].name}</b><span>{PROVIDERS[p].url}</span></button>
+              <button type="button" key={p} className={st.aiProvider === p ? 'on' : ''} onClick={() => pickProvider(p)}><b>{PROVIDERS[p].name}{PROVIDERS[p].free && <em className="st-free">Free</em>}</b><span>{PROVIDERS[p].url}</span></button>
             ))}</div>
             <Row title="API base URL" hint={prov.note}><input className="st-in wide" spellCheck={false} value={st.aiBaseUrl} onChange={(e) => setSettings({ aiBaseUrl: e.target.value.trim() })} placeholder={prov.url} /></Row>
             <Row title="API key" hint={prov.keyNeeded ? 'Required for this provider.' : 'Usually not needed for local servers.'}>
@@ -139,6 +140,18 @@ export default function SettingsPage({ plan, initial = 'general' }: { plan: Plan
               </div>
             </Row>
             {msg && <p className={`st-msg ${msg.ok ? 'ok' : 'bad'}`}>{msg.text}</p>}
+            {st.aiProvider === 'google' && (<>
+              <Row title="Live voice model" hint="Gemini Live API for real-time voice conversation. Fetch models to list the ones your key can use.">
+                <select className="st-in wide" value={st.liveModel} onChange={(e) => setSettings({ liveModel: e.target.value })}>
+                  {(st.liveModels.length ? st.liveModels : [st.liveModel]).map((m) => <option key={m} value={m}>{m}</option>)}
+                </select>
+              </Row>
+              <Row title="Voice" hint="The voice LULER speaks with.">
+                <select className="st-in" value={st.voice} onChange={(e) => setSettings({ voice: e.target.value })}>
+                  {['Puck', 'Charon', 'Kore', 'Fenrir', 'Aoede', 'Leda', 'Orus', 'Zephyr'].map((v) => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </Row>
+            </>)}
             <Row title="NASA API key" hint="For live NASA data in the companion (api.nasa.gov). DEMO_KEY works with low limits.">
               <input className="st-in wide" type="password" autoComplete="off" value={st.nasaKey} onChange={(e) => setSettings({ nasaKey: e.target.value })} placeholder="DEMO_KEY" />
             </Row>

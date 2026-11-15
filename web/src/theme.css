@@ -363,3 +363,18 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .reduce-motion *{animation-duration:.01ms!important;transition-duration:.01ms!important}
 .compact-hud .hud2 .lines,.compact-hud .hud2 .sig{display:none}
 .app .hdr-ic svg{width:18px!important;height:18px!important;flex:none}
+
+/* Live voice */
+.st-free{font-style:normal;margin-left:8px;font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:2px 8px;border-radius:999px;background:rgba(51,217,128,.16);color:#7fe8b0;vertical-align:2px}
+.app .ai-input .ai-mic{width:44px;height:44px;border-radius:50%;background:rgba(150,185,255,.12);border:1px solid rgba(150,185,255,.28);color:#dfe9ff;font-size:0}
+.app .ai-input .ai-mic:not(.off){background:linear-gradient(180deg,#ff6b6b,#d94444);border:0}
+.ai-mic i{width:14px;height:14px;border-radius:3px;background:#fff}
+.ai-mic.connecting{animation:cmpPulse 1s infinite}
+.ai-voice{grid-area:input;align-self:start;transform:translateY(calc(-100% - 10px));display:flex;align-items:center;gap:12px;justify-self:center;padding:8px 10px 8px 16px;border-radius:999px;background:rgba(14,19,33,.96);border:1px solid rgba(150,185,255,.28);font-size:13.5px;color:#dfe9ff;box-shadow:0 10px 30px rgba(0,8,30,.5);z-index:3}
+.app .ai-voice button{all:unset;padding:6px 14px;border-radius:999px;background:rgba(255,90,90,.18);color:#ffb3b3;font:600 12.5px var(--sans);cursor:pointer}
+.ai-wave{display:flex;align-items:center;gap:3px;height:18px}
+.ai-wave i{width:3px;height:6px;border-radius:2px;background:#9cc2ff;animation:aiWave 1s ease-in-out infinite}
+.ai-wave i:nth-child(2){animation-delay:.12s}.ai-wave i:nth-child(3){animation-delay:.24s}.ai-wave i:nth-child(4){animation-delay:.36s}.ai-wave i:nth-child(5){animation-delay:.48s}
+.ai-voice.speaking .ai-wave i{background:#7fe8b0}
+.ai-voice.connecting .ai-wave i{animation-duration:2s;opacity:.5}
+@keyframes aiWave{50%{height:18px}}
