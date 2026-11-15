@@ -5,6 +5,10 @@ import Lanyard from './rb/Lanyard';
 import OptionWheel from './rb/OptionWheel';
 import './rb/Lanyard.css';
 import './rb/OptionWheel.css';
+// @ts-expect-error untyped JS component
+import GridScan from './rb/GridScan';
+// @ts-expect-error untyped JS component
+import GradualBlur from './rb/GradualBlur';
 
 export type Member = { name: string; role: string; photo?: string };
 
@@ -100,19 +104,22 @@ export default function Team() {
   const m = TEAM[sel];
   return (
     <section className="team-page" aria-label="Team JATABELS">
+      <div className="team-bg"><GridScan linesColor="#1f2a44" scanColor="#6fa8ff" cells={8} depth={3} scanDuration={2.8} scanDelay={2.2} glow={0.5} reflection={0.25} clickEffect="none" /></div>
       <div className="team-side">
         <p className="team-k">Team JATABELS</p>
         <h1 className="team-h">The people behind LULER</h1>
         <div className="team-wheel">
           <OptionWheel items={TEAM.map((t) => t.name)} defaultSelected={0} onChange={(i: number) => setSel(i)}
             fontSize={2.4} spacing={1.45} tilt={6} blur={2} fade={0.25} inset={4} textColor="#a6a6a6" activeColor="#ffffff" />
+          <GradualBlur position="top" height="5rem" strength={1.6} layers={8} zIndex={3} />
+          <GradualBlur position="bottom" height="5rem" strength={1.6} layers={8} zIndex={3} />
         </div>
         <p className="team-now"><b>{m.name}</b> · {m.role}</p>
         <p className="team-tip">Scroll or drag the list to switch members · drag the card to swing it, click to flip</p>
       </div>
       <div className="team-card">
         {front && !hasGL && <img className="team-flat" src={front} alt={`ID card of ${m.name}`} />}
-        {front && hasGL && <Lanyard frontImage={front} backImage={back} strapImage={band} cardColor="#070b18" finish="glossy" metal="silver" anchor="right" size={0.5} strapLength={0.42} breeze={0.35} />}
+        {front && hasGL && <Lanyard frontImage={front} backImage={back} strapImage={band} cardColor="#070b18" finish="glossy" metal="silver" anchor="right" size={0.46} strapLength={0.55} breeze={0.35} />}
       </div>
     </section>
   );

@@ -497,3 +497,11 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .team-page .team-wheel{height:min(52dvh,420px);background:none;border:0;border-radius:0}
 .team-page .lanyard,.team-page .lanyard-canvas{background:transparent!important}
 @media (max-width:860px){.team-page .team-side{width:100%}.team-page .team-wheel{height:300px}}
+.page-body:has(.team-page){position:static;max-width:none;padding:0;margin:0}
+.team-page{position:fixed!important;inset:0;z-index:1;overflow:hidden}
+.team-page .team-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+.team-page .team-card{position:absolute;inset:0;z-index:2}
+.team-page .team-side{position:absolute;left:0;top:0;bottom:0;z-index:3;display:flex;flex-direction:column;justify-content:center;padding:150px clamp(16px,4vw,64px) 40px}
+.team-page .team-wheel{position:relative;overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent)}
+.team-page .option-wheel{overflow:visible}
+.page-stage:has(.team-page) .brand,.page-stage:has(.team-page) .modes,.page-stage:has(.team-page) .pickers{z-index:20}
