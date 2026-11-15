@@ -235,7 +235,7 @@ export default function Globe3D({ sites, selected, t, globe, textureUrl, onPick,
       return b;
     });
     gsap.from(btns, { opacity: 0, duration: 0.6, ease: 'power2.out', stagger: 0.025, delay: 0.3 });
-    const widths = btns.map((b) => b.offsetWidth || b.textContent!.length * 7 + 20);
+    const widths = btns.map((b) => b.offsetWidth || b.textContent!.length * 7 + 20); void widths;
     const mk = (text: string, cls: string) => {
       const d = document.createElement('span');
       d.className = cls;
@@ -265,6 +265,10 @@ export default function Globe3D({ sites, selected, t, globe, textureUrl, onPick,
     setHome(t);
     cam.position.copy(home);
     const controls = new OrbitControls(cam, renderer.domElement);
+    if (window.matchMedia?.('(pointer: coarse)').matches) { // phones: one finger scrolls the page, two fingers turn and zoom the Moon
+      controls.touches = { ONE: undefined as unknown as THREE.TOUCH, TWO: THREE.TOUCH.DOLLY_ROTATE };
+      renderer.domElement.style.touchAction = 'pan-y';
+    }
     controls.enablePan = true; // right-drag, or two-finger drag on touch
     controls.enableDamping = true;
     controls.minDistance = 0.12;
@@ -415,27 +419,27 @@ export default function Globe3D({ sites, selected, t, globe, textureUrl, onPick,
       renderer.render(scene, cam);
 
       const camDist = cam.position.length();
-      const boxes: number[][] = [];
-      { // UI panels count as occupied space, so labels never sit under the header, tabs, side panel or site info
-        const host = lh.getBoundingClientRect(); const st = lh.parentElement;
-        st?.querySelectorAll('.brand, .modes, .subtabs, .pickers, .viewpanel, .hud2, .sp-toggle').forEach((el) => {
-          const r = (el as HTMLElement).getBoundingClientRect(); if (r.width && r.height) boxes.push([r.left - host.left - 6, r.top - host.top - 6, r.right - host.left + 6, r.bottom - host.top + 6]);
-        });
-      }
+      // Labels: place every facing label, then measure the real boxes and hide any that would cover the UI or a label placed before it
+      const boxes: DOMRect[] = [];
+      lh.parentElement?.querySelectorAll('.brand, .modes, .subtabs, .pickers, .viewpanel, .hud2, .sp-toggle, .hud-tip').forEach((el) => { const r = (el as HTMLElement).getBoundingClientRect(); if (r.width && r.height) boxes.push(r); });
       const ui = boxes.length;
+      const hit = (a: DOMRect, b: DOMRect, pad = 3) => a.left - pad < b.right && a.right + pad > b.left && a.top - pad < b.bottom && a.bottom + pad > b.top;
       const order = [cur, hover, ...pos.map((_, i) => i)].filter((i, k, a) => i >= 0 && a.indexOf(i) === k);
+      const vis: number[] = [];
       for (const i of order) {
         const facing = pos[i].dot(cam.position) > 1.02 && shown(i);
-        v.copy(pos[i]).project(cam);
-        const x = (v.x * 0.5 + 0.5) * w() + 12, y = (-v.y * 0.5 + 0.5) * h() - 11;
-        if (btns[i].offsetWidth) widths[i] = btns[i].offsetWidth; // live width (fonts / pill style)
-        const bw = widths[i], box = [x - 4, y - 4, x + bw + 6, y + 26];
-        const clash = boxes.some((b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1]);
-        const show = facing && (i === hover || !clash || (i === cur && !boxes.slice(0, ui).some((b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1])));
-        if (show) boxes.push(box);
         btns[i].classList.toggle('hov', i === hover);
-        place(btns[i], pos[i], show);
+        place(btns[i], pos[i], facing);
+        if (facing) vis.push(i);
       }
+      const rects = vis.map((i) => btns[i].getBoundingClientRect());
+      vis.forEach((i, k) => {
+        const r = rects[k];
+        const blocked = boxes.slice(0, ui).some((b) => hit(r, b));
+        const clash = boxes.slice(ui).some((b) => hit(r, b));
+        const keep = i === hover || (i === cur && !blocked) || (!blocked && !clash);
+        if (keep) boxes.push(r); else btns[i].style.display = 'none';
+      });
       for (const g of gridLabels) place(g.node, g.p, (g.grid ? lay.grid && camDist < 6 : camDist < 8) && g.p.dot(cam.position) > 1.05);
       place(sunLabel, sunTip, true);
       place(earthLabel, earthTip, true);

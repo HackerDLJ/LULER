@@ -86,7 +86,7 @@ export default function Intro({ onStart, sites, landings, list }: Props) {
       </AnimatedContent>
 
       <AnimatedContent {...ac} className="i2-sec i2-stats" stagger={0.1} distance={50} scale={0.9} staggerFrom="center">
-        {[[String(sites), 'landing sites'], ['17,544', 'hours computed per site'], ['5 m', 'polar terrain detail'], ['0.008°', 'sun-angle error vs NASA SPICE']].map(([n, l]) => (
+        {[[String(sites), 'landing sites'], ['17,544', 'hours computed per site'], ['5 m', 'polar terrain detail'], ['≤0.00001°', 'Sun direction vs JPL Horizons']].map(([n, l]) => (
           <div key={l} className="i2-stat"><b>{n}</b><span>{l}</span></div>))}
       </AnimatedContent>
 

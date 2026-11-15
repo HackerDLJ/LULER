@@ -473,3 +473,8 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .mve-card p{margin:0;font-size:13px;line-height:1.5;color:#9fb0cf}
 .pickers input[type=time]{height:40px;padding:0 12px;border-radius:999px!important;border:1px solid rgba(150,185,255,.24)!important;background:rgba(20,28,48,.92)!important;color:#eaf1ff!important;font:500 13px var(--sans)!important;color-scheme:dark}
 @media (max-width:1200px){.pickers .hdr-clock{display:none}}
+/* Mission clock = 24 h UTC hour selector (replaces the native AM/PM picker) */
+.app .hdr-clock{padding:0 14px 0 12px;cursor:pointer}
+.app .hdr-clock select{all:unset;cursor:pointer;font:600 15px var(--sans);font-feature-settings:"tnum" 1;color:#fff;padding:0 16px 0 2px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239cc2ff' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat right 2px center}
+.app .hdr-clock select option{background:#121a2e;color:#fff}
+@media (max-width:1200px){.pickers .hdr-clock{display:inline-flex!important}.pickers .hdr-clock>span:last-child{display:none}}
