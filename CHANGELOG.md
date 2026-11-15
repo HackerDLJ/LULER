@@ -8,6 +8,8 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 - Mission clock is now a 24-hour UTC hour selector (replaces the browser's AM/PM time picker), keeping the current day of the window.
 - Moon labels: overlap check now uses each label's real on-screen box, so no label covers another or the interface.
 - Phones: one finger scrolls the page, two fingers turn and zoom the Moon.
+- Click anywhere on the site terrain to pin and read its exact latitude, longitude, elevation and slope.
+- Plan several touchdowns: each double-click adds a numbered point (T1, T2, …) with its coordinates; "Clear all touchdowns" removes them.
 - Welcome page accuracy figure corrected to the verified value: Sun direction within 0.00001° of JPL Horizons.
 
 ## v7.5.0 · 2026-11-15 · Time of day and Moon vs Earth

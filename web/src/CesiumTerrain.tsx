@@ -168,9 +168,17 @@ export default function CesiumTerrain({ site, common, t, modelsBase, view, onVie
       /* --- Pin and home pole --- */
       const pinE = viewer.entities.add({ show: false, position: target, point: { pixelSize: 13, color: C.Color.fromCssColorString('#6fa8ff'), outlineColor: C.Color.BLACK, outlineWidth: 2, disableDepthTestDistance: 1e9 }, label: { text: 'Planned touchdown', font: '13px sans-serif', pixelOffset: new C.Cartesian2(0, -22), fillColor: C.Color.WHITE, showBackground: true, backgroundColor: C.Color.BLACK.withAlpha(0.6), disableDepthTestDistance: 1e9 } });
       const homePole = viewer.entities.add({ show: false, polyline: { positions: [worldAt(0, 0, 0), worldAt(0, 0, 40)], width: 3, material: C.Color.fromCssColorString('#a9cbff') } });
+      const extra: any[] = []; let lastLL = '';
       const placePin = (e: number, n: number) => {
         const q = describe(e, n);
+        if (pinE.show && pinE.position) { // keep earlier touchdowns as numbered markers
+          const pv = (pinE.position as any).getValue ? (pinE.position as any).getValue(C.JulianDate.now()) : pinE.position;
+          extra.push(viewer.entities.add({ position: pv, point: { pixelSize: 11, color: C.Color.fromCssColorString('#6fa8ff'), outlineColor: C.Color.BLACK, outlineWidth: 2, disableDepthTestDistance: 1e9 }, label: { text: `T${extra.length + 1}${lastLL ? ' · ' + lastLL : ''}`, font: '12px sans-serif', pixelOffset: new C.Cartesian2(0, -18), fillColor: C.Color.WHITE, showBackground: true, backgroundColor: C.Color.fromCssColorString('#0a0f1c').withAlpha(0.8), disableDepthTestDistance: 1e9 } }));
+        }
         pinE.position = worldAt(e, n, 0); pinE.show = true;
+        const ll = `${Math.abs(q.lat).toFixed(4)}°${q.lat < 0 ? 'S' : 'N'} ${Math.abs(q.lon).toFixed(4)}°${q.lon < 0 ? 'W' : 'E'}`;
+        lastLL = ll;
+        if (pinE.label) pinE.label.text = new C.ConstantProperty(`Touchdown T${extra.length + 1} · ${ll}\n${Math.round(q.elev)} m · slope ${q.slope.toFixed(1)}°`);
         setPin({ lat: q.lat, lon: q.lon, elev: q.elev, slope: q.slope, base: q.base, dist: q.dist, brg: q.brg });
       };
 
@@ -178,6 +186,12 @@ export default function CesiumTerrain({ site, common, t, modelsBase, view, onVie
       const sh = viewer.screenSpaceEventHandler;
       sh.removeInputAction(C.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
       sh.setInputAction((m: any) => { if (viewRef.current !== 'orbit') return; const p = sc.pickPosition(m.position); if (!p) return; const q = toLocal(p); placePin(q.x, q.y); }, C.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+      const pickE = viewer.entities.add({ show: false, position: target, point: { pixelSize: 10, color: C.Color.WHITE, outlineColor: C.Color.fromCssColorString('#6fa8ff'), outlineWidth: 3, disableDepthTestDistance: 1e9 }, label: { text: '', font: '12.5px sans-serif', pixelOffset: new C.Cartesian2(0, -20), fillColor: C.Color.WHITE, showBackground: true, backgroundColor: C.Color.fromCssColorString('#0a0f1c').withAlpha(0.85), disableDepthTestDistance: 1e9 } });
+      sh.setInputAction((m: any) => { // single click: show exactly where you clicked
+        if (viewRef.current !== 'orbit') return; const p = sc.pickPosition(m.position); if (!p) return; const q0 = toLocal(p); const q = describe(q0.x, q0.y);
+        pickE.position = worldAt(q0.x, q0.y, 0); pickE.show = true;
+        if (pickE.label) pickE.label.text = new C.ConstantProperty(`${Math.abs(q.lat).toFixed(4)}°${q.lat < 0 ? 'S' : 'N'} ${Math.abs(q.lon).toFixed(4)}°${q.lon < 0 ? 'W' : 'E'} · ${Math.round(q.elev)} m · slope ${q.slope.toFixed(1)}°\nDouble-click to plan a touchdown here`);
+      }, C.ScreenSpaceEventType.LEFT_CLICK);
       let lastMove = 0;
       sh.setInputAction((m: any) => {
         if (viewRef.current !== 'orbit' || !cursorRef.current) return; const now = performance.now(); if (now - lastMove < 120) return; lastMove = now;
@@ -284,7 +298,7 @@ export default function CesiumTerrain({ site, common, t, modelsBase, view, onVie
         setTime, setView: setView2, setSim, setLayer: (l) => setLayer(l, 0, 0),
         setExag: (x) => { try { sc.verticalExaggeration = x; sc.verticalExaggerationRelativeHeight = gh; } catch { /* unsupported */ } },
         setSpeed: (v) => { moveSpeed = v; }, key: (k, on) => { if (on) keys.add(k); else keys.delete(k); },
-        pinHere: () => placePin(px, pn), goHome: () => { px = -14 * Math.sin(yaw); pn = -14 * Math.cos(yaw); }, clearPin: () => { pinE.show = false; setPin(null); },
+        pinHere: () => placePin(px, pn), goHome: () => { px = -14 * Math.sin(yaw); pn = -14 * Math.cos(yaw); }, clearPin: () => { pinE.show = false; extra.splice(0).forEach((x) => viewer.entities.remove(x)); setPin(null); },
       };
       (api.current as any).layerR = (l: Layer, r: [number, number]) => setLayer(l, r[0], r[1]);
       void northV; void eastV;
@@ -353,7 +367,7 @@ export default function CesiumTerrain({ site, common, t, modelsBase, view, onVie
               <b>{ll(pin.lat, pin.lon)}</b>
               <span>Elevation {pin.elev.toFixed(0)} m · slope {pin.slope.toFixed(1)}° over {pin.base} m</span>
               <span>{pin.dist < 1 ? `${(pin.dist * 1000).toFixed(0)} m` : `${pin.dist.toFixed(2)} km`} from the site centre, bearing {pin.brg.toFixed(0)}°</span>
-              <button type="button" className="pill" onClick={() => api.current?.clearPin()}>Remove pin</button>
+              <button type="button" className="pill" onClick={() => api.current?.clearPin()}>Clear all touchdowns</button>
             </div>
           ) : <p className="sp-src">Double-click the terrain to drop a pin and read its exact coordinates, elevation and slope.</p>}
         </aside>
