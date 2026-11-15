@@ -158,6 +158,20 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
 
   const cfg = useSettings();
   useEffect(() => { document.documentElement.classList.toggle('reduce-motion', cfg.reduceMotion); document.documentElement.classList.toggle('compact-hud', cfg.compactHud); gsap.globalTimeline.timeScale(cfg.reduceMotion ? 4 : 1); }, [cfg.reduceMotion, cfg.compactHud]);
+  const [zoomHint, setZoomHint] = useState(false);
+  useEffect(() => { // plain scroll over a 3D view scrolls the page; pinch or ⌘/Ctrl + scroll zooms the view
+    let tm = 0;
+    const h = (e: WheelEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (!el?.closest?.('.stage') || el.closest('.page-stage, .sitepick-pop, .viewpanel, .sitepanel, .drive, .hud-bottom, .modes, .subtabs, .pickers, .ai-page, .st-page')) return;
+      if (el.tagName !== 'CANVAS' && !el.closest('.cesium-widget, .gl, .glabels')) return;
+      if (e.ctrlKey || e.metaKey) return;
+      e.stopPropagation();
+      setZoomHint(true); window.clearTimeout(tm); tm = window.setTimeout(() => setZoomHint(false), 1600);
+    };
+    window.addEventListener('wheel', h, { capture: true, passive: true });
+    return () => { window.removeEventListener('wheel', h, { capture: true }); window.clearTimeout(tm); };
+  }, []);
   const [stSec, setStSec] = useState<'general' | 'ai'>('general');
   const openSettings = (sec: 'general' | 'ai' = 'general') => { setStSec(sec); setViewRaw('settings'); window.scrollTo({ top: 0 }); };
   const pickSite = (i: number) => set({ a: i, scrub: firstLit(i, start, end) });
@@ -234,6 +248,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
   );
   return (
     <>
+      {zoomHint && <div className="zoom-hint" role="status">Pinch or hold <b>{/Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent) ? '⌘' : 'Ctrl'}</b> + scroll to zoom · scroll to move down the page</div>}
       {view === 'settings' || view === 'ai' ? (
         <div className="stage page-stage">
           {chrome}

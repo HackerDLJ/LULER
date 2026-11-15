@@ -416,14 +416,22 @@ export default function Globe3D({ sites, selected, t, globe, textureUrl, onPick,
 
       const camDist = cam.position.length();
       const boxes: number[][] = [];
+      { // UI panels count as occupied space, so labels never sit under the header, tabs, side panel or site info
+        const host = lh.getBoundingClientRect(); const st = lh.parentElement;
+        st?.querySelectorAll('.brand, .modes, .subtabs, .pickers, .viewpanel, .hud2, .sp-toggle').forEach((el) => {
+          const r = (el as HTMLElement).getBoundingClientRect(); if (r.width && r.height) boxes.push([r.left - host.left - 6, r.top - host.top - 6, r.right - host.left + 6, r.bottom - host.top + 6]);
+        });
+      }
+      const ui = boxes.length;
       const order = [cur, hover, ...pos.map((_, i) => i)].filter((i, k, a) => i >= 0 && a.indexOf(i) === k);
       for (const i of order) {
         const facing = pos[i].dot(cam.position) > 1.02 && shown(i);
         v.copy(pos[i]).project(cam);
         const x = (v.x * 0.5 + 0.5) * w() + 12, y = (-v.y * 0.5 + 0.5) * h() - 11;
-        const bw = widths[i], box = [x - 4, y - 3, x + bw + 4, y + 25];
+        if (btns[i].offsetWidth) widths[i] = btns[i].offsetWidth; // live width (fonts / pill style)
+        const bw = widths[i], box = [x - 4, y - 4, x + bw + 6, y + 26];
         const clash = boxes.some((b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1]);
-        const show = facing && (i === cur || i === hover || !clash);
+        const show = facing && (i === hover || !clash || (i === cur && !boxes.slice(0, ui).some((b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1])));
         if (show) boxes.push(box);
         btns[i].classList.toggle('hov', i === hover);
         place(btns[i], pos[i], show);

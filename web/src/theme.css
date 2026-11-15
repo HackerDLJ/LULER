@@ -446,3 +446,19 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .mpin.preview span{opacity:1;border-color:#6fa8ff!important;background:rgba(20,40,90,.88)!important}
 .mpin.preview .pring{border-color:#6fa8ff;animation:pvPulse 1.6s ease-out infinite}
 @keyframes pvPulse{from{transform:scale(1);opacity:.9}to{transform:scale(3);opacity:0}}
+
+/* ===== Header: no overlap on mid-size windows — tabs move to their own row ===== */
+.pickers .sitepick > button{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (min-width:761px) and (max-width:1560px){
+  .app .stage .modes{top:78px!important}
+  .app .stage .subtabs{top:140px!important}
+  .app .stage :is(.viewpanel,.sitepanel,.drive,.telemetry,.earthbtn,.exagbox){top:204px!important}
+  .app .stage .hud-tip{top:200px!important}
+}
+@media (min-width:761px) and (max-width:1200px){
+  .hdr-clock span:not(.hc-dot){display:none}
+  .pickers .sitepick > button{max-width:190px}
+}
+.zoom-hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:120;padding:12px 20px;border-radius:999px;background:rgba(8,12,22,.9);border:1px solid rgba(150,185,255,.3);color:#eaf1ff;font:500 14px var(--sans);box-shadow:0 12px 30px rgba(0,0,0,.5);pointer-events:none;animation:zhIn .2s ease-out}
+.zoom-hint b{display:inline-block;padding:1px 7px;margin:0 2px;border-radius:6px;background:rgba(150,185,255,.18)}
+@keyframes zhIn{from{opacity:0;transform:translate(-50%,-44%)}}
