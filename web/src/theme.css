@@ -478,3 +478,4 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .app .hdr-clock select{all:unset;cursor:pointer;font:600 15px var(--sans);font-feature-settings:"tnum" 1;color:#fff;padding:0 16px 0 2px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239cc2ff' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat right 2px center}
 .app .hdr-clock select option{background:#121a2e;color:#fff}
 @media (max-width:1200px){.pickers .hdr-clock{display:inline-flex!important}.pickers .hdr-clock>span:last-child{display:none}}
+.app .pickers .hdr-clock select{border:0!important;box-shadow:none!important;background-color:transparent!important;height:auto!important;min-height:0!important;width:auto!important;border-radius:0!important}

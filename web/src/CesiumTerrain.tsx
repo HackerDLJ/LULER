@@ -178,19 +178,19 @@ export default function CesiumTerrain({ site, common, t, modelsBase, view, onVie
         pinE.position = worldAt(e, n, 0); pinE.show = true;
         const ll = `${Math.abs(q.lat).toFixed(4)}°${q.lat < 0 ? 'S' : 'N'} ${Math.abs(q.lon).toFixed(4)}°${q.lon < 0 ? 'W' : 'E'}`;
         lastLL = ll;
-        if (pinE.label) pinE.label.text = new C.ConstantProperty(`Touchdown T${extra.length + 1} · ${ll}\n${Math.round(q.elev)} m · slope ${q.slope.toFixed(1)}°`);
+        if (pinE.label) pinE.label.text = new C.ConstantProperty(`T${extra.length + 1} · ${ll} · ${Math.round(q.elev)} m · ${q.slope.toFixed(1)}°`);
         setPin({ lat: q.lat, lon: q.lon, elev: q.elev, slope: q.slope, base: q.base, dist: q.dist, brg: q.brg });
       };
 
       /* --- Overview (Site view) interaction --- */
       const sh = viewer.screenSpaceEventHandler;
       sh.removeInputAction(C.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-      sh.setInputAction((m: any) => { if (viewRef.current !== 'orbit') return; const p = sc.pickPosition(m.position); if (!p) return; const q = toLocal(p); placePin(q.x, q.y); }, C.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+      sh.setInputAction((m: any) => { if (viewRef.current !== 'orbit') return; const p = sc.pickPosition(m.position); if (!p) return; const q = toLocal(p); pickE.show = false; placePin(q.x, q.y); }, C.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
       const pickE = viewer.entities.add({ show: false, position: target, point: { pixelSize: 10, color: C.Color.WHITE, outlineColor: C.Color.fromCssColorString('#6fa8ff'), outlineWidth: 3, disableDepthTestDistance: 1e9 }, label: { text: '', font: '12.5px sans-serif', pixelOffset: new C.Cartesian2(0, -20), fillColor: C.Color.WHITE, showBackground: true, backgroundColor: C.Color.fromCssColorString('#0a0f1c').withAlpha(0.85), disableDepthTestDistance: 1e9 } });
       sh.setInputAction((m: any) => { // single click: show exactly where you clicked
         if (viewRef.current !== 'orbit') return; const p = sc.pickPosition(m.position); if (!p) return; const q0 = toLocal(p); const q = describe(q0.x, q0.y);
         pickE.position = worldAt(q0.x, q0.y, 0); pickE.show = true;
-        if (pickE.label) pickE.label.text = new C.ConstantProperty(`${Math.abs(q.lat).toFixed(4)}°${q.lat < 0 ? 'S' : 'N'} ${Math.abs(q.lon).toFixed(4)}°${q.lon < 0 ? 'W' : 'E'} · ${Math.round(q.elev)} m · slope ${q.slope.toFixed(1)}°\nDouble-click to plan a touchdown here`);
+        if (pickE.label) pickE.label.text = new C.ConstantProperty(`${Math.abs(q.lat).toFixed(4)}°${q.lat < 0 ? 'S' : 'N'} ${Math.abs(q.lon).toFixed(4)}°${q.lon < 0 ? 'W' : 'E'} · ${Math.round(q.elev)} m · slope ${q.slope.toFixed(1)}°`);
       }, C.ScreenSpaceEventType.LEFT_CLICK);
       let lastMove = 0;
       sh.setInputAction((m: any) => {
