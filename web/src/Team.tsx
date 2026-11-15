@@ -16,10 +16,10 @@ export type Member = { name: string; role: string; photo?: string };
 export const TEAM: Member[] = [
   { name: 'Luke Jebasundar D', role: 'Team Lead', photo: 'team/luke.jpg' },
   { name: 'Jachin Gnanaraj I', role: 'Team Member', photo: 'team/jachin.jpg' },
-  { name: 'Alfreda Jenilyn N', role: 'Team Member' },
-  { name: 'Jerry Daniel P', role: 'Team Member' },
+  { name: 'Alfreda Jenilyn N', role: 'Team Member', photo: 'team/alfreda.jpg' },
+  { name: 'Jerry Daniel P', role: 'Team Member', photo: 'team/jerry.jpg' },
   { name: 'Ananth M', role: 'Team Member' },
-  { name: 'Jaziya S', role: 'Team Member' },
+  { name: 'Jaziya S', role: 'Team Member', photo: 'team/jaziya.jpg' },
 ];
 
 const W = 1024, H = 1440;
