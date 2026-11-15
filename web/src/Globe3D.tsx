@@ -435,7 +435,7 @@ export default function Globe3D({ sites, selected, t, globe, textureUrl, onPick,
       const rects = vis.map((i) => btns[i].getBoundingClientRect());
       vis.forEach((i, k) => {
         const r = rects[k];
-        const blocked = boxes.slice(0, ui).some((b) => hit(r, b));
+        const cvr = cv.getBoundingClientRect(); const blocked = r.top < Math.max(cvr.top, 0) + 64 || r.bottom > Math.min(cvr.bottom, innerHeight) - 8 || r.left < cvr.left + 4 || r.right > cvr.right - 4 || boxes.slice(0, ui).some((b) => hit(r, b));
         const clash = boxes.slice(ui).some((b) => hit(r, b));
         const keep = i === hover || (i === cur && !blocked) || (!blocked && !clash);
         if (keep) boxes.push(r); else btns[i].style.display = 'none';
