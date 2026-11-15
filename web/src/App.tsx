@@ -201,7 +201,6 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
     <>
       <SitePicker sites={sites} value={s.a} onPick={pickSite} />
       <input type="date" aria-label="Date (UTC)" min="2027-01-01" max="2028-12-31" value={fmtDay(day)} onChange={(e) => e.target.value && set({ day: Math.min(dateToDay(e.target.value), N_DAYS - s.len), scrub: 0 })} />
-      <button type="button" className={`hdr-team${view === 'team' ? ' on' : ''}`} title="Team JATABELS" onClick={() => { setViewRaw('team'); window.scrollTo({ top: 0 }); }}>Team</button>
       <label className="hdr-clock" title={`Mission time in UTC (hourly NASA SPICE data). Your local time: ${hourToDate(start + scrub).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}`}>
         <span className="hc-dot" aria-hidden="true" />
         <select aria-label="Hour of day (UTC)" value={hourToDate(start + scrub).getUTCHours()} onChange={(e) => { const hh = Number(e.target.value); set({ scrub: Math.min(end - start - 1, Math.max(0, Math.floor(scrub / 24) * 24 + hh)) }); }}>
@@ -215,7 +214,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
       </div>
     </>
   );
-  const VIEWS: [typeof view, string, string][] = [['globe', 'Moon', 'Pick a landing site on the 3D Moon'], ['orbit', 'Site', 'Terrain, slope and comparison'], ['lander', 'Surface', 'Stand there and drive around'], ['calendar', 'Dates', 'Best days to land']];
+  const VIEWS: [typeof view, string, string][] = [['globe', 'Moon', 'Pick a landing site on the 3D Moon'], ['orbit', 'Site', 'Terrain, slope and comparison'], ['lander', 'Surface', 'Stand there and drive around'], ['calendar', 'Dates', 'Best days to land'], ['team', 'Team', 'Team JATABELS']];
   const activeTab = view === 'map' || view === 'timeline' ? 'globe' : view === 'descent' || view === 'craft' || view === 'cesium' || view === 'mission' ? 'orbit' : view;
   const chrome = (
     <>

@@ -11,6 +11,11 @@ export type Member = { name: string; role: string; photo?: string };
 /* Team JATABELS. Photos live in public/team/. */
 export const TEAM: Member[] = [
   { name: 'Luke Jebasundar D', role: 'Team Lead', photo: 'team/luke.jpg' },
+  { name: 'Jachin Gnanaraj I', role: 'Team Member', photo: 'team/jachin.jpg' },
+  { name: 'Alfreda Jenilyn N', role: 'Team Member' },
+  { name: 'Jerry Daniel P', role: 'Team Member' },
+  { name: 'Ananth M', role: 'Team Member' },
+  { name: 'Jaziya S', role: 'Team Member' },
 ];
 
 const W = 1024, H = 1440;
@@ -100,14 +105,14 @@ export default function Team() {
         <h1 className="team-h">The people behind LULER</h1>
         <div className="team-wheel">
           <OptionWheel items={TEAM.map((t) => t.name)} defaultSelected={0} onChange={(i: number) => setSel(i)}
-            fontSize={1.9} spacing={1.6} tilt={7} blur={1.5} fade={0.3} inset={8} textColor="#7f8cab" activeColor="#ffffff" />
+            fontSize={2.4} spacing={1.45} tilt={6} blur={2} fade={0.25} inset={4} textColor="#a6a6a6" activeColor="#ffffff" />
         </div>
         <p className="team-now"><b>{m.name}</b> · {m.role}</p>
         <p className="team-tip">Scroll or drag the list to switch members · drag the card to swing it, click to flip</p>
       </div>
       <div className="team-card">
         {front && !hasGL && <img className="team-flat" src={front} alt={`ID card of ${m.name}`} />}
-        {front && hasGL && <Lanyard key={sel} frontImage={front} backImage={back} strapImage={band} cardColor="#070b18" finish="glossy" metal="silver" size={0.64} strapLength={0.36} breeze={0.35} />}
+        {front && hasGL && <Lanyard frontImage={front} backImage={back} strapImage={band} cardColor="#070b18" finish="glossy" metal="silver" anchor="right" size={0.5} strapLength={0.42} breeze={0.35} />}
       </div>
     </section>
   );

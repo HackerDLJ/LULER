@@ -490,3 +490,10 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .team-card{height:min(78dvh,760px);min-height:460px}
 @media (max-width:860px){.team-page{grid-template-columns:1fr}.team-card{height:70dvh}}
 .team-flat{display:block;height:100%;max-height:640px;margin:0 auto;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.team-page{position:relative;display:block;min-height:calc(100dvh - 140px);padding:0}
+.team-page .team-card{position:absolute;inset:0;height:auto;min-height:0;z-index:1}
+.team-page .team-side{position:relative;z-index:2;width:min(520px,92vw);padding:40px clamp(16px,4vw,64px);pointer-events:none}
+.team-page .team-side>*{pointer-events:auto}
+.team-page .team-wheel{height:min(52dvh,420px);background:none;border:0;border-radius:0}
+.team-page .lanyard,.team-page .lanyard-canvas{background:transparent!important}
+@media (max-width:860px){.team-page .team-side{width:100%}.team-page .team-wheel{height:300px}}
