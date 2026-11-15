@@ -1,3 +1,4 @@
+import { realStars } from './stars';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -124,14 +125,7 @@ export default function Terrain3D({ site, common, t, mastM, base, textured, mode
     setRange([Math.round(hMin), Math.round(hMax)]);
 
     // Stars
-    const sg = new THREE.BufferGeometry();
-    const sp = new Float32Array(3 * 1500);
-    for (let i = 0; i < 1500; i++) {
-      const v = new THREE.Vector3(Math.random() - 0.5, Math.random() * 0.9 - 0.1, Math.random() - 0.5).normalize().multiplyScalar(50000);
-      sp.set([v.x, v.y, v.z], 3 * i);
-    }
-    sg.setAttribute('position', new THREE.BufferAttribute(sp, 3));
-    scene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xffffff, size: 60, sizeAttenuation: true })));
+    scene.add(realStars(50000, 90)); // real stars: Yale Bright Star Catalogue (NASA HEASARC)
 
     // --- terrain meshes: the regional patch, plus a fine inner patch where NASA 5 m data exists ---
     const grid = (m: number, hf: number, hole: boolean) => {
@@ -223,7 +217,7 @@ export default function Terrain3D({ site, common, t, mastM, base, textured, mode
       grain.wrapS = grain.wrapT = THREE.RepeatWrapping;
       grain.repeat.set((2 * half) / 0.012, (2 * half) / 0.012);
       grain.anisotropy = 8;
-      if (!fine) { mat.bumpMap = grain; mat.bumpScale = 0.06; } // not needed where real 5 m terrain exists
+      void grain; // no invented surface grain: only real NASA terrain and imagery are shown
     }
     for (const gg of [outer, inner]) if (gg) { const m = new THREE.Mesh(gg.g, mat); m.castShadow = gg === outer; m.receiveShadow = true; scene.add(m); meshes.push(m); }
 
@@ -413,7 +407,7 @@ export default function Terrain3D({ site, common, t, mastM, base, textured, mode
       }
     };
     // Boulders and regolith clutter around the landing point (descent + surface views)
-    const NR = 900;
+    const NR = 0; // no invented boulders: the terrain shows only real NASA elevation data
     const rgeo = new THREE.IcosahedronGeometry(1, 1);
     { const pa = rgeo.getAttribute('position') as THREE.BufferAttribute; const seen = new Map<string, number>();
       for (let i = 0; i < pa.count; i++) { const key = [pa.getX(i), pa.getY(i), pa.getZ(i)].map((v) => v.toFixed(3)).join(); if (!seen.has(key)) seen.set(key, 0.78 + Math.random() * 0.4); const j = seen.get(key)!; pa.setXYZ(i, pa.getX(i) * j, pa.getY(i) * j * 0.7, pa.getZ(i) * j); }

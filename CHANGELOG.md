@@ -4,6 +4,13 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.2.0 · 2026-11-15 · Real data everywhere, live NASA
+- **Sky charts rebuilt as real graphs**: continuous Sun and Earth tracks from NAIF SPICE DE440 over the NASA LOLA horizon, solid where in view and dashed where blocked, daily date ticks, automatic range (no more "off chart"), labeled current positions, legend, data-source line, and hover tooltips with exact time, azimuth and elevation.
+- **Ephemeris verified against JPL Horizons** for the Sun and the Earth at a polar and an equatorial site (Sun within 0.0001°, Earth within 0.0004° in elevation); see docs/validation.md.
+- **Live from NASA** (api.nasa.gov): DONKI space weather (radiation storms, solar flares, CMEs, geomagnetic storms) with a radiation status, the latest EPIC photo of Earth from DSCOVR, and NASA Image Library photos of the selected site. The companion also sees the live space weather.
+- **No invented content**: removed procedural craters and colour noise from the terrain shader, random boulders and surface grain from the backup terrain; random starfields replaced by the real Yale Bright Star Catalogue (NASA HEASARC), 6,331 stars at their true positions and colours.
+- **Site pins** on the 3D Moon and the map redesigned and animated with GSAP: glowing dots (solid = landed, ring = candidate), clean labels, and a pulsing selection.
+
 ## v7.1.0 · 2026-11-15 · Free Gemini and live voice
 - **Google Gemini** provider (free key from Google AI Studio), now the default: native Gemini API with function calling, so it can drive the app.
 - **Live voice** through the **Gemini Live API** (`gemini-3.1-flash-live-preview` by default). Talk with the microphone, interrupt at any time, and get spoken answers; both sides are transcribed into the chat, and voice commands run app actions.

@@ -116,7 +116,8 @@ export default function SettingsPage({ plan, initial = 'general' }: { plan: Plan
             </Row>
             <Row title="Terrain" hint="NASA LRO LOLA (global) and NASA PGDA 5 m polar DEMs with their error maps for uncertainty bands."><span className="st-tag">NASA</span></Row>
             <Row title="Sun & Earth positions" hint="NAIF SPICE DE440, horizon-masked against the real terrain at the chosen height."><span className="st-tag">NAIF</span></Row>
-            <Row title="Imagery & 3D" hint="LROC mosaics (SVS Moon Kit, Moon Trek), Cesium Moon terrain, NASA 3D Resources models."><span className="st-tag">LRO</span></Row>
+            <Row title="Ephemeris accuracy" hint="Checked against JPL Horizons at a polar and an equatorial site: Sun within 0.0001°, Earth within 0.0004° in elevation (docs/validation.md)."><span className="st-tag">JPL</span></Row>
+            <Row title="Imagery, stars & 3D" hint="LROC mosaics (SVS Moon Kit, Moon Trek), Cesium Moon terrain, NASA 3D Resources models, Yale Bright Star Catalogue (NASA HEASARC) for real star positions."><span className="st-tag">LRO</span></Row>
           </div>
         </>)}
 
@@ -152,8 +153,8 @@ export default function SettingsPage({ plan, initial = 'general' }: { plan: Plan
                 </select>
               </Row>
             </>)}
-            <Row title="NASA API key" hint="For live NASA data in the companion (api.nasa.gov). DEMO_KEY works with low limits.">
-              <input className="st-in wide" type="password" autoComplete="off" value={st.nasaKey} onChange={(e) => setSettings({ nasaKey: e.target.value })} placeholder="DEMO_KEY" />
+            <Row title="NASA API key" hint="Powers Live from NASA (DONKI space weather, EPIC Earth images) and the companion. Leave empty to use the project key built into this site.">
+              <input className="st-in wide" type="password" autoComplete="off" value={st.nasaKey} onChange={(e) => setSettings({ nasaKey: e.target.value })} placeholder="Built-in project key" />
             </Row>
           </div>
           <p className="st-status">{st.aiModel ? <>✦ Companion ready · <b>{prov.name}</b> · {st.aiModel}</> : 'Companion not connected yet.'}</p>

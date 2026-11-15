@@ -1,3 +1,4 @@
+import { realStars } from './stars';
 import { pixelCap } from './settings';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import * as THREE from 'three';
@@ -49,9 +50,8 @@ export default function Craft({ site, base, chrome }: Props) {
     const sg = new THREE.BufferGeometry();
     const sp = new Float32Array(3 * 1500);
     const tmp = new THREE.Vector3();
-    for (let i = 0; i < 1500; i++) { tmp.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().multiplyScalar(300); sp.set([tmp.x, tmp.y, tmp.z], 3 * i); }
-    sg.setAttribute('position', new THREE.BufferAttribute(sp, 3));
-    scene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xffffff, size: 0.7 })));
+    void sp; void tmp; void sg;
+    scene.add(realStars(300, 1.1)); // real stars: Yale Bright Star Catalogue (NASA HEASARC)
     const key = new THREE.DirectionalLight(0xfff4e0, 4.2);
     key.position.set(5, 6, 4);
     scene.add(key, new THREE.HemisphereLight(0x9fb4d8, 0x3a332c, 1.1));

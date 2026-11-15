@@ -15,6 +15,8 @@ import Compare3 from './Compare3';
 import { scoreSite } from './score';
 import { Preloader } from './fx';
 import Companion from './Companion';
+import LiveNasa from './LiveNasa';
+import { spaceWeatherNow } from './nasa';
 import SettingsPage from './SettingsPage';
 import { getSettings, useSettings } from './settings';
 import OptionWheel from './rb/OptionWheel.jsx';
@@ -213,7 +215,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
         getContext={() => {
           const all = sites.map((x, i) => { let sc: { total?: number; grade?: string } = {}; try { sc = scoreSite(x, statsWithUncertainty(cache, manifest, i, s.mast, s.earth, start, end).center); } catch { /* no data */ } return { name: x.name, lat: +x.lat.toFixed(3), lon: +x.lon.toFixed(3), group: x.group, score: sc.total, grade: sc.grade }; });
           const cur = sites[s.a];
-          return { site: { name: cur?.name ?? 'Custom point', lat: cur?.lat ?? 0, lon: cur?.lon ?? 0, group: cur?.group }, date: fmtDay(day), view, score: scoreA, stats: sa.center, sites: all };
+          const sw = spaceWeatherNow(); return { site: { name: cur?.name ?? 'Custom point', lat: cur?.lat ?? 0, lon: cur?.lon ?? 0, group: cur?.group }, date: fmtDay(day), view, score: scoreA, stats: sa.center, sites: all, spaceWeatherNow: sw ? { source: 'NASA DONKI, live', level: sw.level, headline: sw.headline, radiationStorms30d: sw.sep?.length, mxFlares30d: sw.flares?.filter((f) => /^[XM]/.test(f.cls ?? '')).length, cmes30d: sw.cme?.length, latestCme: sw.cme?.[0] } : 'not loaded yet' };
         }}
         actions={{
           goToSite: (name) => { const q = name.toLowerCase(); const i = sites.findIndex((x) => x.name.toLowerCase() === q); const j = i >= 0 ? i : sites.findIndex((x) => x.name.toLowerCase().includes(q) || q.includes(x.name.toLowerCase())); if (j < 0) return `No site matching "${name}"`; pickSite(j); return `Selected ${sites[j].name}`; },
@@ -288,6 +290,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
       )}
       {view !== 'settings' && view !== 'ai' && <div className="below">
       <Compare3 sites={sites} picks={pick3} scores={scores3} onPick={(slot, i) => setPick3((p) => p.map((v, k) => (k === slot ? i : v)))} onOpen={(i) => { pickSite(i); setView('orbit'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+      <LiveNasa site={sites[s.a]} />
       <h2 className="below-h">Two sites side by side, and the best dates</h2>
       <p className="below-note">Change the dates, stay length, array height, Earth margin or the second site in <button type="button" className="linkish" onClick={() => openSettings('general')}>Settings</button>.</p>
 

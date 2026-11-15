@@ -6,7 +6,7 @@ import { PROVIDERS, useSettings } from './settings';
 
 export interface CompanionCtx {
   site: { name: string; lat: number; lon: number; group?: string };
-  date: string; view: string; score: unknown; stats: unknown;
+  date: string; view: string; score: unknown; stats: unknown; spaceWeatherNow?: unknown;
   sites: { name: string; lat: number; lon: number; group?: string; score?: number; grade?: string }[];
 }
 export interface CompanionActions { goToSite: (name: string) => string; openView: (view: string) => string; setDate: (isoDate: string) => string }
@@ -21,7 +21,7 @@ const TOOLS = [
 const SYSTEM = (c: CompanionCtx) => `You are LULER Intelligence, the assistant inside LULER (Lunar Landing Site Navigator) by Team JATABELS, NASA Space Apps Challenge 2026.
 LULER helps choose where and when to land on the Moon using NASA data: LRO LOLA terrain, LROC imagery, NASA PGDA 5 m polar DEMs, NAIF SPICE DE440 Sun/Earth ephemeris, Cesium Moon terrain, NASA 3D Resources models.
 Safety score 0-100 (rule-based, explainable): slope at touchdown 30, sunlight 25, Earth in view for radio 20, steepest nearby ground 10, night length 10, relief 5. Good >= 75, Fair >= 50, else Poor.
-LULER also detects craters in the terrain and simulates a powered descent that diverts to the nearest safe spot if the target is hazardous.
+Live NASA space weather (DONKI) is in spaceWeatherNow; use it when asked if it is safe right now. LULER also detects craters in the terrain and simulates a powered descent that diverts to the nearest safe spot if the target is hazardous.
 Answer concisely and concretely from the live data below; never invent numbers that are not in it. Use the tools when the user wants to see, open or go somewhere. Call simulations and estimates what they are.
 LIVE APP STATE (JSON): ${JSON.stringify(c)}`;
 

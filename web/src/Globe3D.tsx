@@ -1,6 +1,8 @@
+import { realStars } from './stars';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { pixelCap, setSettings, useSettings } from './settings';
 import * as THREE from 'three';
+import { gsap } from 'gsap';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
@@ -25,19 +27,18 @@ export const isHistorical = (s: Site) => s.year !== null;
 
 function markerTexture(color: string, historical: boolean): THREE.CanvasTexture {
   const c = document.createElement('canvas');
-  c.width = c.height = 64;
+  c.width = c.height = 128;
   const g = c.getContext('2d');
   if (g) {
-    g.lineWidth = 6;
-    if (historical) { // filled disc with a dark rim: a place where a spacecraft has landed
-      g.beginPath(); g.arc(32, 32, 17, 0, 2 * Math.PI);
-      g.fillStyle = color; g.fill();
-      g.strokeStyle = 'rgba(0,0,0,0.85)'; g.stroke();
-      g.beginPath(); g.arc(32, 32, 5, 0, 2 * Math.PI); g.fillStyle = 'rgba(0,0,0,0.8)'; g.fill();
-    } else { // hollow diamond: a candidate or planned site
-      g.beginPath(); g.moveTo(32, 8); g.lineTo(56, 32); g.lineTo(32, 56); g.lineTo(8, 32); g.closePath();
-      g.fillStyle = 'rgba(0,0,0,0.55)'; g.fill();
-      g.strokeStyle = color; g.stroke();
+    const halo = g.createRadialGradient(64, 64, 6, 64, 64, 60);
+    halo.addColorStop(0, color + 'aa'); halo.addColorStop(0.45, color + '33'); halo.addColorStop(1, color + '00');
+    g.fillStyle = halo; g.beginPath(); g.arc(64, 64, 60, 0, 2 * Math.PI); g.fill();
+    if (historical) { // landed: solid dot with a white rim
+      g.beginPath(); g.arc(64, 64, 17, 0, 2 * Math.PI); g.fillStyle = color; g.fill();
+      g.lineWidth = 5; g.strokeStyle = '#ffffff'; g.stroke();
+    } else { // candidate / planned: open ring with a centre point
+      g.beginPath(); g.arc(64, 64, 17, 0, 2 * Math.PI); g.lineWidth = 7; g.strokeStyle = color; g.stroke();
+      g.beginPath(); g.arc(64, 64, 5, 0, 2 * Math.PI); g.fillStyle = '#ffffff'; g.fill();
     }
   }
   return new THREE.CanvasTexture(c);
@@ -99,14 +100,7 @@ export default function Globe3D({ sites, selected, t, globe, textureUrl, onPick,
     const tmp = new THREE.Vector3();
 
     // stars
-    const sg = new THREE.BufferGeometry();
-    const sp = new Float32Array(3 * 3000);
-    for (let i = 0; i < 3000; i++) {
-      tmp.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize().multiplyScalar(400);
-      sp.set([tmp.x, tmp.y, tmp.z], 3 * i);
-    }
-    sg.setAttribute('position', new THREE.BufferAttribute(sp, 3));
-    scene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xffffff, size: 0.9, sizeAttenuation: true, transparent: true, opacity: 0.8 })));
+    scene.add(realStars(400, 1.3)); // real stars: Yale Bright Star Catalogue (NASA HEASARC)
 
     // the Moon: LRO imagery + relief from LOLA elevation
     const mat = new THREE.MeshStandardMaterial({ color: 0x8c8c8c, roughness: 1, metalness: 0 });
@@ -227,15 +221,20 @@ export default function Globe3D({ sites, selected, t, globe, textureUrl, onPick,
     const ring = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(rc), sizeAttenuation: false, transparent: true, depthWrite: false, depthTest: false }));
     scene.add(ring);
 
+    const pulse = { s: 0.035, o: 1 };
+    const pulseTw = gsap.fromTo(pulse, { s: 0.035, o: 1 }, { s: 0.11, o: 0, duration: 1.6, ease: 'power2.out', repeat: -1 });
     const btns = sites.map((s, i) => {
       const b = document.createElement('button');
       b.type = 'button';
-      b.textContent = s.name;
+      b.style.setProperty('--c', GROUP_COLOR[s.group] ?? '#ffffff');
+      b.innerHTML = `<i class="pdot"></i><span>${s.name.replace(/[<>&]/g, '')}</span>`;
+      b.classList.add(hist[i] ? 'landed' : 'cand');
       b.title = `${s.mission}${hist[i] ? ` · landed ${s.year}` : ' · candidate site'}`;
       b.onclick = () => pick.current(i);
       lh.appendChild(b);
       return b;
     });
+    gsap.from(btns, { opacity: 0, duration: 0.6, ease: 'power2.out', stagger: 0.025, delay: 0.3 });
     const widths = btns.map((b) => b.offsetWidth || b.textContent!.length * 7 + 20);
     const mk = (text: string, cls: string) => {
       const d = document.createElement('span');
@@ -300,6 +299,7 @@ export default function Globe3D({ sites, selected, t, globe, textureUrl, onPick,
     const focus = (i: number, fly: boolean) => {
       cur = i;
       btns.forEach((b, k) => b.classList.toggle('sel', k === i));
+      const dot = btns[i]?.querySelector('.pdot'); if (dot) gsap.fromTo(dot, { scale: 0.4 }, { scale: 1, duration: 0.6, ease: 'back.out(3)' });
       if (pos[i]) {
         ring.position.copy(pos[i]).multiplyScalar(1.007);
         if (fly) { pristine = false; flyTo = pos[i].clone(); flyDist = Math.min(cam.position.length(), 1.9); }
@@ -411,7 +411,7 @@ export default function Globe3D({ sites, selected, t, globe, textureUrl, onPick,
       if (cam.position.length() < 1.12) cam.position.setLength(1.12); // never inside the Moon
       for (let i = 0; i < markers.length; i++) markers[i].visible = shown(i) && pos[i].dot(cam.position) > 1.0;
       ring.visible = !!pos[cur] && pos[cur].dot(cam.position) > 1.0;
-      ring.scale.setScalar(0.05 + 0.012 * Math.sin(frame * 0.08));
+      ring.scale.setScalar(pulse.s); (ring.material as THREE.SpriteMaterial).opacity = pulse.o;
       renderer.render(scene, cam);
 
       const camDist = cam.position.length();
@@ -440,6 +440,7 @@ export default function Globe3D({ sites, selected, t, globe, textureUrl, onPick,
     });
     ro.observe(el);
     return () => {
+      pulseTw.kill();
       cancelAnimationFrame(raf);
       ro.disconnect();
       cv.removeEventListener('pointermove', onMove);

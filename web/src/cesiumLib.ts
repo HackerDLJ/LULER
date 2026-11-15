@@ -38,26 +38,18 @@ float hgt(vec3 p,float lod){
 void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material){
  vec3 pe = fsInput.attributes.positionEC;
  vec3 p = u_cam + czm_inverseViewRotation * pe;
- float lod = length(fwidth(p));
- float h = hgt(p, lod);
  vec3 dpx = dFdx(pe), dpy = dFdy(pe);
- vec3 N = normalize(cross(dpx, dpy)); if (dot(N, -pe) < 0.0) N = -N;
- float dhx = dFdx(h), dhy = dFdy(h);
- vec3 r1 = cross(dpy, N), r2 = cross(N, dpx);
- float det = dot(dpx, r1);
- vec3 g = sign(det) * (dhx * r1 + dhy * r2);
- vec3 Nb = normalize(abs(det) * N - g * 0.7);
+ vec3 N = normalize(cross(dpx, dpy)); if (dot(N, -pe) < 0.0) N = -N; // normal of the real NASA terrain mesh only
+ vec3 Nb = N;
  vec3 upEC = normalize((czm_view * vec4(normalize(fsInput.attributes.positionWC), 0.0)).xyz);
  vec3 L = czm_lightDirectionEC;
  float sinEl = max(dot(upEC, L), 0.06);
  float d = max(dot(Nb, L), 0.0);
  float sun = smoothstep(-0.02, 0.04, dot(upEC, L));
  float lit = 0.04 + sun * 1.45 * d / sinEl;
- float v = 0.55*nn(p*0.06) + 0.45*nn(p*0.4);
- float rocks = 0.0;
- vec3 c = pow(material.diffuse * 3.0, vec3(1.1));
+ vec3 c = pow(material.diffuse * 3.0, vec3(1.1)); // real LRO imagery colour, no procedural detail
  float near = smoothstep(900.0, 120.0, length(pe));
- material.diffuse = c * (0.75 + 0.5 * v) * (1.0 + rocks * 0.35) * mix(1.0, lit, near);
+ material.diffuse = c * mix(1.0, lit, near);
 }`;
 export const SLOPE = `
 void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material){

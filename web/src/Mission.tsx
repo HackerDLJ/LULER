@@ -1,3 +1,4 @@
+import { realStars } from './stars';
 import { getSettings, pixelCap } from './settings';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
@@ -55,7 +56,7 @@ export default function Mission({ base, chrome, onLand }: Props) {
     const cam = new THREE.PerspectiveCamera(40, W() / H(), 0.05, 20000);
     const sun = new THREE.DirectionalLight(0xfff4e0, 2.1); sun.position.set(-30, 12, 40); scene.add(sun);
     scene.add(new THREE.AmbientLight(0x8fa6c8, 0.12), new THREE.HemisphereLight(0x9ec4ff, 0x202030, 0.25));
-    const star = (() => { const n = 2500, p = new Float32Array(n * 3); for (let i = 0; i < n; i++) { const u = Math.random() * 2 - 1, a = Math.random() * 6.283, r = Math.sqrt(1 - u * u); p.set([r * Math.cos(a) * 9000, u * 9000, r * Math.sin(a) * 9000], i * 3); } const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p, 3)); return new THREE.Points(g, new THREE.PointsMaterial({ color: 0xffffff, size: 1.6, sizeAttenuation: false })); })();
+    const star = realStars(9000, 2.2, false); // real stars: Yale Bright Star Catalogue (NASA HEASARC)
     scene.add(star);
     const tl = new THREE.TextureLoader();
     const planet = (url: string, r: number, atmo?: number) => {

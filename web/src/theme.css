@@ -378,3 +378,60 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .ai-voice.speaking .ai-wave i{background:#7fe8b0}
 .ai-voice.connecting .ai-wave i{animation-duration:2s;opacity:.5}
 @keyframes aiWave{50%{height:18px}}
+
+/* Sky chart: real Sun/Earth tracks over the NASA LOLA horizon */
+.sky-src{display:block;margin-top:3px;font-size:12.5px;color:#8fa1c3;font-weight:400}
+.sky-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:6px 0 8px;font-size:12px;color:#b9c7e2}
+.sky-legend span{display:inline-flex;align-items:center;gap:7px}
+.lg{display:inline-block;width:22px;height:0;border-top:2.5px solid}
+.lg.sun{border-color:#ffc857}.lg.earth{border-color:#4cc9f0}.lg.dash{border-top-style:dashed;opacity:.6}
+.lg.ridge{border-color:#d8d6cf;border-top-width:1.5px}.lg.zero{border-color:#ffffff66;border-top-style:dashed;border-top-width:1px}
+.sky .plot{fill:#060709}
+.sky .trk{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.sky .trk.vis{stroke-width:2.6}.sky .trk.blk{stroke-width:1.6;stroke-dasharray:4 4;opacity:.55}
+.sky .trk.sun{stroke:#ffc857}.sky .trk.earth{stroke:#4cc9f0}
+.sky .day circle{stroke:#060709;stroke-width:1}.sky .day.sun circle{fill:#ffc857}.sky .day.earth circle{fill:#4cc9f0}
+.sky .day text{fill:#ffe3a3;font:10.5px var(--sans);paint-order:stroke;stroke:#060709;stroke-width:3px}
+.sky .now text{font:600 12px var(--sans);paint-order:stroke;stroke:#060709;stroke-width:3px}
+.sky .probe .hs{fill:none;stroke:#fff;stroke-width:2}.sky .probe .he{fill:none;stroke:#fff;stroke-width:2}
+.sky .terrain{fill:#17181d!important;fill-opacity:.92}
+
+/* Live from NASA */
+.live{margin:40px 0}
+.live h2{margin:0 0 6px}
+.live-lede{margin:0 0 18px;color:#9fb0cf}
+.live-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.live-card{border-radius:20px;background:rgba(14,19,33,.92);border:1px solid rgba(150,185,255,.16);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.live-card header{display:flex;flex-direction:column;gap:3px}.live-card header b{font-size:16px}.live-card header span{font-size:12px;color:#8fa1c3}
+.live-wait{color:#8fa1c3;font-size:14px;margin:0}
+.live-pill{margin:0;padding:10px 14px;border-radius:14px;font-weight:600;font-size:14px;line-height:1.4}
+.live-pill.quiet{background:rgba(51,217,128,.12);color:#8ff0bd;border:1px solid rgba(51,217,128,.3)}
+.live-pill.watch{background:rgba(255,200,87,.12);color:#ffd77a;border:1px solid rgba(255,200,87,.35)}
+.live-pill.alert{background:rgba(255,90,90,.12);color:#ff9b9b;border:1px solid rgba(255,90,90,.35)}
+.live-stats{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.live-stats li{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.25)}
+.live-stats b{font-size:22px;font-weight:600}.live-stats span{font-size:12px;color:#9fb0cf;line-height:1.35}
+.live-note{margin:0;font-size:12.5px;color:#8fa1c3;line-height:1.5}
+.live-card.earth img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:50%;background:#000;max-width:320px;align-self:center}
+.live-ph{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.live-ph a{display:block;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#000}
+.live-ph img{width:100%;height:100%;object-fit:cover;transition:opacity .2s}.live-ph a:hover img{opacity:.8}
+
+/* ===== Site pins: Moon globe labels + map pins (GSAP-animated) ===== */
+.glabels button:not(.dir){display:inline-flex!important;align-items:center;gap:7px;margin:-12px 0 0 10px!important;padding:3px 10px 3px 7px!important;border-radius:999px!important;background:rgba(8,12,22,.78)!important;border:1px solid rgba(255,255,255,.14)!important;color:#eef3ff!important;font:500 11.5px var(--sans)!important;letter-spacing:0!important;box-shadow:0 4px 14px rgba(0,0,0,.35)!important;transition:background .2s,border-color .2s}
+.glabels button .pdot,.mpin .pdot{display:inline-block;flex:none;width:8px;height:8px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px rgba(255,255,255,.85),0 0 10px var(--c)}
+.glabels button.cand .pdot,.mpin.cand .pdot{background:transparent;box-shadow:inset 0 0 0 2px var(--c),0 0 0 1.5px rgba(255,255,255,.6),0 0 10px var(--c)}
+.glabels button.hov,.glabels button:hover{border-color:var(--c)!important}
+.glabels button.sel{background:color-mix(in srgb,var(--c) 22%,rgba(8,12,22,.9))!important;border-color:var(--c)!important;font-weight:600!important;font-size:12.5px!important;z-index:3}
+.glabels button.sel .pdot{width:10px;height:10px}
+.map-pins{position:absolute;inset:0;pointer-events:none;z-index:3}
+.mapcv{position:relative}
+.app .mpin{all:unset;position:absolute;transform:translate(-50%,-50%);pointer-events:auto;cursor:pointer;display:flex;align-items:center;justify-content:center;width:22px;height:22px;--c:#fff}
+.mpin .pdot{width:10px;height:10px;transition:transform .2s}
+.mpin span{position:absolute;left:calc(100% + 2px);top:50%;transform:translateY(-50%);white-space:nowrap;padding:3px 9px;border-radius:999px;background:rgba(8,12,22,.82);border:1px solid rgba(255,255,255,.14);color:#eef3ff;font:500 11.5px var(--sans);opacity:0;pointer-events:none;transition:opacity .2s}
+.mpin:hover span,.mpin.sel span{opacity:1}
+.mpin:hover .pdot{transform:scale(1.35)}
+.mpin.sel{z-index:2}.mpin.sel .pdot{width:14px;height:14px}
+.mpin.sel span{border-color:var(--c);background:color-mix(in srgb,var(--c) 22%,rgba(8,12,22,.92));font-weight:600;font-size:12.5px}
+.mpin .pring{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid var(--c);pointer-events:none}
+.map-pins{inset:0 0 auto 0!important;width:100%;aspect-ratio:2/1;height:auto}

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { gsap } from 'gsap';
 import type { Globe, Site } from './data';
 import { DraftingCursor, type DraftProbe } from './fx';
 import SpecularButton from './rb/SpecularButton.jsx';
@@ -24,6 +25,20 @@ const GROUP_COLOR: Record<string, string> = { Apollo: '#ffc857', 'CLPS / commerc
 const xy = (lat: number, lon: number): [number, number] => [((((lon + 540) % 360) / 360) * W), ((90 - lat) / 180) * H];
 
 export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPickSite, onCustom, chrome, children }: Props) {
+  const pinsRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => { // pins drop in one after another
+    const els = pinsRef.current?.querySelectorAll('.mpin'); if (!els?.length) return;
+    const tw = gsap.from(els, { scale: 0, opacity: 0, duration: 0.5, ease: 'back.out(2.5)', stagger: 0.03, delay: 0.2 });
+    return () => { tw.kill(); };
+  }, [sites.length]);
+  useLayoutEffect(() => { // selected pin: pop + two expanding pulse rings
+    const sel = pinsRef.current?.querySelector('.mpin.sel'); if (!sel) return;
+    const ctx = gsap.context(() => {
+      gsap.fromTo(sel.querySelector('.pdot'), { scale: 0.4 }, { scale: 1, duration: 0.6, ease: 'back.out(3)' });
+      gsap.fromTo(sel.querySelectorAll('.pring'), { scale: 1, opacity: 0.9 }, { scale: 3.2, opacity: 0, duration: 1.8, ease: 'power2.out', repeat: -1, stagger: 0.9 });
+    });
+    return () => ctx.revert();
+  }, [selected]);
   const cv = useRef<HTMLCanvasElement>(null);
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [lat, setLat] = useState(sites[selected].lat.toFixed(3));
@@ -109,25 +124,7 @@ export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPic
     g.fillStyle = '#fff';
     mark(globe.sunLat[t], globe.sunLon[t], '☀');
     mark(globe.earthLat[t], globe.earthLon[t], '🌍');
-    sites.forEach((s, i) => {
-      const [x, y] = xy(s.lat, s.lon);
-      g.beginPath();
-      g.arc(x, y, i === selected ? 11 : 6, 0, 2 * Math.PI);
-      g.fillStyle = GROUP_COLOR[s.group] ?? '#fff';
-      g.fill();
-      g.lineWidth = i === selected ? 4 : 1.5;
-      g.strokeStyle = i === selected ? '#fff' : '#000';
-      g.stroke();
-      if (i === selected) {
-        g.font = 'bold 22px system-ui, sans-serif';
-        const tw = g.measureText(s.name).width;
-        const tx = Math.min(x + 16, W - tw - 12);
-        g.fillStyle = 'rgba(0,0,0,0.75)';
-        g.fillRect(tx - 6, y - 34, tw + 12, 30);
-        g.fillStyle = '#fff';
-        g.fillText(s.name, tx, y - 12);
-      }
-    });
+    // site pins are HTML (animated with GSAP) — see .map-pins below
   }, [img, hi, sites, selected, t, globe]);
 
   const toLL = (e: React.MouseEvent<HTMLCanvasElement>): [number, number, number, number] => {
@@ -162,6 +159,12 @@ export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPic
         </form>
         <div className="mapcv">
         <DraftingCursor probe={mapProbe} distance={hav} hint="Click to analyse · shift-drag to measure" />
+        <div className="map-pins" ref={pinsRef}>
+          {sites.map((st, i) => { const [x, y] = xy(st.lat, st.lon); return (
+            <button key={st.id} type="button" className={`mpin ${st.year !== null ? 'landed' : 'cand'}${i === selected ? ' sel' : ''}`} style={{ left: `${(x / W) * 100}%`, top: `${(y / H) * 100}%`, ['--c' as string]: GROUP_COLOR[st.group] ?? '#fff' }} onClick={() => onPickSite(i)} title={`${st.name} · ${st.mission}`} aria-label={st.name}>
+              {i === selected && <><i className="pring" /><i className="pring" /></>}<i className="pdot" /><span>{st.name}</span>
+            </button>); })}
+        </div>
         <canvas ref={cv} width={W * S} height={H * S} onClick={click}
           onMouseMove={(e) => { const [la, lo] = toLL(e); setHover(`${Math.abs(la).toFixed(2)}°${la < 0 ? 'S' : 'N'}, ${Math.abs(lo).toFixed(2)}°${lo < 0 ? 'W' : 'E'}  (click to analyse)`); }}
           onMouseLeave={() => setHover('')} aria-label="Map of the Moon. Click to choose a landing point." />
