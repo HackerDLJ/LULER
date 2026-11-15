@@ -4,6 +4,10 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.3.0 · 2026-11-15 · Coordinate preview and mission clock
+- Typing coordinates on the flat map drops a live, pulsing preview pin at that exact spot with its coordinates; click it or "Analyse this point" to analyse it.
+- Header clock showing the simulated mission time (UTC and date) on every page; hover for your local time. It follows the time slider and "Next sunrise".
+
 ## v7.2.0 · 2026-11-15 · Real data everywhere, live NASA
 - **Sky charts rebuilt as real graphs**: continuous Sun and Earth tracks from NAIF SPICE DE440 over the NASA LOLA horizon, solid where in view and dashed where blocked, daily date ticks, automatic range (no more "off chart"), labeled current positions, legend, data-source line, and hover tooltips with exact time, azimuth and elevation.
 - **Ephemeris verified against JPL Horizons** for the Sun and the Earth at a polar and an equatorial site (Sun within 0.0001°, Earth within 0.0004° in elevation); see docs/validation.md.

@@ -435,3 +435,14 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .mpin.sel span{border-color:var(--c);background:color-mix(in srgb,var(--c) 22%,rgba(8,12,22,.92));font-weight:600;font-size:12.5px}
 .mpin .pring{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid var(--c);pointer-events:none}
 .map-pins{inset:0 0 auto 0!important;width:100%;aspect-ratio:2/1;height:auto}
+
+/* Header clock: simulated mission time */
+.hdr-clock{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 14px;border-radius:999px;background:rgba(20,28,48,.92);border:1px solid rgba(150,185,255,.24);color:#dfe9ff;font:500 12.5px var(--sans);white-space:nowrap}
+.hdr-clock b{font-size:15px;font-weight:600;font-feature-settings:"tnum" 1;color:#fff}
+.hdr-clock span{color:#9fb0cf}
+.hc-dot{width:8px;height:8px;border-radius:50%;background:#7fe8b0;box-shadow:0 0 8px #7fe8b0}
+@media (max-width:760px){.hdr-clock span:not(.hc-dot){display:none}}
+.mpin.preview .pdot{background:#fff;box-shadow:0 0 0 2px #6fa8ff,0 0 14px #6fa8ff}
+.mpin.preview span{opacity:1;border-color:#6fa8ff!important;background:rgba(20,40,90,.88)!important}
+.mpin.preview .pring{border-color:#6fa8ff;animation:pvPulse 1.6s ease-out infinite}
+@keyframes pvPulse{from{transform:scale(1);opacity:.9}to{transform:scale(3);opacity:0}}

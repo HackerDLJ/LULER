@@ -164,6 +164,16 @@ export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPic
             <button key={st.id} type="button" className={`mpin ${st.year !== null ? 'landed' : 'cand'}${i === selected ? ' sel' : ''}`} style={{ left: `${(x / W) * 100}%`, top: `${(y / H) * 100}%`, ['--c' as string]: GROUP_COLOR[st.group] ?? '#fff' }} onClick={() => onPickSite(i)} title={`${st.name} · ${st.mission}`} aria-label={st.name}>
               {i === selected && <><i className="pring" /><i className="pring" /></>}<i className="pdot" /><span>{st.name}</span>
             </button>); })}
+          {(() => { // live preview of the typed coordinates, before "Analyse this point"
+            const la = parseFloat(lat), lo = parseFloat(lon);
+            if (!Number.isFinite(la) || !Number.isFinite(lo) || Math.abs(la) > 90 || Math.abs(lo) > 360) return null;
+            const cur = sites[selected]; const lo180 = ((lo + 540) % 360) - 180;
+            if (cur && Math.abs(cur.lat - la) < 0.0005 && Math.abs((((cur.lon + 540) % 360) - 180) - lo180) < 0.0005) return null;
+            const [x, y] = xy(la, lo180);
+            return <button type="button" className="mpin preview sel" style={{ left: `${(x / W) * 100}%`, top: `${(y / H) * 100}%`, ['--c' as string]: '#ffffff' }} onClick={() => onCustom(la, lo180)} title="Analyse this point">
+              <i className="pring" /><i className="pdot" /><span>{Math.abs(la).toFixed(3)}°{la < 0 ? 'S' : 'N'}, {Math.abs(lo180).toFixed(3)}°{lo180 < 0 ? 'W' : 'E'} · click to analyse</span>
+            </button>;
+          })()}
         </div>
         <canvas ref={cv} width={W * S} height={H * S} onClick={click}
           onMouseMove={(e) => { const [la, lo] = toLL(e); setHover(`${Math.abs(la).toFixed(2)}°${la < 0 ? 'S' : 'N'}, ${Math.abs(lo).toFixed(2)}°${lo < 0 ? 'W' : 'E'}  (click to analyse)`); }}
