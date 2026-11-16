@@ -505,3 +505,9 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .team-page .team-wheel{position:relative;overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent)}
 .team-page .option-wheel{overflow:visible}
 .page-stage:has(.team-page) .brand,.page-stage:has(.team-page) .modes,.page-stage:has(.team-page) .pickers{z-index:20}
+/* Flat map: show the whole map between the tabs and the time bar */
+@media (min-width:761px){.app .mapstage .mapwrap{top:204px!important}}
+.app .mapstage .mapwrap{bottom:84px!important}
+.app .mapstage .hud2>:not(.timebar){display:none!important}
+.app .mapstage .mapcv{flex:0 0 auto;width:min(100%,calc((100dvh - 204px - 84px - 80px) * 2))}
+.app .mapstage .mapcv canvas{width:100%!important;height:auto!important;max-height:none!important;max-width:100%!important;aspect-ratio:2/1}
