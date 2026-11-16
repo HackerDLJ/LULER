@@ -4,6 +4,9 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.8.6 · 2026-11-16
+- Flat map: switch between the LRO camera map and the 3D Moon colour map; only one is shown at a time (no overlapping layers).
+
 ## v7.8.5 · 2026-11-16
 - Flat map: full-width map (whole Moon visible); the time bar sits below it.
 

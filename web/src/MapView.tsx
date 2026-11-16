@@ -45,6 +45,7 @@ export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPic
   const [lon, setLon] = useState((((sites[selected].lon + 540) % 360) - 180).toFixed(3));
   const [hover, setHover] = useState('');
   const [hi, setHi] = useState<HTMLCanvasElement | null>(null);
+  const [layer, setLayer] = useState<'wac' | 'colour'>('wac'); // one map at a time
   const [prog, setProg] = useState(0);
   const [err, setErr] = useState('');
   const mapProbe = useCallback((x: number, y: number): DraftProbe | null => { const c = cv.current; if (!c) return null; const w = c.clientWidth, h = c.clientHeight; if (x < 0 || y < 0 || x > w || y > h) return null; return { lat: 90 - (y / h) * 180, lon: (x / w) * 360 - 180, extra: 'LROC WAC mosaic' }; }, []);
@@ -81,8 +82,8 @@ export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPic
     g.imageSmoothingQuality = 'high';
     g.fillStyle = '#222';
     g.fillRect(0, 0, W * S, H * S);
-    if (img) g.drawImage(img, 0, 0, W * S, H * S);
-    if (hi) g.drawImage(hi, 0, 0, W * S, H * S);
+    if (layer === 'colour' || !hi || prog < 1) { if (img) g.drawImage(img, 0, 0, W * S, H * S); }
+    if (layer === 'wac' && hi && prog >= 1) g.drawImage(hi, 0, 0, W * S, H * S);
     g.setTransform(S, 0, 0, S, 0, 0);
     // night side for the selected time (true sub-solar point)
     const nw = 360, nh = 180;
@@ -125,7 +126,7 @@ export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPic
     mark(globe.sunLat[t], globe.sunLon[t], '☀');
     mark(globe.earthLat[t], globe.earthLon[t], '🌍');
     // site pins are HTML (animated with GSAP) — see .map-pins below
-  }, [img, hi, sites, selected, t, globe]);
+  }, [img, hi, sites, selected, t, globe, layer, prog]);
 
   const toLL = (e: React.MouseEvent<HTMLCanvasElement>): [number, number, number, number] => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -157,6 +158,10 @@ export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPic
           <SpecularButton type="submit" size="md" radius={999} tint="#6fa8ff" tintOpacity={0.14} lineColor="#d6e6ff" baseColor="#3d5a8c" textColor="#f5f8ff" idleIntensity={0.4} glow={1} proximity={220} className="cta-spec" disabled={busy}>{busy ? 'Computing…' : 'Analyse this point'}</SpecularButton>
           <span className="maphint">{err || hover || (prog < 1 ? `Loading NASA LRO WAC 4K imagery… ${Math.round(prog * 100)}%` : '') || 'Click anywhere on the map, or type coordinates. South and west are negative. ☀ marks where the Sun is overhead, 🌍 where Earth is overhead; the shaded half is night.'}</span>
         </form>
+        <div className="maplayers" role="tablist" aria-label="Map imagery">
+          <button type="button" role="tab" aria-selected={layer === 'wac'} className={layer === 'wac' ? 'on' : ''} onClick={() => setLayer('wac')}>LRO camera map{prog < 1 ? ` · ${Math.round(prog * 100)}%` : ''}</button>
+          <button type="button" role="tab" aria-selected={layer === 'colour'} className={layer === 'colour' ? 'on' : ''} onClick={() => setLayer('colour')}>3D Moon colour map</button>
+        </div>
         <div className="mapcv">
         <DraftingCursor probe={mapProbe} distance={hav} hint="Click to analyse · shift-drag to measure" />
         <div className="map-pins" ref={pinsRef}>
