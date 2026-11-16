@@ -40,15 +40,29 @@ void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material){
  vec3 p = u_cam + czm_inverseViewRotation * pe;
  vec3 dpx = dFdx(pe), dpy = dFdy(pe);
  vec3 N = normalize(cross(dpx, dpy)); if (dot(N, -pe) < 0.0) N = -N; // normal of the real NASA terrain mesh only
- vec3 Nb = N;
  vec3 upEC = normalize((czm_view * vec4(normalize(fsInput.attributes.positionWC), 0.0)).xyz);
+ // Regolith detail (texture: "Moon Terrain" by abhayexe, CC-BY 4.0), tiled on the local ground plane so it
+ // covers the whole Moon with no edge. Two scales (2.6 m and 21 m) hide repetition; it fades out with distance.
+ vec3 upW = normalize(fsInput.attributes.positionWC);
+ vec3 eW = normalize(cross(vec3(0.0, 0.0, 1.0), upW)); vec3 nW = cross(upW, eW);
+ vec2 uv = vec2(dot(p, eW), dot(p, nW));
+ float dist = length(pe);
+ float det = smoothstep(420.0, 4.0, dist) * u_detail;
+ vec3 t1 = texture(u_regN, uv / 2.6).xyz * 2.0 - 1.0;
+ vec3 t2 = texture(u_regN, uv / 21.0 + 0.37).xyz * 2.0 - 1.0;
+ vec3 tn = normalize(vec3(t1.xy * 0.9 + t2.xy * 1.1, 1.0));
+ vec3 eEC = normalize((czm_view * vec4(eW, 0.0)).xyz), nEC = normalize((czm_view * vec4(nW, 0.0)).xyz);
+ vec3 Nb = normalize(mix(N, normalize(eEC * tn.x + nEC * tn.y + N * tn.z), det));
+ float alb = texture(u_regA, uv / 2.6).r * 0.55 + texture(u_regA, uv / 21.0 + 0.37).r * 0.45;
+
  vec3 L = czm_lightDirectionEC;
  float sinEl = max(dot(upEC, L), 0.06);
  float d = max(dot(Nb, L), 0.0);
  float sun = smoothstep(-0.02, 0.04, dot(upEC, L));
  float lit = 0.04 + sun * 1.45 * d / sinEl;
  vec3 c = pow(material.diffuse * 3.0, vec3(1.1)); // real LRO imagery colour, no procedural detail
- float near = smoothstep(900.0, 120.0, length(pe));
+ c *= mix(1.0, clamp(alb / 0.203, 0.55, 1.45), det * 0.7);
+ float near = smoothstep(900.0, 120.0, dist);
  material.diffuse = c * mix(1.0, lit, near);
 }`;
 export const SLOPE = `

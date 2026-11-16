@@ -71,7 +71,7 @@ export default function CesiumTerrain({ site, common, t, modelsBase, view, onVie
       (viewer._cesiumWidget._creditContainer as HTMLElement).style.display = 'none';
       const ts = await C.Cesium3DTileset.fromIonAssetId(MOON_ASSET, { maximumScreenSpaceError: 3 });
       if (dead) return;
-      const mkShader = (txt: string, lo = 0, hi = 1) => new C.CustomShader({ lightingModel: C.LightingModel.UNLIT, uniforms: { u_lo: { type: C.UniformType.FLOAT, value: lo }, u_hi: { type: C.UniformType.FLOAT, value: hi }, u_cam: { type: C.UniformType.VEC3, value: new C.Cartesian3() } }, fragmentShaderText: txt });
+      const mkShader = (txt: string, lo = 0, hi = 1) => new C.CustomShader({ lightingModel: C.LightingModel.UNLIT, uniforms: { u_lo: { type: C.UniformType.FLOAT, value: lo }, u_hi: { type: C.UniformType.FLOAT, value: hi }, u_cam: { type: C.UniformType.VEC3, value: new C.Cartesian3() }, ...(txt === NATURAL ? { u_detail: { type: C.UniformType.FLOAT, value: 1 }, u_regN: { type: C.UniformType.SAMPLER_2D, value: new C.TextureUniform({ url: modelsBase.replace(/models\/$/, '') + 'tex/regolith_n.jpg', repeat: true, minificationFilter: C.TextureMinificationFilter.LINEAR_MIPMAP_LINEAR, magnificationFilter: C.TextureMagnificationFilter.LINEAR }) }, u_regA: { type: C.UniformType.SAMPLER_2D, value: new C.TextureUniform({ url: modelsBase.replace(/models\/$/, '') + 'tex/regolith_a.jpg', repeat: true, minificationFilter: C.TextureMinificationFilter.LINEAR_MIPMAP_LINEAR, magnificationFilter: C.TextureMagnificationFilter.LINEAR }) } } : {}) }, fragmentShaderText: txt });
       ts.customShader = mkShader(NATURAL);
       ts.imageBasedLighting.imageBasedLightingFactor = new C.Cartesian2(0.05, 0.05); ts.shadows = C.ShadowMode.ENABLED;
       sc.primitives.add(ts);
