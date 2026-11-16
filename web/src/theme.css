@@ -519,7 +519,7 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 
 /* Tap the 3D surface to hide the overlays; scroll to bring them back (blur-in) */
 .app .stage :is(.hud2,.viewpanel,.subtabs,.modes,.pickers,.hud-tip,.sp-toggle,.drive,.hdr-icons){transition:opacity .45s cubic-bezier(.22,1,.36,1),filter .45s cubic-bezier(.22,1,.36,1)}
-body.ui-hide .app .stage :is(.hud2,.hud-bottom,.simctl,.mission-feed,.stage-msg,.glabels,.vp-help,.viewpanel,.sitepanel,.subtabs,.modes,.pickers,.hud-tip,.sp-toggle,.drive,.hdr-icons,.hud,.legend,.lookat,.mission-ui,.craft-ui,.panel){opacity:0!important;filter:blur(10px);pointer-events:none!important}
+body.ui-hide .app .stage :is(.hud2,.mission-feed,.stage-msg,.glabels,.vp-help,.viewpanel,.sitepanel,.subtabs,.modes,.pickers,.hud-tip,.sp-toggle,.hdr-icons,.legend,.lookat){opacity:0!important;filter:blur(10px);pointer-events:none!important}
 @keyframes luBlurIn{0%{opacity:0;filter:blur(10px);transform:translateY(-14px)}55%{opacity:.6;filter:blur(4px);transform:translateY(2px)}100%{opacity:1;filter:blur(0);transform:none}}
 body.ui-show .app .stage .hud2 :is(h2,.meta,.stat,.score-chip,.specular-button,.timebar),body.ui-show .app .stage :is(.viewpanel,.subtabs,.modes,.pickers){animation:luBlurIn .7s cubic-bezier(.33,1,.68,1) both}
 body.ui-show .app .stage .hud2 .meta{animation-delay:.08s}body.ui-show .app .stage .hud2 .stat{animation-delay:.16s}body.ui-show .app .stage .hud2 .stat+.stat{animation-delay:.24s}body.ui-show .app .stage .hud2 .timebar{animation-delay:.32s}
@@ -530,3 +530,8 @@ body.ui-show .app .stage .hud2 .meta{animation-delay:.08s}body.ui-show .app .sta
 .app .roverstage .rover-fs{all:unset;position:absolute;right:20px;top:208px;z-index:4;cursor:pointer;padding:9px 16px;border-radius:999px;font:600 13px var(--sans);color:#eaf1ff;background:rgba(18,26,48,.75);border:1px solid rgba(140,180,255,.3);backdrop-filter:blur(14px)}
 .app .roverstage .rover-fs:hover{background:rgba(60,100,200,.45)}
 @media (max-width:760px){.app .roverstage .rover-fs{top:242px}}
+
+/* controls stay usable while the view is clear */
+body.ui-hide .app .stage :is(.drive,.simctl,.timebar){opacity:1!important;filter:none!important;pointer-events:auto!important}
+body.ui-hide .app .stage .hud2:has(.timebar){opacity:1!important;filter:none!important}
+body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-events:none}
