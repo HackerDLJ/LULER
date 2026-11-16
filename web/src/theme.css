@@ -535,3 +535,7 @@ body.ui-show .app .stage .hud2 .meta{animation-delay:.08s}body.ui-show .app .sta
 body.ui-hide .app .stage :is(.drive,.simctl,.timebar){opacity:1!important;filter:none!important;pointer-events:auto!important}
 body.ui-hide .app .stage .hud2:has(.timebar){opacity:1!important;filter:none!important}
 body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-events:none}
+/* Alignment pass: right-hand panels end above the bottom details; details stay inside the screen */
+.app .stage :is(.viewpanel,.drive){max-height:calc(100dvh - 209px - 250px)!important;overflow:auto!important}
+@media (max-height:620px){.app .stage :is(.viewpanel,.drive){max-height:calc(100dvh - 190px - 200px)!important}}
+@media (max-width:760px){.app .stage .drive{top:166px!important}}
