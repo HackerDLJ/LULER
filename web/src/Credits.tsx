@@ -8,6 +8,7 @@ export const CREDITS = [
   { node: W('NAIF SPICE', 'ephemerides'), title: 'NAIF SPICE', href: 'https://naif.jpl.nasa.gov/naif/', hoverColor: '#6fa8ff' },
   { node: W('JPL Horizons', 'cross-check'), title: 'JPL Horizons', href: 'https://ssd.jpl.nasa.gov/horizons/', hoverColor: '#6fa8ff' },
   { node: W('Moon Trek', 'NASA Solar System Treks'), title: 'NASA Moon Trek', href: 'https://trek.nasa.gov/moon/', hoverColor: '#6fa8ff' },
+  { node: W('REGOLITH', 'rover simulation · MIT'), title: 'REGOLITH by winch (MIT licence)', href: 'https://github.com/winchxyz/moon-rover', hoverColor: '#6fa8ff' },
   { node: W('NASA 3D', 'Saturn V · LM · LRO models'), title: 'NASA 3D Resources', href: 'https://science.nasa.gov/3d-resources/', hoverColor: '#6fa8ff' },
   { node: W('Cesium', 'Moon Terrain'), title: 'Cesium Moon Terrain', href: 'https://cesium.com/platform/cesium-ion/content/cesium-moon-terrain/', hoverColor: '#6fa8ff' },
   { node: W('Space Apps 2026', 'NASA International Space Apps Challenge'), title: 'NASA Space Apps Challenge', href: 'https://www.spaceappschallenge.org/', hoverColor: '#6fa8ff' },

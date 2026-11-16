@@ -523,3 +523,7 @@ body.ui-hide .app .stage :is(.hud2,.hud-bottom,.simctl,.mission-feed,.stage-msg,
 @keyframes luBlurIn{0%{opacity:0;filter:blur(10px);transform:translateY(-14px)}55%{opacity:.6;filter:blur(4px);transform:translateY(2px)}100%{opacity:1;filter:blur(0);transform:none}}
 body.ui-show .app .stage .hud2 :is(h2,.meta,.stat,.score-chip,.specular-button,.timebar),body.ui-show .app .stage :is(.viewpanel,.subtabs,.modes,.pickers){animation:luBlurIn .7s cubic-bezier(.33,1,.68,1) both}
 body.ui-show .app .stage .hud2 .meta{animation-delay:.08s}body.ui-show .app .stage .hud2 .stat{animation-delay:.16s}body.ui-show .app .stage .hud2 .stat+.stat{animation-delay:.24s}body.ui-show .app .stage .hud2 .timebar{animation-delay:.32s}
+.app .roverstage{position:relative;height:100dvh;background:#000;overflow:hidden}
+.app .roverstage .rover-frame{position:absolute;left:0;right:0;bottom:0;top:196px;width:100%;height:calc(100% - 196px);border:0;border-radius:18px 18px 0 0;background:#000}
+.app .roverstage .rover-credit{position:absolute;right:16px;bottom:8px;margin:0;font:400 11px var(--sans);color:#8d98b5;z-index:3;pointer-events:none}
+@media (max-width:760px){.app .roverstage .rover-frame{top:230px;height:calc(100% - 230px)}}

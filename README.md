@@ -155,3 +155,8 @@ Every version is a git tag. v1 to v6 are the real compiled websites from each mi
 Luke Jebasundar D (lead) · Jachin Gnanaraj I · Alfreda Jenilyn N · Jerry Daniel P · Ananth M · Jaziya S
 
 Made for the NASA Space Apps Challenge 2026.
+
+
+## Third-party code
+
+- **Rover simulation** (Surface → Rover simulation): [REGOLITH](https://github.com/winchxyz/moon-rover) by winch, MIT licence, included unmodified in `web/public/rover/` with its licence file. Its terrain is procedural and is not NASA data.

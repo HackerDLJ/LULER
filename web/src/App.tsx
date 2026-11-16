@@ -92,7 +92,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
   // Stable identity so Hud's playback interval isn't torn down and recreated on every tick.
   const onScrub = useCallback((v: number) => setS((o) => ({ ...o, scrub: v })), []);
   const [cesiumFail, setCesiumFail] = useState(false);
-  const [view, setViewRaw] = useState<'globe' | 'orbit' | 'lander' | 'descent' | 'map' | 'calendar' | 'craft' | 'cesium' | 'mission' | 'timeline' | 'settings' | 'ai' | 'team'>('globe');
+  const [view, setViewRaw] = useState<'globe' | 'orbit' | 'lander' | 'descent' | 'map' | 'calendar' | 'craft' | 'cesium' | 'mission' | 'timeline' | 'settings' | 'ai' | 'team' | 'rover'>('globe');
   useGSAP(() => { // smooth GSAP entrance for panels on every view change
     const els = gsap.utils.toArray<HTMLElement>('.app .subtabs, .app .hud2, .app .drive, .app .viewpanel, .app .sitepanel, .app .site-wheel, .app .hud-bottom, .app .below > *');
     gsap.fromTo(els, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: 'power2.out', stagger: 0.03, clearProps: 'transform,opacity,visibility' });
@@ -230,7 +230,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
     </>
   );
   const VIEWS: [typeof view, string, string][] = [['globe', 'Moon', 'Pick a landing site on the 3D Moon'], ['orbit', 'Site', 'Terrain, slope and comparison'], ['lander', 'Surface', 'Stand there and drive around'], ['calendar', 'Dates', 'Best days to land'], ['team', 'Team', 'Team JATABELS']];
-  const activeTab = view === 'map' || view === 'timeline' ? 'globe' : view === 'descent' || view === 'craft' || view === 'cesium' || view === 'mission' ? 'orbit' : view;
+  const activeTab = view === 'rover' ? 'lander' : view === 'map' || view === 'timeline' ? 'globe' : view === 'descent' || view === 'craft' || view === 'cesium' || view === 'mission' ? 'orbit' : view;
   const chrome = (
     <>
       <div className="brand" role="button" tabIndex={0} title="Back to the front page" onClick={onHome} onKeyDown={(e) => e.key === 'Enter' && onHome()} style={{ cursor: 'pointer' }}><b>LULER</b><span><ShinyText text="LUNAR LANDING SITE NAVIGATOR" color="#8d8c86" shineColor="#ffffff" speed={3.2} delay={2.5} /></span></div>
@@ -242,6 +242,9 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
       <div className="pickers">{pickers}</div>
       {(view === 'globe' || view === 'map' || view === 'timeline') && (
         <div className="subtabs"><button type="button" className={view === 'globe' ? 'on' : ''} onClick={() => setView('globe')}>3D globe</button><button type="button" className={view === 'map' ? 'on' : ''} onClick={() => setView('map')}>Flat map + coordinates</button><button type="button" className={view === 'timeline' ? 'on' : ''} onClick={() => setView('timeline')}>Mission timeline</button></div>
+      )}
+      {(view === 'lander' || view === 'rover') && (
+        <div className="subtabs"><button type="button" className={view === 'lander' ? 'on' : ''} onClick={() => setView('lander')}>Walk the site (NASA terrain)</button><button type="button" className={view === 'rover' ? 'on' : ''} onClick={() => setView('rover')}>Rover simulation</button></div>
       )}
       {(view === 'orbit' || view === 'descent' || view === 'craft' || view === 'cesium' || view === 'mission') && (
         <div className="subtabs"><button type="button" className={view === 'orbit' ? 'on' : ''} onClick={() => setView('orbit')}>Terrain</button><button type="button" className={view === 'mission' || view === 'descent' ? 'on' : ''} onClick={() => setView('mission')}>Mission: launch → landing</button><button type="button" className={view === 'craft' ? 'on' : ''} onClick={() => setView('craft')}>Spacecraft</button></div>
@@ -298,6 +301,12 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
         <CalendarView site={sites[s.a]} manifest={manifest} mastIdx={s.mast} earthMin={s.earth} day={day} onDay={(d) => set({ day: Math.min(d, N_DAYS - s.len), scrub: 0 })} onGo={() => setViewRaw('globe')} chrome={chrome} />
       ) : view === 'cesium' ? (
         <CesiumMoon site={sites[s.a]} chrome={chrome} />
+      ) : view === 'rover' ? (
+        <div className="stage roverstage">
+          {chrome}
+          <iframe className="rover-frame" title="Lunar rover simulation" src={import.meta.env.BASE_URL + 'rover/index.html'} allow="fullscreen; autoplay" />
+          <p className="rover-credit">Rover simulation: REGOLITH by winch (MIT licence), procedural terrain under 1/6 g physics. Click inside to drive.</p>
+        </div>
       ) : view === 'timeline' ? (
         <MissionTimeline sites={sites} chrome={chrome} onOpen={(i) => { pickSite(i); setView('orbit'); }} />
       ) : view === 'mission' ? (

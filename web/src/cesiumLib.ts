@@ -40,19 +40,14 @@ void fragmentMain(FragmentInput fsInput, inout czm_modelMaterial material){
  vec3 p = u_cam + czm_inverseViewRotation * pe;
  vec3 dpx = dFdx(pe), dpy = dFdy(pe);
  vec3 N = normalize(cross(dpx, dpy)); if (dot(N, -pe) < 0.0) N = -N; // normal of the real NASA terrain mesh only
- float dist = length(pe);
- float micro = smoothstep(260.0, 25.0, dist); // regolith micro-relief only close to the camera (texture, not data)
- float hb = hgt(p, dist) * micro;
- vec3 gx = dpx / max(dot(dpx, dpx), 1e-6), gy = dpy / max(dot(dpy, dpy), 1e-6);
- vec3 Nb = normalize(N - 14.0 * (dFdx(hb) * gx + dFdy(hb) * gy));
+ vec3 Nb = N;
  vec3 upEC = normalize((czm_view * vec4(normalize(fsInput.attributes.positionWC), 0.0)).xyz);
  vec3 L = czm_lightDirectionEC;
  float sinEl = max(dot(upEC, L), 0.06);
  float d = max(dot(Nb, L), 0.0);
  float sun = smoothstep(-0.02, 0.04, dot(upEC, L));
  float lit = 0.04 + sun * 1.45 * d / sinEl;
- vec3 c = pow(material.diffuse * 3.0, vec3(1.1)); // real LRO imagery colour
- c *= mix(1.0, 0.86 + 0.28 * nn(p * 1.9), micro); // fine regolith tone variation close up
+ vec3 c = pow(material.diffuse * 3.0, vec3(1.1)); // real LRO imagery colour, no procedural detail
  float near = smoothstep(900.0, 120.0, length(pe));
  material.diffuse = c * mix(1.0, lit, near);
 }`;
