@@ -4,6 +4,9 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.8.8 · 2026-11-16
+- Tap or drag the 3D surface to hide every overlay and see the terrain clearly; scroll to bring them back with a blur-in animation. Bottom details restored to full size.
+
 ## v7.8.7 · 2026-11-16
 - Compact bottom details (smaller site name and status lines) and a shorter side panel, so the 3D terrain stays visible; the Team tab no longer clips.
 

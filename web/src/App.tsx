@@ -174,6 +174,21 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
     window.addEventListener('wheel', h, { capture: true, passive: true });
     return () => { window.removeEventListener('wheel', h, { capture: true }); window.clearTimeout(tm); };
   }, []);
+  useEffect(() => { // tap the 3D surface to hide the overlays; scroll brings them back
+    let tm = 0;
+    const b = document.body;
+    const show = () => { if (!b.classList.contains('ui-hide')) return; b.classList.remove('ui-hide'); b.classList.add('ui-show'); window.clearTimeout(tm); tm = window.setTimeout(() => b.classList.remove('ui-show'), 1200); };
+    const down = (e: PointerEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (!el?.closest?.('.stage') || el.closest('.page-stage, .mapstage, .viewpanel, .drive, .hud2, .modes, .subtabs, .pickers, button, input, select, a')) return;
+      if (el.tagName !== 'CANVAS' && !el.closest('.cesium-widget, .gl')) return;
+      b.classList.remove('ui-show'); b.classList.add('ui-hide');
+    };
+    window.addEventListener('pointerdown', down, true);
+    window.addEventListener('wheel', show, { capture: true, passive: true });
+    window.addEventListener('scroll', show, { passive: true });
+    return () => { window.removeEventListener('pointerdown', down, true); window.removeEventListener('wheel', show, true); window.removeEventListener('scroll', show); b.classList.remove('ui-hide', 'ui-show'); window.clearTimeout(tm); };
+  }, []);
   const [stSec, setStSec] = useState<'general' | 'ai'>('general');
   const openSettings = (sec: 'general' | 'ai' = 'general') => { setStSec(sec); setViewRaw('settings'); window.scrollTo({ top: 0 }); };
   const pickSite = (i: number) => set({ a: i, scrub: firstLit(i, start, end) });
