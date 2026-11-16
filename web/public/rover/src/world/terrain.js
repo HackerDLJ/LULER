@@ -62,8 +62,24 @@ function rilleH(x, z) {
   return prof * 17.5 * (1 - bridge) * taper;
 }
 
+/* LULER: real NASA LOLA elevation of the chosen landing site (set before the bake).
+   x/z are metres east/south of the landing point; the DEM is north-up. */
+let REAL = null;
+export function setRealDEM(d) { REAL = d; }
+function realHeight(x, z) {
+  const { n, px, h, scale, h0 } = REAL;
+  const fx = Math.min(n - 1.001, Math.max(0, x / px + (n - 1) / 2));
+  const fy = Math.min(n - 1.001, Math.max(0, z / px + (n - 1) / 2));
+  const ix = Math.floor(fx), iy = Math.floor(fy), tx = fx - ix, ty = fy - iy;
+  const g = (i, j) => h[j * n + i] * scale;
+  const v = (g(ix, iy) * (1 - tx) + g(ix + 1, iy) * tx) * (1 - ty) + (g(ix, iy + 1) * (1 - tx) + g(ix + 1, iy + 1) * tx) * ty;
+  // gentle sub-pixel relief between DEM posts so the ground is never a flat plane
+  return v - h0 + (fbm(x * 0.006, z * 0.006, 4, 2.05, 0.5, 11) - 0.5) * 6;
+}
+
 /** Smooth basin form. Shared by the near AND far bakes so they blend seamlessly. */
 export function baseHeight(x, z) {
+  if (REAL) return realHeight(x, z);
   const r = Math.hypot(x, z);
   let h = (fbm(x * 0.00175, z * 0.00175, 4, 2.05, 0.5, 11) - 0.5) * 33;
 

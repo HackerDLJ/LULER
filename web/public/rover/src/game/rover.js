@@ -1,5 +1,5 @@
 /* ============================================================
-   MU-7 "CASSIOPEIA" — survey rover
+   LULER-1 — survey rover
    ------------------------------------------------------------
    900 kg, six-wheel drive, rocker-bogie suspension, 1.62 m/s².
    Physics: a proper rigid body (quaternion + inertia tensor) with a
@@ -151,10 +151,10 @@ function panelTexture(size = 512) {
   // markings
   g.fillStyle = '#2a2824';
   g.font = `600 ${Math.round(size * 0.052)}px ui-monospace, monospace`;
-  g.fillText('MU-7 · CASSIOPEIA', size * 0.06, size * 0.16);
+  g.fillText('LULER-1 · SURVEY', size * 0.06, size * 0.16);
   g.font = `500 ${Math.round(size * 0.034)}px ui-monospace, monospace`;
   g.fillStyle = '#5a564e';
-  g.fillText('SELENE DIRECTORATE', size * 0.06, size * 0.235);
+  g.fillText('TEAM JATABELS', size * 0.06, size * 0.235);
   g.fillText('FAR-SIDE SURVEY DIV.', size * 0.06, size * 0.29);
   g.strokeStyle = '#b4472a'; g.lineWidth = 4;
   g.strokeRect(size * 0.06, size * 0.66, size * 0.30, size * 0.16);

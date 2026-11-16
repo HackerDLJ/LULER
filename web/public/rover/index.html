@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>REGOLITH — The Silence at Anaxagoras</title>
+<title>LULER Rover — Lunar Site Survey</title>
 <meta name="description" content="A lunar rover survey sim. 1/6 g, deformable regolith, ground-penetrating radar, and something under the basin floor." />
 <meta name="theme-color" content="#05060a" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='13' fill='%23cfc6b8'/><circle cx='11' cy='12' r='3.4' fill='%23a79c8c'/><circle cx='20' cy='19' r='4.6' fill='%23a79c8c'/><circle cx='22' cy='9' r='2' fill='%23a79c8c'/></svg>" />
@@ -38,11 +38,11 @@
         <circle cx="72" cy="47" r="3.5" fill="currentColor" opacity=".28"/>
       </svg>
     </div>
-    <h1 class="title">REGOLITH</h1>
-    <p class="subtitle">The Silence at Anaxagoras</p>
+    <h1 class="title">LULER ROVER</h1>
+    <p class="subtitle">Lunar landing site survey</p>
     <div class="loadbar"><i id="loadfill"></i></div>
     <p class="loadtext" id="loadtext">initialising telemetry link…</p>
-    <p class="legal">SELENE DIRECTORATE · FAR-SIDE SURVEY DIVISION · MU-7 “CASSIOPEIA”</p>
+    <p class="legal">TEAM JATABELS · NASA SPACE APPS 2026 · LULER-1 SURVEY ROVER</p>
   </div>
 </div>
 
@@ -50,8 +50,8 @@
 <div id="menu" class="overlay menu hidden">
   <div class="menu-grid">
     <div class="menu-left">
-      <h1 class="title big">REGOLITH</h1>
-      <p class="subtitle">The Silence at Anaxagoras</p>
+      <h1 class="title big">LULER ROVER</h1>
+      <p class="subtitle">Lunar landing site survey</p>
       <div class="brief" id="menuBrief"></div>
       <div class="menu-actions">
         <button class="btn primary" id="btnPlay">BEGIN DESCENT</button>
@@ -64,12 +64,12 @@
     </div>
     <div class="menu-right">
       <div class="dossier">
-        <div class="dossier-row"><span>OPERATION</span><b>ANAXAGORAS</b></div>
-        <div class="dossier-row"><span>BODY</span><b>LUNA · FAR SIDE</b></div>
+        <div class="dossier-row"><span>SITE</span><b id="siteName">LANDING SITE</b></div>
+        <div class="dossier-row"><span>BODY</span><b>THE MOON</b></div>
         <div class="dossier-row"><span>GRAVITY</span><b>1.62 m/s²</b></div>
         <div class="dossier-row"><span>ATMOSPHERE</span><b>NONE</b></div>
         <div class="dossier-row"><span>SURFACE TEMP</span><b>−173 … +117 °C</b></div>
-        <div class="dossier-row"><span>LAST CONTACT</span><b>D+214</b></div>
+        <div class="dossier-row"><span>TERRAIN</span><b>NASA LRO LOLA</b></div>
         <div class="dossier-row alert"><span>STATUS</span><b>SILENT</b></div>
       </div>
     </div>
@@ -93,7 +93,7 @@
     <section class="panel clock">
       <div class="row"><span>SOL PHASE</span><b id="sunPhase">—</b></div>
       <div class="row"><span>MET</span><b id="met">00:00:00</b></div>
-      <div class="row"><span>RANGE · SLED</span><b id="rangeHome">—</b></div>
+      <div class="row"><span>RANGE · LANDER</span><b id="rangeHome">—</b></div>
     </section>
   </div>
 
@@ -102,7 +102,7 @@
 
   <div class="z-rail">
     <section class="panel map">
-      <header><span>ANAXAGORAS BASIN</span><b id="mapScale">400 m</b></header>
+      <header><span id="mapName">SURVEY AREA</span><b id="mapScale">400 m</b></header>
       <canvas id="minimap" width="300" height="300"></canvas>
     </section>
     <section class="panel bay">
@@ -181,7 +181,7 @@
   </div>
 </div>
 
-<noscript><div class="overlay boot"><div class="boot-inner"><h1 class="title">REGOLITH</h1><p class="subtitle">JavaScript is required.</p></div></div></noscript>
+<noscript><div class="overlay boot"><div class="boot-inner"><h1 class="title">LULER ROVER</h1><p class="subtitle">JavaScript is required.</p></div></div></noscript>
 
 <script type="module" src="src/main.js"></script>
 </body>

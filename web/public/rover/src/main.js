@@ -1,5 +1,6 @@
 /* ============================================================
-   REGOLITH — The Silence at Anaxagoras
+   LULER Rover — lunar landing site survey (Team JATABELS)
+   Built on the REGOLITH engine by winch (MIT licence, see LICENSE)
    Bootstrap, loading, menus, and the frame loop.
    ============================================================ */
 import * as THREE from 'three';
@@ -8,7 +9,7 @@ import { Input } from './core/input.js';
 import { Audio } from './core/audio.js';
 import { Save } from './core/save.js';
 import { clamp, sstep, lerp } from './core/rng.js';
-import { bakeTerrain, Terrain, PLAYABLE_R } from './world/terrain.js';
+import { bakeTerrain, Terrain, PLAYABLE_R, setRealDEM } from './world/terrain.js';
 import { Sky } from './world/sky.js';
 import { Props, HOME } from './world/props.js';
 import { Dust } from './world/dust.js';
@@ -97,12 +98,29 @@ function loadTextures() {
   });
 }
 
+const SITE_NAME = new URLSearchParams(location.search).get('name') || 'the landing site';
+
 async function boot() {
   progress(0.01, 'initialising telemetry link…');
 
   const engine = new Engine($('stage'), App.settings.quality);
   App.engine = engine;
   await new Promise(r => setTimeout(r, 30));
+
+  /* ---- LULER: load the real NASA elevation of the selected landing site ---- */
+  const siteId = new URLSearchParams(location.search).get('site');
+  if (document.getElementById('siteName')) document.getElementById('siteName').textContent = SITE_NAME.toUpperCase();
+  if (document.getElementById('mapName')) document.getElementById('mapName').textContent = SITE_NAME.toUpperCase();
+  if (siteId) {
+    try {
+      progress(0.015, 'loading NASA LOLA elevation for ' + siteId);
+      const j = await (await fetch(`../data/${siteId}.dem.json`)).json();
+      const bin = atob(j.b64), buf = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+      const h = new Int16Array(buf.buffer), n = j.n, sc = j.scale ?? 1, c = (n - 1) / 2;
+      setRealDEM({ n, px: j.px_m, h, scale: sc, h0: h[Math.round(c) * n + Math.round(c)] * sc });
+    } catch (e) { console.warn('real terrain unavailable, using the default basin', e); }
+  }
 
   /* ---- bake the basin, yielding to the browser so the bar animates ---- */
   progress(0.02, 'shaping the basin');
@@ -177,7 +195,7 @@ async function boot() {
 
   App.tick = tick;
   App.startGame = startGame;
-  window.REGOLITH = App;                 // debug handle: inspect or drive from the console
+  window.LULER_ROVER = App;                 // debug handle: inspect or drive from the console
   progress(1, 'link established');
   await new Promise(r => setTimeout(r, 260));
   $('boot').classList.add('hidden');
@@ -197,11 +215,11 @@ function showMenu() {
   const saved = Save.read();
   $('btnContinue').hidden = !saved;
   $('menuBrief').innerHTML =
-    `Two hundred and fourteen days ago the far-side outpost <b>BEACON-9</b> sent four seconds of
-     empty carrier and stopped. You are the operator of <b>MU-7 CASSIOPEIA</b>, put down by descent
-     sled on the floor of <b>Anaxagoras</b> at seventy-three degrees north.<br><br>
-     Survey the basin. Restore the relay chain. Find out what is under the floor —
-     and why the dossier does not say what the station was <em>for</em>.`;
+    `You are driving <b>LULER-1</b>, a six-wheel survey rover, at <b>${SITE_NAME}</b>.
+     The ground around you is built from <b>NASA LRO laser altimeter</b> elevation data for this site,
+     with small rocks and craters added for detail.<br><br>
+     Check the ground is safe, keep the radio link to Earth and bring back samples:
+     a full site survey before any crew lands.`;
 }
 
 function startGame(freeRoam, loadSaved) {
@@ -226,8 +244,8 @@ function startGame(freeRoam, loadSaved) {
   App.state = ST.PLAY;
   App.input.lock();
   App.input.showTouch(true);
-  App.hud.log('MU-7 CASSIOPEIA — SYSTEMS NOMINAL', 'good');
-  App.hud.log('SELENE DIRECTORATE · FAR-SIDE SURVEY DIVISION');
+  App.hud.log('LULER-1 — SYSTEMS NOMINAL', 'good');
+  App.hud.log('TEAM JATABELS · SITE SURVEY · ' + SITE_NAME);
 
   if (!resumed && !freeRoam) {
     setTimeout(() => {

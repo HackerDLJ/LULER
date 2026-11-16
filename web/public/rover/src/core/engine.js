@@ -160,7 +160,7 @@ export class Engine {
       aniso: this.renderer.capabilities.getMaxAnisotropy()
     };
     if (!this.caps.floatLinear) {
-      console.warn('[REGOLITH] OES_texture_float_linear unavailable — terrain sampling will be blocky.');
+      console.warn('[LULER Rover] OES_texture_float_linear unavailable — terrain sampling will be blocky.');
     }
 
     this.scene = new THREE.Scene();

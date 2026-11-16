@@ -572,7 +572,7 @@ function makeFlagMaterial() {
   g.strokeStyle = '#6fe3f5'; g.lineWidth = 3; g.strokeRect(8, 8, 240, 140);
   g.fillStyle = '#d8d2c6';
   g.font = '600 26px ui-monospace, monospace';
-  g.fillText('SELENE', 26, 62);
+  g.fillText('LULER', 26, 62);
   g.font = '500 14px ui-monospace, monospace';
   g.fillStyle = '#6fe3f5';
   g.fillText('DIRECTORATE', 26, 86);

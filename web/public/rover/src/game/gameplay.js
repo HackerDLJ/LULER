@@ -170,7 +170,7 @@ export class Game {
       this.hud.missionDirty = true;
     } else {
       this.hud.showCard({
-        tag: 'OPERATION ANAXAGORAS', name: 'TRANSMITTED',
+        tag: 'LULER SITE SURVEY', name: 'TRANSMITTED',
         brief: `The uplink closed forty seconds ago. Whatever happens to the record now happens on Earth, in a building with a lobby and a receptionist and a legal department.\n\nYou are still here. The basin is still here. Under your wheels, four metres down, nine square kilometres of glass pipe is drawing charge at a rate you measured yourself.\n\nEleven months.`,
         objectives: [{ id: '_', text: 'Free survey unlocked — the basin is yours' }]
       });
@@ -259,7 +259,7 @@ export class Game {
   startDrill() {
     if (this.drill.active) return;
     if (!this.rover.armOut) { this.toggleArm(); return; }
-    if (this.bayFull) { this.log('SAMPLE BAY FULL — RETURN TO SLED', 'warn'); this.audio.ui('bad'); return; }
+    if (this.bayFull) { this.log('SAMPLE BAY FULL — RETURN TO LANDER', 'warn'); this.audio.ui('bad'); return; }
     if (this.power < DRILL_COST) { this.log('INSUFFICIENT POWER FOR DRILL CYCLE', 'warn'); this.audio.ui('bad'); return; }
     if (this.rover.vel.length() > 1.1) { this.log('BRAKE BEFORE DRILLING', 'warn'); return; }
     const a = this.nearestAnom();
@@ -399,7 +399,7 @@ export class Game {
     this.heat += (targetHeat - this.heat) * Math.min(1, dt * 0.055);
 
     if (this.power < 12 && !this._lowWarned) {
-      this._lowWarned = true; this.log('POWER CRITICAL — SEEK SUNLIGHT OR RETURN TO SLED', 'bad'); this.audio.ui('warn');
+      this._lowWarned = true; this.log('POWER CRITICAL — SEEK SUNLIGHT OR RETURN TO LANDER', 'bad'); this.audio.ui('warn');
     }
     if (this.power > 30) this._lowWarned = false;
     this.dangerTone = clamp((1 - this.power / 40) * 0.6 + (1 - this.hull / 100) * 0.6, 0, 1);
@@ -428,7 +428,7 @@ export class Game {
       if (!this.objDone.reach && this.distTo(STATION.x, STATION.z) < 26) {
         this.complete('reach');
         this.unlock('roster');
-        this.log('BEACON-9 PERIMETER — NO POWER SIGNATURE', 'warn');
+        this.log('SURVEY BEACON — NO POWER SIGNATURE', 'warn');
       }
       if (!this.objDone.massif && this.distTo(MASSIF.x, MASSIF.z) < 46 &&
           this.terrain.heightAt(this.rover.pos.x, this.rover.pos.z) > 12) {
@@ -520,7 +520,7 @@ export class Game {
 
   strand() {
     this.hull = 22;
-    this.log('CRITICAL DAMAGE — SLED WINCH RECOVERY', 'bad');
+    this.log('CRITICAL DAMAGE — LANDER WINCH RECOVERY', 'bad');
     this.rover.placeAt(HOME.x - 9, HOME.z - 9, 2.2);
     this.power = Math.max(this.power, 35);
     this.audio.ui('bad');

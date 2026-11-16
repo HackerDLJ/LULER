@@ -304,8 +304,9 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
       ) : view === 'rover' ? (
         <div className="stage roverstage">
           {chrome}
-          <iframe className="rover-frame" title="Lunar rover simulation" src={import.meta.env.BASE_URL + 'rover/index.html'} allow="fullscreen; autoplay" />
-          <p className="rover-credit">Rover simulation: REGOLITH by winch (MIT licence), procedural terrain under 1/6 g physics. Click inside to drive.</p>
+          <iframe className="rover-frame" title="Lunar rover simulation" key={sites[s.a].id} src={import.meta.env.BASE_URL + 'rover/index.html?site=' + encodeURIComponent(sites[s.a].id) + '&name=' + encodeURIComponent(sites[s.a].name)} allow="fullscreen; autoplay" />
+          <button type="button" className="rover-fs" onClick={() => { const f = document.querySelector('.rover-frame') as HTMLIFrameElement | null; if (!f) return; if (document.fullscreenElement) void document.exitFullscreen(); else void f.requestFullscreen?.().then(() => f.focus()).catch(() => {}); }}>⛶ Full screen</button>
+          <p className="rover-credit">{`LULER Rover · real NASA LOLA terrain of ${sites[s.a].name} with added rocks and small craters for detail · 1/6 g physics · engine based on REGOLITH by winch (MIT)`}</p>
         </div>
       ) : view === 'timeline' ? (
         <MissionTimeline sites={sites} chrome={chrome} onOpen={(i) => { pickSite(i); setView('orbit'); }} />

@@ -159,4 +159,4 @@ Made for the NASA Space Apps Challenge 2026.
 
 ## Third-party code
 
-- **Rover simulation** (Surface → Rover simulation): [REGOLITH](https://github.com/winchxyz/moon-rover) by winch, MIT licence, included unmodified in `web/public/rover/` with its licence file. Its terrain is procedural and is not NASA data.
+- **LULER Rover** (Surface → Rover simulation): our rover survey built on the [REGOLITH](https://github.com/winchxyz/moon-rover) engine by winch (MIT licence, kept in `web/public/rover/LICENSE`). We changed the terrain to the real NASA LOLA elevation of the chosen site, and rewrote the missions, text and branding. Small rocks and craters are procedural detail.

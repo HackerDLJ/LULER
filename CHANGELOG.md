@@ -4,6 +4,10 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.11.0 · 2026-11-16 · LULER Rover
+- The rover simulation is now LULER Rover: drives on the real NASA LOLA elevation of the selected landing site, with LULER missions (power up, subsurface survey, relay chain, survey beacon, deep core), real lunar science notes and Team JATABELS branding. Built on the REGOLITH engine by winch (MIT licence, kept in web/public/rover/LICENSE).
+- Full-screen button for the rover simulation.
+
 ## v7.10.1 · 2026-11-16
 - Surface tab opens the rover simulation first; the walk mode on NASA terrain is the second sub-tab. Surface terrain detail back to the normal level (the finest level loaded slowly and looked flat grey).
 

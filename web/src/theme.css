@@ -527,3 +527,6 @@ body.ui-show .app .stage .hud2 .meta{animation-delay:.08s}body.ui-show .app .sta
 .app .roverstage .rover-frame{position:absolute;left:0;right:0;bottom:0;top:196px;width:100%;height:calc(100% - 196px);border:0;border-radius:18px 18px 0 0;background:#000}
 .app .roverstage .rover-credit{position:absolute;right:16px;bottom:8px;margin:0;font:400 11px var(--sans);color:#8d98b5;z-index:3;pointer-events:none}
 @media (max-width:760px){.app .roverstage .rover-frame{top:230px;height:calc(100% - 230px)}}
+.app .roverstage .rover-fs{all:unset;position:absolute;right:20px;top:208px;z-index:4;cursor:pointer;padding:9px 16px;border-radius:999px;font:600 13px var(--sans);color:#eaf1ff;background:rgba(18,26,48,.75);border:1px solid rgba(140,180,255,.3);backdrop-filter:blur(14px)}
+.app .roverstage .rover-fs:hover{background:rgba(60,100,200,.45)}
+@media (max-width:760px){.app .roverstage .rover-fs{top:242px}}

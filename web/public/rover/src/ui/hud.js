@@ -143,7 +143,7 @@ export class HUD {
     const m = game.mission;
     if (!m) {
       this.el.tag.textContent = 'FREE SURVEY';
-      this.el.name.textContent = 'ANAXAGORAS';
+      this.el.name.textContent = (new URLSearchParams(location.search).get('name') || 'SURVEY AREA').toUpperCase();
       this.el.obj.innerHTML = `<div>${game.excavated} excavations · ${(game.rover.odo / 1000).toFixed(2)} km driven</div>`;
       this.missionDirty = false; return;
     }
@@ -238,7 +238,7 @@ export class HUD {
     // objective bearing
     const targets = [];
     if (game.mission) {
-      if (!game.objDone.reach && game.missionIdx === 3) targets.push([STATION.x, STATION.z, '#ffb454', 'BEACON-9']);
+      if (!game.objDone.reach && game.missionIdx === 3) targets.push([STATION.x, STATION.z, '#ffb454', 'SURVEY BEACON']);
       if (!game.objDone.massif && game.missionIdx === 4) targets.push([MASSIF.x, MASSIF.z, '#ffb454', 'MASSIF']);
     }
     if (game.bay.length >= 6 || game.objDone.deep || game.power < 25) targets.push([HOME.x, HOME.z, '#6fe3f5', 'SLED']);
@@ -314,7 +314,7 @@ export class HUD {
       }
     };
     poi(HOME.x, HOME.z, '#6fe3f5', 'SLED', 'home');
-    if (game.missionIdx >= 3 || game.stationVisited) poi(STATION.x, STATION.z, '#ffb454', 'BEACON-9', 'x');
+    if (game.missionIdx >= 3 || game.stationVisited) poi(STATION.x, STATION.z, '#ffb454', 'SURVEY BEACON', 'x');
     if (game.missionIdx >= 4) poi(MASSIF.x, MASSIF.z, '#ffb454', 'MASSIF', 'x');
     for (const a of game.anoms) if (a.found && !a.taken)
       poi(a.x, a.z, a.special || a.type === 'tube' ? '#ffb454' : '#2ad2ff', null, 'dot');
