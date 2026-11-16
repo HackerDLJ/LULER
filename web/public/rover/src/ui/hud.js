@@ -241,7 +241,7 @@ export class HUD {
       if (!game.objDone.reach && game.missionIdx === 3) targets.push([STATION.x, STATION.z, '#ffb454', 'SURVEY BEACON']);
       if (!game.objDone.massif && game.missionIdx === 4) targets.push([MASSIF.x, MASSIF.z, '#ffb454', 'MASSIF']);
     }
-    if (game.bay.length >= 6 || game.objDone.deep || game.power < 25) targets.push([HOME.x, HOME.z, '#6fe3f5', 'SLED']);
+    if (game.bay.length >= 6 || game.objDone.deep || game.power < 25) targets.push([HOME.x, HOME.z, '#6fe3f5', 'LANDER']);
     for (const a of game.anoms) if (a.found && !a.taken && game.distTo(a.x, a.z) < 190)
       targets.push([a.x, a.z, a.special || a.type === 'tube' ? '#ffb454' : '#6fe3f5', null]);
     for (const [tx, tz, col, lab] of targets) {
@@ -313,7 +313,7 @@ export class HUD {
         g.fillStyle = col; g.fillText(label, ux, uy - 9);
       }
     };
-    poi(HOME.x, HOME.z, '#6fe3f5', 'SLED', 'home');
+    poi(HOME.x, HOME.z, '#6fe3f5', 'LANDER', 'home');
     if (game.missionIdx >= 3 || game.stationVisited) poi(STATION.x, STATION.z, '#ffb454', 'SURVEY BEACON', 'x');
     if (game.missionIdx >= 4) poi(MASSIF.x, MASSIF.z, '#ffb454', 'MASSIF', 'x');
     for (const a of game.anoms) if (a.found && !a.taken)
