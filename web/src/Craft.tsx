@@ -10,7 +10,7 @@ import { decodeB64 } from './data';
 import { FACTS } from './events';
 
 interface Props { site: Site; base: string; chrome?: ReactNode }
-type Which = 'lm' | 'lro' | 'llcd' | 'orion' | 'stack';
+type Which = 'lm' | 'lro' | 'llcd' | 'orion' | 'stack' | 'vikram' | 'chandrayaan2' | 'sls' | 'saturnv_full';
 const MODEL: Record<string, { title: string; credit: string; text: string }> = {
   lm: { title: 'Apollo Lunar Module', credit: 'NASA 3D Resources: Apollo Lunar Module', text: 'The two-stage lander flown on every Apollo landing. The gold descent stage stayed on the Moon; the ascent stage carried the two astronauts back to orbit.' },
   lro: { title: 'Lunar Reconnaissance Orbiter', credit: 'NASA 3D Resources: Lunar Reconnaissance Orbiter', text: 'In lunar orbit since 2009. Its LOLA laser altimeter measured the terrain and its cameras took the imagery that this whole application is built on.' },
@@ -19,6 +19,11 @@ const MODEL: Record<string, { title: string; credit: string; text: string }> = {
 MODEL.stack = { title: 'Apollo stack: how the spacecraft comes apart', credit: 'Built from NASA Apollo Program drawings, with the NASA Apollo Lunar Module model', text: 'Saturn V (S-IC first stage, S-II second stage, S-IVB third stage and instrument ring) lifts the stack. The S-IVB sends it to the Moon, then the four adapter panels fold open and the Lunar Module is pulled out. The Service Module and Command Module fly on together to orbit the Moon. Slide to take it apart, stage by stage. Drag to rotate.' };
 MODEL.llcd = { title: 'Lunar Laser Communications Demonstration (LLCD)', credit: 'NASA 3D Resources: LLCD', text: 'Flown on the LADEE orbiter in 2013, LLCD sent data between the Moon and Earth with laser light instead of radio. It reached 622 megabits per second down and 20 megabits per second up, the first laser link beyond Earth orbit. Optical links like this are why future lunar bases could stream high-definition video home.' };
 MODEL.orion = { title: 'Orion crew capsule', credit: 'NASA 3D Resources: Orion Capsule', text: 'The capsule that carries Artemis astronauts to lunar orbit and back. It rides on top of the SLS rocket with a service module for power and propulsion, and returns to Earth at about 40,000 km/h under a heat shield. It does not land on the Moon: a separate lander takes the crew down to the surface.' };
+MODEL.vikram = { title: 'Chandrayaan-3 Vikram lander (ISRO)', credit: '"ISRO Chandrayyan-3 Mission Lander Module Vikram" by akareactor, CC-BY 4.0 (Sketchfab)', text: 'India\'s Vikram touched down near the lunar south pole on 23 August 2023, the first landing that close to the pole. The site, named Shiv Shakti point, is one of the sites in LULER.' };
+MODEL.chandrayaan2 = { title: 'Chandrayaan-2 (ISRO)', credit: '"Chandrayaan-2 in flight configuration" by tashtego, CC-BY 4.0 (Sketchfab)', text: 'Orbiter, lander and rover launched together in 2019. The lander was lost during descent, but the orbiter still maps the Moon from orbit today.' };
+MODEL.sls = { title: 'Space Launch System Block 1 (NASA)', credit: '"NASA SLS Block 1 Crew V4" by Clarence365, CC-BY 4.0 (Sketchfab)', text: 'NASA\'s Moon rocket for Artemis. It flew Artemis I in November 2022 and carries Orion and its crew toward the Moon.' };
+MODEL.saturnv_full = { title: 'Saturn V (NASA)', credit: '"Saturn V - NASA" by Stanley Creative, CC-BY-ND 4.0 (Sketchfab), unmodified', text: 'The rocket that launched every Apollo Moon landing, 110.6 m tall. It is still one of the most powerful rockets ever flown.' };
+const SKETCHFAB = new Set(['vikram', 'chandrayaan2', 'sls', 'saturnv_full']);
 export async function loadGlb(url: string): Promise<THREE.Group> {
   const r = await fetch(url);
   if (!r.ok) throw new Error(`model missing (${r.status})`);
@@ -99,7 +104,7 @@ export default function Craft({ site, base, chrome }: Props) {
       setState(''); cam.position.set(15, 12, 28); controls.target.set(0, 11, 0); controls.minDistance = 6; controls.maxDistance = 90; cam.far = 600; cam.updateProjectionMatrix();
     }
     setState('Loading NASA 3D model…');
-    const mp = which === 'stack' ? new Promise<THREE.Object3D>(() => {}) : which === 'llcd' ? new Promise<THREE.Object3D>((res, rej) => new GLTFLoader().load(`${base}llcd.glb`, (g) => res(g.scene), undefined, rej)) : which === 'orion' ? new Promise<THREE.Object3D>((res, rej) => new STLLoader().load(`${base}orion.stl`, (geo) => { geo.computeVertexNormals(); res(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xd9dde6, metalness: 0.45, roughness: 0.4 }))); }, undefined, rej)) : loadGlb(`${base}${which}.glb.json`);
+    const mp = which === 'stack' ? new Promise<THREE.Object3D>(() => {}) : which === 'llcd' || SKETCHFAB.has(which) ? new Promise<THREE.Object3D>((res, rej) => new GLTFLoader().load(`${base}${which}.glb`, (g) => res(g.scene), undefined, rej)) : which === 'orion' ? new Promise<THREE.Object3D>((res, rej) => new STLLoader().load(`${base}orion.stl`, (geo) => { geo.computeVertexNormals(); res(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xd9dde6, metalness: 0.45, roughness: 0.4 }))); }, undefined, rej)) : loadGlb(`${base}${which}.glb.json`);
     mp.then((m) => {
       if (!live) return;
       const box = new THREE.Box3().setFromObject(m);
@@ -133,6 +138,10 @@ export default function Craft({ site, base, chrome }: Props) {
             <button type="button" className={which === 'llcd' ? 'on' : ''} onClick={() => setWhich('llcd')}>LLCD laser comms</button>
             <button type="button" className={which === 'orion' ? 'on' : ''} onClick={() => setWhich('orion')}>Orion capsule</button>
             <button type="button" className={which === 'stack' ? 'on' : ''} onClick={() => setWhich('stack')}>Apollo stack ▸ disassemble</button>
+            <button type="button" className={which === 'saturnv_full' ? 'on' : ''} onClick={() => setWhich('saturnv_full')}>Saturn V</button>
+            <button type="button" className={which === 'sls' ? 'on' : ''} onClick={() => setWhich('sls')}>SLS (Artemis)</button>
+            <button type="button" className={which === 'vikram' ? 'on' : ''} onClick={() => setWhich('vikram')}>Chandrayaan-3 Vikram</button>
+            <button type="button" className={which === 'chandrayaan2' ? 'on' : ''} onClick={() => setWhich('chandrayaan2')}>Chandrayaan-2</button>
           </div>
           {which === 'stack' && (<div className="simctl"><button type="button" onClick={() => setE(0)}>Assemble</button><input type="range" min={0} max={1} step={0.01} value={exp} onChange={(e) => setE(+e.target.value)} aria-label="Disassemble" style={{ flex: 1, minWidth: 160 }} /><button type="button" onClick={() => setE(1)}>Disassemble</button></div>)}
           <h2>{which === 'lm' && f && hasLm ? f.craft : MODEL[which].title}</h2>
