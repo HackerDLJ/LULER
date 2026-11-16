@@ -200,10 +200,11 @@ export default function CesiumTerrain({ site, common, t, modelsBase, view, onVie
       }, C.ScreenSpaceEventType.MOUSE_MOVE);
 
       /* --- Surface (first-person) --- */
+      let hz = 0, vz = 0, gait = 0; // jump height and speed under real lunar gravity (1.62 m/s²)
       let px = 0, pn = 0, yaw = 0, pitch = 0, moveSpeed = 4; const keys = new Set<string>();
       const KEYMAP: Record<string, string> = { w: 'f', arrowup: 'f', s: 'b', arrowdown: 'b', a: 'l', d: 'r', q: 'tl', arrowleft: 'tl', e: 'tr', arrowright: 'tr' };
       const typing = (e: KeyboardEvent) => { const t = e.target as HTMLElement; return !!t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA'); };
-      const kd = (e: KeyboardEvent) => { if (viewRef.current !== 'lander' || typing(e)) return; const k = KEYMAP[e.key.toLowerCase()]; if (k) { keys.add(k); e.preventDefault(); } };
+      const kd = (e: KeyboardEvent) => { if (viewRef.current !== 'lander' || typing(e)) return; if (e.key === ' ') { if (hz <= 0) vz = 1.6; e.preventDefault(); return; } const k = KEYMAP[e.key.toLowerCase()]; if (k) { keys.add(k); e.preventDefault(); } };
       const ku = (e: KeyboardEvent) => { const k = KEYMAP[e.key.toLowerCase()]; if (k) keys.delete(k); };
       window.addEventListener('keydown', kd); window.addEventListener('keyup', ku); cleanups.push(() => { window.removeEventListener('keydown', kd); window.removeEventListener('keyup', ku); });
       const cv = viewer.canvas as HTMLCanvasElement; let drag = false, lx = 0, ly = 0;
@@ -218,7 +219,10 @@ export default function CesiumTerrain({ site, common, t, modelsBase, view, onVie
         yaw += ((keys.has('tr') ? 1 : 0) - (keys.has('tl') ? 1 : 0)) * 1.2 * dt;
         const fwd = (keys.has('f') ? 1 : 0) - (keys.has('b') ? 1 : 0), st = (keys.has('r') ? 1 : 0) - (keys.has('l') ? 1 : 0);
         if (fwd || st) { const step = moveSpeed * dt; px += (Math.sin(yaw) * fwd + Math.cos(yaw) * st) * step; pn += (Math.cos(yaw) * fwd - Math.sin(yaw) * st) * step; }
-        cam.setView({ destination: worldAt(px, pn, 1.7), orientation: { heading: yaw, pitch, roll: 0 } });
+        if (hz > 0 || vz > 0) { hz += vz * dt; vz -= 1.62 * dt; if (hz <= 0) { hz = 0; vz = 0; } }
+        gait = (fwd || st) ? gait + dt * 2.4 * Math.max(1, moveSpeed / 2) : gait * 0.9; // low-gravity lope
+        const bob = (fwd || st) ? Math.abs(Math.sin(gait)) * Math.min(0.18, 0.05 * moveSpeed) : 0;
+        cam.setView({ destination: worldAt(px, pn, 1.7 + hz + bob), orientation: { heading: yaw, pitch, roll: (fwd || st) ? Math.sin(gait) * 0.006 : 0 } });
         homePole.show = Math.hypot(px, pn) > 20;
         if (frame % 6 === 0 && teleRef.current) {
           const q = describe(px, pn); const hd = ((yaw / D2R) % 360 + 360) % 360;
@@ -290,6 +294,8 @@ export default function CesiumTerrain({ site, common, t, modelsBase, view, onVie
         cam.lookAtTransform(C.Matrix4.IDENTITY); cam.frustum.fov = 60 * D2R;
         ctl.enableInputs = m === 'orbit'; ctl.minimumZoomDistance = 3; ctl.maximumZoomDistance = 120000;
         ts.maximumScreenSpaceError = m === 'lander' ? 1 : m === 'descent' ? 1.5 : 3; // full Cesium Moon Terrain detail on the surface
+        sc.highDynamicRange = m === 'lander' || m === 'descent'; // HDR + bloom so the unfiltered Sun glares like it does on the Moon
+        const bl = sc.postProcessStages.bloom; bl.enabled = sc.highDynamicRange; bl.uniforms.glowOnly = false; bl.uniforms.contrast = 119; bl.uniforms.brightness = -0.35; bl.uniforms.delta = 1.4; bl.uniforms.sigma = 3.2; bl.uniforms.stepSize = 1.2;
         pinE.show = m !== 'descent' && !!pinE.position && pinE.show; homePole.show = m === 'lander' && Math.hypot(px, pn) > 20;
         if (m === 'orbit') { lookOverview(1.8); ov.style.display = 'none'; if (lm) lm.show = false; dust.show = exhaust.show = false; }
         if (m === 'lander') { pitch = -0.05; yaw = (site.sunAz[tRef.current] + 125) * D2R; px = -14 * Math.sin(yaw); pn = -14 * Math.cos(yaw); ov.style.display = 'none'; if (lm) { lm.show = true; lm.modelMatrix = C.Transforms.eastNorthUpToFixedFrame(worldAt(0, 0, 1.9)); lm.scale = lk; } dust.show = exhaust.show = false; cam.setView({ destination: worldAt(px, pn, 1.7), orientation: { heading: yaw, pitch, roll: 0 } }); }
@@ -397,7 +403,7 @@ export default function CesiumTerrain({ site, common, t, modelsBase, view, onVie
           </div>
         </>
       )}
-      <p className="hud-tip">{view === 'descent' ? 'Drag to orbit the lander · scroll to zoom · approach flown with the Sun behind the lander' : view === 'orbit' ? 'Drag to rotate · scroll to zoom · move the mouse over the terrain for coordinates · double-click to plan a touchdown point' : 'Move: W A S D or arrow keys · turn: Q E or ← → · drag to look · Sun and Earth at true size and direction'}</p>
+      <p className="hud-tip">{view === 'descent' ? 'Drag to orbit the lander · scroll to zoom · approach flown with the Sun behind the lander' : view === 'orbit' ? 'Drag to rotate · scroll to zoom · move the mouse over the terrain for coordinates · double-click to plan a touchdown point' : 'Move: W A S D or arrow keys · turn: Q E or ← → · Space: jump (1.62 m/s² lunar gravity) · drag to look · Sun and Earth at true size and direction'}</p>
       {view === 'orbit' && <span ref={cursorRef} className="cursorll" />}
       {!ready && !err && <p className="stage-msg">Loading Cesium Moon terrain…</p>}
       {err && <p className="stage-msg error">{err}</p>}

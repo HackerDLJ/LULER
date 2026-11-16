@@ -4,6 +4,11 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.9.0 · 2026-11-16 · Surface simulation
+- Jump with Space under real lunar gravity (1.62 m/s²: about 0.8 m high, 2 s in the air).
+- Low-gravity walking lope (head bob and sway scaled to speed).
+- HDR and bloom on the surface and during descent so the unfiltered Sun glares realistically.
+
 ## v7.8.9 · 2026-11-16
 - LULER logo stays visible when overlays hide; tap-to-hide now covers every 3D page (Moon globe, Site, Surface, Mission, Spacecraft).
 - Surface: Cesium Moon Terrain streams at full detail (screen-space error 1) when standing on the ground.
