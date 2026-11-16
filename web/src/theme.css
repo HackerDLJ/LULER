@@ -518,8 +518,8 @@ button:hover,a:hover,.cta:hover,.cta-glass:hover,.glass-surface:hover,.score-chi
 .app .modes{width:max-content!important;max-width:calc(100vw - 24px)}
 
 /* Tap the 3D surface to hide the overlays; scroll to bring them back (blur-in) */
-.app .stage :is(.hud2,.viewpanel,.subtabs,.modes,.pickers,.brand,.hud-tip,.sp-toggle,.drive,.hdr-icons){transition:opacity .45s cubic-bezier(.22,1,.36,1),filter .45s cubic-bezier(.22,1,.36,1)}
-body.ui-hide .app .stage :is(.hud2,.viewpanel,.subtabs,.modes,.pickers,.brand,.hud-tip,.sp-toggle,.drive,.hdr-icons){opacity:0!important;filter:blur(10px);pointer-events:none!important}
+.app .stage :is(.hud2,.viewpanel,.subtabs,.modes,.pickers,.hud-tip,.sp-toggle,.drive,.hdr-icons){transition:opacity .45s cubic-bezier(.22,1,.36,1),filter .45s cubic-bezier(.22,1,.36,1)}
+body.ui-hide .app .stage :is(.hud2,.hud-bottom,.simctl,.mission-feed,.stage-msg,.glabels,.vp-help,.viewpanel,.sitepanel,.subtabs,.modes,.pickers,.hud-tip,.sp-toggle,.drive,.hdr-icons,.hud,.legend,.lookat,.mission-ui,.craft-ui,.panel){opacity:0!important;filter:blur(10px);pointer-events:none!important}
 @keyframes luBlurIn{0%{opacity:0;filter:blur(10px);transform:translateY(-14px)}55%{opacity:.6;filter:blur(4px);transform:translateY(2px)}100%{opacity:1;filter:blur(0);transform:none}}
-body.ui-show .app .stage .hud2 :is(h2,.meta,.stat,.score-chip,.specular-button,.timebar),body.ui-show .app .stage :is(.viewpanel,.subtabs,.modes,.pickers,.brand){animation:luBlurIn .7s cubic-bezier(.33,1,.68,1) both}
+body.ui-show .app .stage .hud2 :is(h2,.meta,.stat,.score-chip,.specular-button,.timebar),body.ui-show .app .stage :is(.viewpanel,.subtabs,.modes,.pickers){animation:luBlurIn .7s cubic-bezier(.33,1,.68,1) both}
 body.ui-show .app .stage .hud2 .meta{animation-delay:.08s}body.ui-show .app .stage .hud2 .stat{animation-delay:.16s}body.ui-show .app .stage .hud2 .stat+.stat{animation-delay:.24s}body.ui-show .app .stage .hud2 .timebar{animation-delay:.32s}
