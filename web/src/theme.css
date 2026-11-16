@@ -539,3 +539,6 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 .app .stage :is(.viewpanel,.drive){max-height:calc(100dvh - 209px - 250px)!important;overflow:auto!important}
 @media (max-height:620px){.app .stage :is(.viewpanel,.drive){max-height:calc(100dvh - 190px - 200px)!important}}
 @media (max-width:760px){.app .stage .drive{top:166px!important}}
+/* Team page: only the settings button in the top bar */
+.page-stage:has(.team-page) .pickers>:not(.hdr-icons){display:none!important}
+.page-stage:has(.team-page) .pickers .hdr-icons>:not([title="Settings"]){display:none!important}
