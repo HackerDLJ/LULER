@@ -193,6 +193,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
   const openSettings = (sec: 'general' | 'ai' = 'general') => { setStSec(sec); setViewRaw('settings'); window.scrollTo({ top: 0 }); };
   const pickSite = (i: number) => set({ a: i, scrub: firstLit(i, start, end) });
   const setView = (v: typeof view) => {
+    if (v === 'lander') v = 'rover'; // the surface is explored in LULER Rover on the real site terrain
     if (view === 'globe' && v === 'orbit') { // fly down from the whole Moon to the site
       setDive((d) => d + 1);
       window.setTimeout(() => setViewRaw((cur) => (cur === 'globe' ? 'orbit' : cur)), 1700);
@@ -244,7 +245,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
         <div className="subtabs"><button type="button" className={view === 'globe' ? 'on' : ''} onClick={() => setView('globe')}>3D globe</button><button type="button" className={view === 'map' ? 'on' : ''} onClick={() => setView('map')}>Flat map + coordinates</button><button type="button" className={view === 'timeline' ? 'on' : ''} onClick={() => setView('timeline')}>Mission timeline</button></div>
       )}
       {(view === 'lander' || view === 'rover') && (
-        <div className="subtabs"><button type="button" className={view === 'rover' ? 'on' : ''} onClick={() => setView('rover')}>Rover simulation</button><button type="button" className={view === 'lander' ? 'on' : ''} onClick={() => setView('lander')}>Walk the site (NASA terrain)</button></div>
+        <div className="subtabs"><button type="button" className="on" onClick={() => setView('rover')}>LULER Rover · real site terrain</button></div>
       )}
       {(view === 'orbit' || view === 'descent' || view === 'craft' || view === 'cesium' || view === 'mission') && (
         <div className="subtabs"><button type="button" className={view === 'orbit' ? 'on' : ''} onClick={() => setView('orbit')}>Terrain</button><button type="button" className={view === 'mission' || view === 'descent' ? 'on' : ''} onClick={() => setView('mission')}>Mission: launch → landing</button><button type="button" className={view === 'craft' ? 'on' : ''} onClick={() => setView('craft')}>Spacecraft</button></div>
@@ -260,7 +261,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
         }}
         actions={{
           goToSite: (name) => { const q = name.toLowerCase(); const i = sites.findIndex((x) => x.name.toLowerCase() === q); const j = i >= 0 ? i : sites.findIndex((x) => x.name.toLowerCase().includes(q) || q.includes(x.name.toLowerCase())); if (j < 0) return `No site matching "${name}"`; pickSite(j); return `Selected ${sites[j].name}`; },
-          openView: (v) => { const m: Record<string, typeof view> = { moon: 'globe', map: 'map', terrain: 'orbit', mission: 'mission', surface: 'lander', dates: 'calendar' }; const t = m[v]; if (!t) return `Unknown view ${v}`; setView(t); window.scrollTo({ top: 0, behavior: 'smooth' }); return `Opened ${v}`; },
+          openView: (v) => { const m: Record<string, typeof view> = { moon: 'globe', map: 'map', terrain: 'orbit', mission: 'mission', surface: 'rover', dates: 'calendar' }; const t = m[v]; if (!t) return `Unknown view ${v}`; setView(t); window.scrollTo({ top: 0, behavior: 'smooth' }); return `Opened ${v}`; },
           setDate: (iso) => { const d = dateToDay(iso); if (!Number.isFinite(d) || d < 0) return 'Date out of range (2027-01-01 to 2028-12-31)'; set({ day: Math.min(d, N_DAYS - s.len) }); return `Date set to ${iso}`; },
         }}
       />
