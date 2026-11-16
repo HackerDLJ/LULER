@@ -293,7 +293,6 @@ export default function CesiumTerrain({ site, common, t, modelsBase, view, onVie
       const setView2 = (m: View) => {
         cam.lookAtTransform(C.Matrix4.IDENTITY); cam.frustum.fov = 60 * D2R;
         ctl.enableInputs = m === 'orbit'; ctl.minimumZoomDistance = 3; ctl.maximumZoomDistance = 120000;
-        ts.maximumScreenSpaceError = m === 'lander' ? 1 : m === 'descent' ? 1.5 : 3; // full Cesium Moon Terrain detail on the surface
         pinE.show = m !== 'descent' && !!pinE.position && pinE.show; homePole.show = m === 'lander' && Math.hypot(px, pn) > 20;
         if (m === 'orbit') { lookOverview(1.8); ov.style.display = 'none'; if (lm) lm.show = false; dust.show = exhaust.show = false; }
         if (m === 'lander') { pitch = -0.05; yaw = (site.sunAz[tRef.current] + 125) * D2R; px = -14 * Math.sin(yaw); pn = -14 * Math.cos(yaw); ov.style.display = 'none'; if (lm) { lm.show = true; lm.modelMatrix = C.Transforms.eastNorthUpToFixedFrame(worldAt(0, 0, 1.9)); lm.scale = lk; } dust.show = exhaust.show = false; cam.setView({ destination: worldAt(px, pn, 1.7), orientation: { heading: yaw, pitch, roll: 0 } }); }

@@ -229,8 +229,8 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
       </div>
     </>
   );
-  const VIEWS: [typeof view, string, string][] = [['globe', 'Moon', 'Pick a landing site on the 3D Moon'], ['orbit', 'Site', 'Terrain, slope and comparison'], ['lander', 'Surface', 'Stand there and drive around'], ['calendar', 'Dates', 'Best days to land'], ['team', 'Team', 'Team JATABELS']];
-  const activeTab = view === 'rover' ? 'lander' : view === 'map' || view === 'timeline' ? 'globe' : view === 'descent' || view === 'craft' || view === 'cesium' || view === 'mission' ? 'orbit' : view;
+  const VIEWS: [typeof view, string, string][] = [['globe', 'Moon', 'Pick a landing site on the 3D Moon'], ['orbit', 'Site', 'Terrain, slope and comparison'], ['rover', 'Surface', 'Stand there and drive around'], ['calendar', 'Dates', 'Best days to land'], ['team', 'Team', 'Team JATABELS']];
+  const activeTab = view === 'lander' ? 'rover' : view === 'map' || view === 'timeline' ? 'globe' : view === 'descent' || view === 'craft' || view === 'cesium' || view === 'mission' ? 'orbit' : view;
   const chrome = (
     <>
       <div className="brand" role="button" tabIndex={0} title="Back to the front page" onClick={onHome} onKeyDown={(e) => e.key === 'Enter' && onHome()} style={{ cursor: 'pointer' }}><b>LULER</b><span><ShinyText text="LUNAR LANDING SITE NAVIGATOR" color="#8d8c86" shineColor="#ffffff" speed={3.2} delay={2.5} /></span></div>
@@ -244,7 +244,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
         <div className="subtabs"><button type="button" className={view === 'globe' ? 'on' : ''} onClick={() => setView('globe')}>3D globe</button><button type="button" className={view === 'map' ? 'on' : ''} onClick={() => setView('map')}>Flat map + coordinates</button><button type="button" className={view === 'timeline' ? 'on' : ''} onClick={() => setView('timeline')}>Mission timeline</button></div>
       )}
       {(view === 'lander' || view === 'rover') && (
-        <div className="subtabs"><button type="button" className={view === 'lander' ? 'on' : ''} onClick={() => setView('lander')}>Walk the site (NASA terrain)</button><button type="button" className={view === 'rover' ? 'on' : ''} onClick={() => setView('rover')}>Rover simulation</button></div>
+        <div className="subtabs"><button type="button" className={view === 'rover' ? 'on' : ''} onClick={() => setView('rover')}>Rover simulation</button><button type="button" className={view === 'lander' ? 'on' : ''} onClick={() => setView('lander')}>Walk the site (NASA terrain)</button></div>
       )}
       {(view === 'orbit' || view === 'descent' || view === 'craft' || view === 'cesium' || view === 'mission') && (
         <div className="subtabs"><button type="button" className={view === 'orbit' ? 'on' : ''} onClick={() => setView('orbit')}>Terrain</button><button type="button" className={view === 'mission' || view === 'descent' ? 'on' : ''} onClick={() => setView('mission')}>Mission: launch → landing</button><button type="button" className={view === 'craft' ? 'on' : ''} onClick={() => setView('craft')}>Spacecraft</button></div>
