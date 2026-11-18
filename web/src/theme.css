@@ -542,3 +542,10 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 /* Team page: only the settings button in the top bar */
 .page-stage:has(.team-page) .pickers>:not(.hdr-icons){display:none!important}
 .page-stage:has(.team-page) .pickers .hdr-icons>:not([title="Settings"]){display:none!important}
+.app .mapstage .mapcv{overflow:hidden;border-radius:10px}
+.app .mapstage .mapcv canvas{touch-action:pan-y;cursor:grab}
+.app .mapstage .mapcv canvas:active{cursor:grabbing}
+.app .mapzoom{position:absolute;right:10px;top:10px;z-index:5;display:flex;align-items:center;gap:6px;line-height:1}
+.app .mapzoom button{all:unset;cursor:pointer;width:34px;height:34px;display:grid;place-items:center;border-radius:999px;font:600 17px var(--sans);color:#eaf1ff;background:rgba(14,20,38,.78);border:1px solid rgba(140,180,255,.28);backdrop-filter:blur(12px)}
+.app .mapzoom button:hover{background:rgba(60,100,200,.5)}
+.app .mapzoom span{padding:7px 12px;border-radius:999px;font:500 12px var(--sans);color:#cfd8ee;background:rgba(14,20,38,.7);pointer-events:none}
