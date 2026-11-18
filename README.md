@@ -159,7 +159,7 @@ Made for the NASA Space Apps Challenge 2026.
 
 ## Third-party code
 
-- **React Bits** FluidGlass (map magnifying glass) ModelViewer (spacecraft viewer, with @react-three/fiber and drei) Strands (AI orb), PillNav (main tabs) and TiltedCard (mission cards), MIT.
+- **React Bits** FluidGlass (map magnifying glass) ModelViewer (spacecraft viewer, with @react-three/fiber and drei) Strands (AI orb), PillNav (main tabs), TiltedCard (mission cards) and BorderGlow (AI chat box and button), MIT.
 - **LULER Rover** (Surface → Rover simulation): our rover survey built on the [REGOLITH](https://github.com/winchxyz/moon-rover) engine by winch (MIT licence, kept in `web/public/rover/LICENSE`). We changed the terrain to the real NASA LOLA elevation of the chosen site, and rewrote the missions, text and branding. Small rocks and craters are procedural detail.
 - **Regolith detail texture** (Walk the site): from "Moon Terrain" by abhayexe, CC-BY 4.0 (Sketchfab), tiled over the NASA terrain close to the camera.
 - **Spacecraft models (Sketchfab, credited in the app):** Chandrayaan-3 Vikram by akareactor (CC-BY 4.0), Chandrayaan-2 by tashtego (CC-BY 4.0), NASA SLS Block 1 Crew V4 by Clarence365 (CC-BY 4.0), Saturn V by Stanley Creative (CC-BY-ND 4.0, unmodified).

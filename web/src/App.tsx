@@ -41,6 +41,8 @@ import Heatmap from './Heatmap';
 import About from './About';
 import SpecularButton from './rb/SpecularButton.jsx';
 import PillNav from './rb/PillNav.jsx';
+import BorderGlow from './rb/BorderGlow.jsx';
+import './rb/BorderGlow.css';
 import './rb/PillNav.css';
 // PillNav renders its links through this, so the tabs stay buttons and never change the URL
 const TabLink = ({ href: _href, ...p }: { href?: string; [k: string]: unknown }) => <button type="button" role="tab" {...p} />;
@@ -229,7 +231,7 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
         <span>UTC · {hourToDate(start + scrub).toUTCString().slice(5, 16)}</span>
       </label>
       <div className="hdr-icons">
-        <button type="button" className={`hdr-ic ai${view === 'ai' ? ' on' : ''}`} title="LULER Intelligence (AI)" aria-label="Open LULER Intelligence" onClick={() => { setViewRaw('ai'); window.scrollTo({ top: 0 }); }}><span className="ai-dot" aria-hidden="true" />AI</button>
+        <BorderGlow className="ai-btn-glow" backgroundColor="#141c30" borderRadius={999} glowRadius={18} glowColor="222 90 78" colors={['#8b5cf6', '#3b6cff', '#7fd8ff']} edgeSensitivity={22} glowIntensity={1.1} coneSpread={25}><button type="button" className={`hdr-ic ai${view === 'ai' ? ' on' : ''}`} title="LULER Intelligence (AI)" aria-label="Open LULER Intelligence" onClick={() => { setViewRaw('ai'); window.scrollTo({ top: 0 }); }}><span className="ai-dot" aria-hidden="true" />AI</button></BorderGlow>
         <button type="button" className={`hdr-ic${view === 'settings' ? ' on' : ''}`} title="Settings" aria-label="Open settings" onClick={() => openSettings('general')}><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3.3h-4l-.4 2.6a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1a7.4 7.4 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7.4 7.4 0 0 0 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg></button>
       </div>
     </>

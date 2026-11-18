@@ -582,3 +582,10 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 .modes.pnav button.pill-nav__item{border-radius:999px!important;background:var(--pn-tile)!important;box-shadow:var(--pn-tile-rim)!important;color:var(--pn-strong)!important;font-family:inherit!important;font-size:var(--pn-font)!important;font-weight:500!important;text-transform:none!important;letter-spacing:-.005em!important;padding:0 var(--pn-x)!important;min-height:0!important;height:100%!important;border:0!important;transition:color .25s ease!important}
 .modes.pnav button.pill-nav__item::after{display:none!important}
 .modes.pnav .pill-nav__item[aria-current] .pill-nav__face{color:#fff}
+/* React Bits BorderGlow around the AI chat box and the AI button */
+.ai-input-glow{grid-area:input;align-self:end}
+.ai-input-glow .border-glow-inner{overflow:visible}
+.app .ai-input-glow .ai-input{background:transparent!important;border:0!important;grid-area:auto}
+.ai-btn-glow{display:inline-grid!important;border:0!important;box-shadow:none!important;background:transparent!important}
+.ai-btn-glow .border-glow-inner{overflow:visible}
+.ai-btn-glow::before{background:linear-gradient(#141c30 0 100%) padding-box,var(--gradient-one) border-box,var(--gradient-two) border-box,var(--gradient-three) border-box,var(--gradient-base) border-box!important}

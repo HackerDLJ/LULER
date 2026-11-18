@@ -7,6 +7,7 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 ## v7.19.0 · 2026-11-18
 - Main tabs use the React Bits PillNav (MIT): raised pills with a rolling fill on hover and a dot under the open tab.
 - Mission timeline: every mission card is a React Bits TiltedCard (MIT) that tilts toward the cursor with glare, a soft shadow and the title floating above the photo.
+- The AI chat box and the AI button get the React Bits BorderGlow (MIT): a blue and purple glow follows the cursor along the edge.
 
 ## v7.18.1 · 2026-11-18
 - LULER Intelligence: when a Gemini model has no free quota left, LULER tries the key's other models and keeps the first one that answers. Auto-pick now prefers stable Flash models over previews. Quota errors are shown as one short sentence.

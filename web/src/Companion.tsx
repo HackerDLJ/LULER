@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Strands from './rb/Strands.jsx';
+import BorderGlow from './rb/BorderGlow.jsx';
+import './rb/BorderGlow.css';
 import './rb/Strands.css';
 // blue and purple palette for the Strands orb (edge → core → deep)
 const ORB = ['#8b5cf6', '#a26bff', '#c4a1ff', '#eef1ff', '#7fd8ff', '#3b6cff', '#2b2a9e'];
@@ -291,11 +293,13 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
           <p className="ai-vstat" role="status">{voice === 'connecting' ? 'Connecting to Gemini Live…' : voice === 'speaking' ? 'LULER is speaking · just talk to interrupt' : voice === 'listening' ? 'Listening… ask about any site, date or score' : ''}</p>
           <button type="button" className="ai-vend" onClick={stopVoice} disabled={voice === 'off'}>End</button>
         </div>, document.body)}
+      <BorderGlow className="ai-input-glow" backgroundColor="#0e1321" borderRadius={999} glowRadius={30} glowColor="222 90 78" colors={['#8b5cf6', '#3b6cff', '#7fd8ff']} edgeSensitivity={22} glowIntensity={1.1} coneSpread={25}>
       <form className="ai-input" onSubmit={(e) => { e.preventDefault(); send(input); }}>
         <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={ready ? `Message LULER Intelligence about ${ctx.site.name}…` : hasKey ? (pickErr ? 'Choose a chat model in AI settings' : 'Picking a model for your key…') : 'Add your API key in AI settings to start'} aria-label="Message" />
         <button type="button" className={`ai-mic ${voice}`} onClick={startVoice} aria-label={voice === 'off' ? 'Talk to LULER (live voice)' : 'Stop voice'} title={voice === 'off' ? 'Talk (Gemini Live voice)' : 'Stop voice'}>{voice === 'off' ? <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1A7 7 0 0 0 19 12z"/></svg> : <i />}</button>
         <button type="submit" disabled={busy || !input.trim()} aria-label="Send">↑</button>
       </form>
+      </BorderGlow>
     </div>
   );
 }
