@@ -125,3 +125,7 @@
 .fx-rcard .fx-rgo{position:absolute;right:14px;top:14px;border-radius:999px;padding:7px 11px;background:#a9c4ff;color:#0a0f1c}
 .fx-rcard.on .tilted-card__rim{box-shadow:inset 0 0 0 1.5px rgba(150,190,255,.85),inset 0 1px 0 rgba(255,255,255,.25)}
 .fx-rcard.on .tilted-card__shadow{background:rgba(70,110,255,.45)}
+/* only the front card tilts; side cards stay flat so they never poke through the front one */
+.fx-rcard{transform-style:flat}
+.fx-rcard .tilted-card{isolation:isolate}
+.fx-rcard:not(.on) .tilted-card{pointer-events:none}

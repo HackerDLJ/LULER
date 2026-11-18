@@ -69,9 +69,11 @@ export function DepthImage({ src, normal, height = 340, label }: { src: string; 
 
 /* ---------- 2. Depth Ribbon: cards winding through 3D space (missions timeline) ---------- */
 export interface RibbonItem { id: string; img?: string; title: string; sub: string; tag?: string; color?: string }
+let tapped = 0; // last tap handled by the ribbon, so the following click does not act twice
 export function DepthRibbon({ items, onPick }: { items: RibbonItem[]; onPick?: (id: string) => void }) {
   const host = useRef<HTMLDivElement>(null); const cards = useRef<(HTMLButtonElement | null)[]>([]);
   const [focus, setFocus] = useState(0);
+  const pickRef = useRef(onPick); pickRef.current = onPick;
   useEffect(() => {
     const el = host.current; if (!el) return;
     let pos = 0, target = 0, raf = 0, alive = true, dragX: number | null = null, lastF = -1;
@@ -93,9 +95,19 @@ export function DepthRibbon({ items, onPick }: { items: RibbonItem[]; onPick?: (
     const kick = () => { if (!raf) raf = requestAnimationFrame(lay); };
     const go = (v: number) => { target = clamp(v, 0, n - 1); kick(); };
     const wh = (e: WheelEvent) => { e.preventDefault(); go(target + (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) / 160); };
-    const pd = (e: PointerEvent) => { dragX = e.clientX; };
-    const pm = (e: PointerEvent) => { if (dragX === null) return; go(target - (e.clientX - dragX) / 180); dragX = e.clientX; };
-    const pu = () => { dragX = null; go(Math.round(target)); };
+    let downX = 0, downY = 0, moved = false;
+    const pd = (e: PointerEvent) => { dragX = e.clientX; downX = e.clientX; downY = e.clientY; moved = false; };
+    const pm = (e: PointerEvent) => { if (dragX === null) return; if (!moved && Math.hypot(e.clientX - downX, e.clientY - downY) < 6) return; moved = true; go(target - (e.clientX - dragX) / 180); dragX = e.clientX; };
+    const pu = (e: PointerEvent) => {
+      const wasDown = dragX !== null; dragX = null;
+      if (wasDown && !moved) { // a tap: pick the card under the finger or cursor (3D cards can miss the normal click)
+        // work out the card from the tap position (cards sit min(260, 30% width) apart around the centre)
+        const r = el.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height * 0.46);
+        const idx = Math.abs(dy) < 200 ? clamp(Math.round(target + dx / Math.min(260, r.width * 0.3)), 0, n - 1) : -1;
+        if (idx >= 0) { tapped = performance.now(); if (idx === clamp(Math.round(target), 0, n - 1)) pickRef.current?.(items[idx].id); else go(idx); return; }
+      }
+      go(Math.round(target));
+    };
     const kd = (e: KeyboardEvent) => { if (e.key === 'ArrowRight') go(Math.round(target) + 1); if (e.key === 'ArrowLeft') go(Math.round(target) - 1); };
     el.addEventListener('wheel', wh, { passive: false }); el.addEventListener('pointerdown', pd); window.addEventListener('pointermove', pm); window.addEventListener('pointerup', pu); el.addEventListener('keydown', kd);
     (el as any).__go = go; kick();
@@ -106,8 +118,8 @@ export function DepthRibbon({ items, onPick }: { items: RibbonItem[]; onPick?: (
     <div className="fx-ribbon" ref={host} tabIndex={0} aria-label="Mission timeline. Scroll, drag or use the arrow keys.">
       <div className="fx-ribbon-stage">
         {items.map((it, i) => (
-          <button key={it.id} type="button" ref={(r) => { cards.current[i] = r; }} className={`fx-rcard${i === focus ? ' on' : ''}`} onClick={() => (i === focus ? onPick?.(it.id) : go(i))}>
-            <TiltedCard imageSrc={it.img} altText={it.title} captionText={i === focus && onPick ? 'Open site ▸' : 'Bring to front'} containerWidth={300} containerHeight={340} imageWidth={300} imageHeight={340} radius={18} rotateAmplitude={13} scaleOnHover={1.04} glare={0.55} glareColor="#d6e4ff" shadow={0.55} parallax={1} intro={false} gyroscope={false}>
+          <button key={it.id} type="button" ref={(r) => { cards.current[i] = r; }} className={`fx-rcard${i === focus ? ' on' : ''}`} onClick={() => { if (performance.now() - tapped < 400) return; if (i === focus) onPick?.(it.id); else go(i); }}>
+            <TiltedCard imageSrc={it.img} altText={it.title} captionText={onPick ? 'Open site ▸' : ''} showTooltip={i === focus} containerWidth={300} containerHeight={340} imageWidth={300} imageHeight={340} radius={18} rotateAmplitude={i === focus ? 12 : 0} scaleOnHover={i === focus ? 1.02 : 1} glare={i === focus ? 0.55 : 0} glareColor="#d6e4ff" shadow={i === focus ? 0.55 : 0} parallax={i === focus ? 1 : 0} intro={false} gyroscope={false}>
               <TiltedCardLayer depth={0}><span className="fx-rshade" /></TiltedCardLayer>
               <TiltedCardLayer depth={34}>
                 <span className="fx-rtext"><span className="fx-rmeta"><i style={{ background: it.color }} />{it.tag}</span><b>{it.title}</b><em>{it.sub}</em></span>

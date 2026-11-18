@@ -604,7 +604,7 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 .app .nm-chip .nm-part i{font-size:10px}
 body.ui-hide .app .stage .nm-chip{opacity:0;filter:blur(10px);pointer-events:none}
 .app .stage .nm-chip{transition:opacity .45s,filter .45s,border-color .2s,background .2s}
-@media (max-width:1200px){.app .nm-chip .nm-txt{display:none}}
+@media (max-width:1200px){.app .nm-chip .nm-txt em{display:none}}
 @media (max-width:900px){.app .nm-chip{top:116px;bottom:auto;left:auto;right:12px;padding:6px 12px 6px 9px}.app .stage:has(.subtabs) .nm-chip{top:168px}}
 .page-stage:has(.team-page) .nm-chip{display:none}
 .nm-stage{position:fixed;inset:0;z-index:9000;overflow-y:auto;overscroll-behavior:contain;background:radial-gradient(70% 50% at 50% 0%,rgba(60,90,200,.25),rgba(3,5,14,.82) 70%);-webkit-backdrop-filter:blur(24px) saturate(1.2);backdrop-filter:blur(24px) saturate(1.2);color:#e8ecf8;font-family:var(--sans,system-ui,-apple-system,sans-serif);animation:vIn .55s ease both}
@@ -655,3 +655,28 @@ body.ui-hide .app .stage .nm-chip{opacity:0;filter:blur(10px);pointer-events:non
   .subtabs.jr .jelly-radio{--jr-px:10px!important;--jr-font:12px!important;--jr-gap:2px!important}
   .app .pickers .hdr-clock{display:none!important}
 }
+/* Prompt bar tidy-up: the site-wide "svg{width:100%}" rule blew the icons up; give every icon its own size */
+.prompt-bar svg,.sling-button svg{display:inline-block;flex:none}
+.prompt-bar__tool svg{width:17px!important;height:17px!important}
+.prompt-bar__pick svg{width:12px!important;height:12px!important}
+.prompt-bar__row-icon svg{width:15px!important;height:15px!important}
+.prompt-bar__row-check svg{width:13px!important;height:13px!important}
+.prompt-bar__effort-help svg{width:14px!important;height:14px!important}
+.prompt-bar__chip svg{width:12px!important;height:12px!important}
+.prompt-bar__chip-x svg{width:10px!important;height:10px!important}
+.prompt-bar .prompt-bar__glyph{width:16px!important;height:16px!important}
+.sling-button__icon svg{width:14px!important;height:14px!important}
+.sling-button__fx{width:var(--sl-svg)!important;height:var(--sl-svg)!important}
+.ai-input-glow .prompt-bar__field{padding:12px 12px 10px 16px;gap:10px}
+.ai-input-glow .prompt-bar__input{font-size:14.5px}
+.ai-input-glow .prompt-bar__bar{gap:6px}
+.ai-input-glow .prompt-bar__tool{width:32px;height:32px;border-radius:999px}
+.ai-input-glow .prompt-bar__pick{height:30px;padding:0 11px;border-radius:999px;white-space:nowrap;max-width:200px;background:rgba(150,185,255,.08)}
+.ai-input-glow .prompt-bar__pick>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ai-input-glow .prompt-bar__menu{max-height:min(320px,46vh);overflow-y:auto}
+.ai-input-glow .prompt-bar__menu[data-kind='model']{width:260px}
+.ai-input-glow .prompt-bar__row-name{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.nm-go{font-size:18px;line-height:1;color:#a9c4ff;margin-left:2px}
+.app .nm-chip .nm-txt b{max-width:190px}
+@media (max-width:900px){.app .nm-chip .nm-txt b{max-width:150px}}

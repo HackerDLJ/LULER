@@ -39,7 +39,7 @@ export default function NextMission() {
   const [open, setOpen] = useState(false);
   const [shown, setShown] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
-  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), open ? 1000 : 60000); return () => clearInterval(t); }, [open]); // the clocks only tick while the page is open
   useEffect(() => { if (open) { setShown(true); return; } const t = setTimeout(() => setShown(false), 650); return () => clearTimeout(t); }, [open]);
   useEffect(() => { if (!open) return; const k = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [open]);
   const up = MISSIONS.filter((m) => at(m) > now).sort((a, b) => at(a) - at(b));
@@ -50,7 +50,7 @@ export default function NextMission() {
       <button type="button" className="nm-chip" onClick={() => setOpen(true)} title="Upcoming Moon missions" aria-label={`Next Moon mission: ${next.name}, ${next.when}. Open details.`}>
         <span className="nm-dot" aria-hidden="true" />
         <span className="nm-txt"><em>Next to the Moon</em><b>{next.name}</b></span>
-        <Clock ms={at(next) - now} size={15} />
+        <span className="nm-go" aria-hidden="true">›</span>
       </button>
       {shown && createPortal(
         <div className={`nm-stage${open ? '' : ' out'}`} ref={scroller} role="dialog" aria-modal="true" aria-label="Upcoming Moon missions">

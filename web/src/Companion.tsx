@@ -5,7 +5,7 @@ import BorderGlow from './rb/BorderGlow.jsx';
 import PromptBar from './rb/PromptBar.jsx';
 import './rb/PromptBar.css';
 import './rb/SlingButton.css';
-import { AiVoiceIcon, Calendar03Icon, Location01Icon, StarIcon } from '@hugeicons/core-free-icons';
+import { Calendar03Icon, Location01Icon, StarIcon } from '@hugeicons/core-free-icons';
 import './rb/BorderGlow.css';
 import './rb/Strands.css';
 // blue and purple palette for the Strands orb (edge → core → deep)
@@ -283,19 +283,9 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
     { key: 'site', name: ctx.site.name, description: 'The selected site', icon: Location01Icon },
     ...(top && top.name !== ctx.site.name ? [{ key: 'best', name: top.name, description: `Best score now${top.score != null ? ` (${top.score})` : ''}`, icon: StarIcon }] : []),
     { key: 'date', name: ctx.date, description: 'The selected date', icon: Calendar03Icon },
-    { key: 'voice', name: 'Talk live', description: 'Gemini Live voice conversation', icon: AiVoiceIcon, attach: true },
   ];
   const short = (m: string) => m.replace(/^models\//, '');
   const MODELS = (chatModels.length ? chatModels : st.aiModel ? [st.aiModel] : []).map((m) => ({ key: m, name: short(m), tag: /pro/i.test(m) ? 'Pro' : /lite/i.test(m) ? 'Lite' : /flash/i.test(m) ? 'Fast' : '' }));
-  // the microphone in the prompt bar types what you say (browser speech recognition)
-  const dictate = () => new Promise<string>((res, rej) => {
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) { add({ role: 'error', text: 'This browser cannot type from speech. Use “Talk live” in the + menu, or Chrome, Edge or Safari.' }); rej(new Error('no speech')); return; }
-    const r = new SR(); r.lang = navigator.language || 'en-US'; r.interimResults = false; r.maxAlternatives = 1;
-    r.onresult = (e: any) => res(String(e.results?.[0]?.[0]?.transcript ?? ''));
-    r.onerror = (e: any) => rej(new Error(e.error)); r.onend = () => res('');
-    r.start();
-  });
   const suggestions = [
     `Is ${ctx.site.name} a safe place to land?`,
     'Which site scores best for this window, and why?',
@@ -342,14 +332,13 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
       <BorderGlow className="ai-input-glow" backgroundColor="#0e1321" borderRadius={20} glowRadius={30} glowColor="222 90 78" colors={['#8b5cf6', '#3b6cff', '#7fd8ff']} edgeSensitivity={22} glowIntensity={1.1} coneSpread={25}>
         <PromptBar key={MODELS.map((m) => m.key).join('|') + st.aiModel}
           className="ai-prompt"
-          placeholder={ready ? `Message LULER Intelligence about ${ctx.site.name}…  (@ for context, / for commands)` : hasKey ? (pickErr ? 'Choose a chat model in AI settings' : 'Picking a model for your key…') : 'Add your API key in AI settings to start'}
+          placeholder={ready ? `Ask about ${ctx.site.name}…   @ adds context · / for commands` : hasKey ? (pickErr ? 'Choose a chat model in AI settings' : 'Picking a model for your key…') : 'Add your API key in AI settings to start'}
           sources={SOURCES} commands={COMMANDS} models={MODELS} defaultModel={st.aiModel}
           efforts={EFFORTS} defaultEffort={effortRef.current} onEffortChange={(e: string) => { effortRef.current = e; }}
           busy={busy}
           onSend={(text: string, o: { model?: { key: string } }) => { if (o?.model?.key && o.model.key !== st.aiModel) { mdl.current = o.model.key; setSettings({ aiModel: o.model.key }); } send(expand(text)); }}
           onStop={() => ctrl.current?.abort()}
-          onAttach={() => { startVoice(); return undefined; }}
-          onDictate={dictate}
+          onDictate={() => { startVoice(); return Promise.resolve(''); }}
           background="#0e1321" color="#eef2ff" menuBackground="#141c30" sparkColor="#8b5cf6" sparkBoost={1}
           width={2000} radius={20} maxRows={6}
           sling={{ size: 32, padColor: '#eef2ff', iconColor: '#0e1321', accentColor: '#a9c4ff', wellColor: 'rgba(120,150,255,.12)', bandColor: '#5b6b95' }} />
