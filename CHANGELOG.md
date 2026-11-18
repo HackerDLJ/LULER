@@ -4,6 +4,9 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.16.0 · 2026-11-18
+- Magnifying glass on the flat map: a liquid-glass lens (React Bits FluidGlass, MIT) follows the cursor over the map and bends the real map image, including the sharper LRO tiles when zoomed. 🔍 turns it on or off.
+
 ## v7.15.0 · 2026-11-18
 - Flat map zoom and pan: pinch, ⌘/Ctrl + scroll or the +/− buttons zoom around the cursor (up to 32×), drag pans, ⤢ shows the whole Moon. Sharper NASA Trek LRO WAC tiles load for the visible area when zoomed. Dragging no longer drops a point by accident.
 
