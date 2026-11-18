@@ -553,3 +553,5 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 .app .mapzoom button.on{background:rgba(70,120,230,.6);border-color:rgba(160,200,255,.6)}
 .craft-mv{position:absolute;inset:0;z-index:1}
 .craft-mv canvas{touch-action:pan-y}
+.ai-strands{width:min(240px,56vw);aspect-ratio:1;margin:0 0 6px -18px}
+.ai-voice-orb{grid-area:log;place-self:center;width:min(380px,70vw);aspect-ratio:1;z-index:2;pointer-events:none;filter:drop-shadow(0 20px 60px rgba(90,70,255,.35))}

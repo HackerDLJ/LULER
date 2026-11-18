@@ -1,4 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Strands from './rb/Strands.jsx';
+import './rb/Strands.css';
+// blue and purple palette for the Strands orb (edge → core → deep)
+const ORB = ['#8b5cf6', '#a26bff', '#c4a1ff', '#eef1ff', '#7fd8ff', '#3b6cff', '#2b2a9e'];
 import { PROVIDERS, useSettings } from './settings';
 
 /* LULER Intelligence: full-page AI companion. Works with Anthropic or any OpenAI-compatible server
@@ -129,6 +133,12 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
 
   /* ---- Live voice: Gemini Live API (bidirectional WebSocket audio) ---- */
   const [voice, setVoice] = useState<'off' | 'connecting' | 'listening' | 'speaking'>('off');
+  // live loudness for the orb: LULER's voice while it speaks, your microphone while it listens
+  const getLevel = useCallback(() => {
+    const L: any = live.current; if (!L) return 0;
+    if (L.srcs?.length && L.an) { const a: Float32Array = L.abuf || (L.abuf = new Float32Array(L.an.fftSize)); L.an.getFloatTimeDomainData(a); let q = 0; for (let i = 0; i < a.length; i++) q += a[i] * a[i]; return Math.min(1, Math.sqrt(q / a.length) * 5); }
+    return Math.min(1, (L.mic || 0) * 7);
+  }, []);
   const live = useRef<any>(null);
   useEffect(() => () => stopVoice(), []);
   const b64 = (u8: Uint8Array) => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode(...u8.subarray(i, i + 0x8000)); return btoa(s); };
@@ -144,7 +154,9 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
   function playPcm(L: any, data: string) {
     const bin = atob(data); const n = bin.length >> 1; const buf = L.out.createBuffer(1, n, 24000); const ch = buf.getChannelData(0);
     for (let i = 0; i < n; i++) { const v = bin.charCodeAt(2 * i) | (bin.charCodeAt(2 * i + 1) << 8); ch[i] = (v >= 32768 ? v - 65536 : v) / 32768; }
-    const src = L.out.createBufferSource(); src.buffer = buf; src.connect(L.out.destination);
+    const src = L.out.createBufferSource(); src.buffer = buf;
+    if (!L.an) { L.an = L.out.createAnalyser(); L.an.fftSize = 512; L.an.connect(L.out.destination); }
+    src.connect(L.an);
     const at = Math.max(L.out.currentTime + 0.02, L.t); src.start(at); L.t = at + buf.duration; L.srcs.push(src); setVoice('speaking');
     src.onended = () => { L.srcs = L.srcs.filter((x: any) => x !== src); if (!L.srcs.length && live.current === L) setVoice('listening'); };
   }
@@ -172,7 +184,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
           const ratio = L.ac.sampleRate / 16000;
           L.proc.onaudioprocess = (e: AudioProcessingEvent) => {
             if (ws.readyState !== 1) return;
-            const f = e.inputBuffer.getChannelData(0); const n = Math.floor(f.length / ratio); const pcm = new Int16Array(n);
+            const f = e.inputBuffer.getChannelData(0); { let q = 0; for (let i = 0; i < f.length; i += 4) q += f[i] * f[i]; L.mic = (L.mic || 0) * 0.5 + Math.sqrt(q / (f.length / 4)) * 0.5; } const n = Math.floor(f.length / ratio); const pcm = new Int16Array(n);
             for (let i = 0; i < n; i++) { let acc = 0, c = 0; for (let k = Math.floor(i * ratio); k < Math.floor((i + 1) * ratio); k++) { acc += f[k]; c++; } const v = Math.max(-1, Math.min(1, acc / (c || 1))); pcm[i] = v < 0 ? v * 32768 : v * 32767; }
             ws.send(JSON.stringify({ realtimeInput: { audio: { data: b64(new Uint8Array(pcm.buffer)), mimeType: 'audio/pcm;rate=16000' } } }));
           };
@@ -231,7 +243,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
           <div className="ai-empty">
             {!ready ? (
               <div className="ai-setup"><h2>Connect a model to start</h2><p>Use Google Gemini for free (key from Google AI Studio, also enables live voice), or Anthropic, OpenAI, a local Ollama or any OpenAI-compatible server. Add the key and fetch the models.</p><button type="button" className="ai-cta" onClick={onOpenSettings}>Open AI settings</button></div>
-            ) : (<><h2>Ask anything about landing on the Moon</h2><p>I can read every site, date and score in LULER, and I can move the app for you.</p></>)}
+            ) : (<><div className="ai-strands"><Strands colors={ORB} energy={busy ? 0.95 : 0.55} listening={busy} glassSize={1.05} /></div><h2>Ask anything about landing on the Moon</h2><p>I can read every site, date and score in LULER, and I can move the app for you.</p></>)}
             <div className="ai-sugs">{suggestions.map((s) => <button type="button" key={s} onClick={() => send(s)} disabled={!ready}>{s}</button>)}</div>
           </div>
         )}
@@ -239,6 +251,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
         {busy && <div className="ai-msg assistant ai-typing"><i /><i /><i /></div>}
         <div ref={endRef} />
       </div>
+      {voice !== 'off' && <div className={`ai-voice-orb ${voice}`} aria-hidden="true"><Strands colors={ORB} energy={0.5} listening={voice === 'connecting'} getLevel={voice === 'connecting' ? undefined : getLevel} glassSize={1.1} /></div>}
       {voice !== 'off' && <div className={`ai-voice ${voice}`} role="status"><span className="ai-wave"><i /><i /><i /><i /><i /></span>{voice === 'connecting' ? 'Connecting to Gemini Live…' : voice === 'speaking' ? 'LULER is speaking… (just talk to interrupt)' : 'Listening… ask about any site, date or score'}<button type="button" onClick={stopVoice}>End</button></div>}
       <form className="ai-input" onSubmit={(e) => { e.preventDefault(); send(input); }}>
         <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={ready ? `Message LULER Intelligence about ${ctx.site.name}…` : 'Connect a model in AI settings to start'} aria-label="Message" />
