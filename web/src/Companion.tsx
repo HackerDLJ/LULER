@@ -45,14 +45,15 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
   const ctx = getContext();
   const hasKey = !PROVIDERS[st.aiProvider].keyNeeded || !!st.aiKey.trim();
   // a key but no chat model yet: pick one for the key automatically so typing works straight away
+  const rankModels = (list: string[]) => list.filter((m) => !/(image|tts|live|audio|embed|vision|learnlm|aqa)/i.test(m)).map((m, i) => ({ m, r: (/flash/i.test(m) ? 0 : 2) + (/preview|exp/i.test(m) ? 1 : 0) + (/lite/i.test(m) ? 0.5 : 0) + i * 1e-4 })).sort((a, b) => a.r - b.r).map((x) => x.m);
+  const isQuota = (m: string) => /quota|RESOURCE_EXHAUSTED|rate limit|limit: 0|HTTP 429/i.test(m);
   const picking = useRef('');
   const [pickErr, setPickErr] = useState('');
   useEffect(() => {
     if (st.aiModel || !hasKey) return;
     const k = st.aiProvider + st.aiBaseUrl + st.aiKey; if (picking.current === k) return; picking.current = k; setPickErr('');
     fetchModels(st.aiProvider, st.aiBaseUrl, st.aiKey.trim()).then(({ chat }) => {
-      const ok = (m: string) => !/(lite|image|tts|live|audio|embed|vision|learnlm|aqa)/i.test(m);
-      const pick = chat.find((m) => /flash/i.test(m) && ok(m)) || chat.find(ok) || chat[0];
+      const pick = rankModels(chat)[0] || chat[0];
       if (pick) setSettings({ aiModel: pick }); else setPickErr('No chat models are available for this key.');
     }).catch((e) => setPickErr((e as Error).message));
   }, [st.aiModel, st.aiProvider, st.aiBaseUrl, st.aiKey, hasKey]);
@@ -87,9 +88,9 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
     }
   }
 
-  async function googleTurn() {
+  async function googleTurn(model = st.aiModel) {
     for (let round = 0; round < 5; round++) {
-      const r = await fetch(`${trim(st.aiBaseUrl)}/models/${st.aiModel}:generateContent?key=${encodeURIComponent(st.aiKey.trim())}`, {
+      const r = await fetch(`${trim(st.aiBaseUrl)}/models/${model}:generateContent?key=${encodeURIComponent(st.aiKey.trim())}`, {
         method: 'POST', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM(getContext()) }] }, contents: hist.current, tools: [{ functionDeclarations: TOOLS.map((t) => ({ name: t.name, description: t.description, parameters: t.params })) }] }),
       });
@@ -136,7 +137,22 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
     setInput(''); add({ role: 'user', text: q });
     hist.current.push(st.aiProvider === 'google' ? { role: 'user', parts: [{ text: q }] } : { role: 'user', content: q });
     setBusy(true);
-    try { await (st.aiProvider === 'anthropic' ? anthropicTurn() : st.aiProvider === 'google' ? googleTurn() : openaiTurn()); }
+    try {
+      if (st.aiProvider === 'google') {
+        try { await googleTurn(); }
+        catch (e) {
+          if (!isQuota((e as Error).message)) throw e;
+          // this model has no free quota left: try the key's other models and keep the first that answers
+          const { chat } = await fetchModels('google', st.aiBaseUrl, st.aiKey.trim());
+          let done = false;
+          for (const m of rankModels(chat).filter((x) => x !== st.aiModel).slice(0, 6)) {
+            try { await googleTurn(m); setSettings({ aiModel: m }); add({ role: 'tool', text: `Switched to ${m} (the previous model had no free quota left)` }); done = true; break; }
+            catch (e2) { if (!isQuota((e2 as Error).message)) throw e2; }
+          }
+          if (!done) { const w = /retry in ([\d.hms]+)/i.exec((e as Error).message)?.[1]; throw new Error(`The free Gemini quota for this key is used up on every model I tried.${w ? ` Google says to retry in ${w.replace(/\.\d+s$/, 's')}.` : ''} You can wait, use another key, or turn on billing in Google AI Studio.`); }
+        }
+      } else await (st.aiProvider === 'anthropic' ? anthropicTurn() : openaiTurn());
+    }
     catch (e) {
       const m = (e as Error).message;
       add({ role: 'error', text: /Failed to fetch|NetworkError|Load failed/i.test(m) ? `Could not reach ${st.aiBaseUrl}. Is the server running and allowing browser requests (CORS)?` : m });
