@@ -62,8 +62,6 @@ export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPic
   const glass = useRef<{ refresh: () => void } | null>(null);
   const [mag, setMag] = useState(true);
   const glassSrc = useCallback(() => cv.current, []);
-  const [glassTune, setGlassTune] = useState<Record<string, number>>({});
-  useEffect(() => { (window as unknown as { luGlass: (o: Record<string, number>) => void }).luGlass = (o) => setGlassTune(o); }, []);
   const mapProbe = useCallback((x: number, y: number): DraftProbe | null => { const c = cv.current; if (!c) return null; const w = c.clientWidth, h = c.clientHeight; if (x < 0 || y < 0 || x > w || y > h) return null; const v = vwRef.current; const mx = v.x0 + ((x / w) * W) / v.z, my = v.y0 + ((y / h) * H) / v.z; return { lat: 90 - (my / H) * 180, lon: (mx / W) * 360 - 180, extra: v.z > 1 ? `LROC WAC mosaic · zoom ${v.z.toFixed(1)}×` : 'LROC WAC mosaic' }; }, []);
 
   useEffect(() => {
@@ -202,7 +200,7 @@ export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPic
         </div>
         <div className="mapcv">
         <DraftingCursor probe={mapProbe} distance={hav} hint="Click to analyse · shift-drag to measure" />
-        {mag && <FluidGlass className="mapglass" source={glassSrc} apiRef={glass} onlyGlass hideOutside text="" shape="lens" size={230} magnify={2.5} refraction={0.8} dispersion={0.1} reflection={0.45} shadow={0} elevation={0.35} interaction="follow" smoothness={0} wobble={0.15} spin={0} idle={false} intro={false} morphOnClick={false} maxDevicePixelRatio={2} {...glassTune} />}
+        {mag && <FluidGlass className="mapglass" source={glassSrc} apiRef={glass} onlyGlass hideOutside text="" shape="lens" size={230} magnify={2.5} refraction={0.8} dispersion={0.1} reflection={0.45} shadow={0} elevation={0.35} interaction="follow" smoothness={0} wobble={0.15} spin={0} idle={false} intro={false} morphOnClick={false} maxDevicePixelRatio={2} />}
         <div className="map-pins" ref={pinsRef}>
           {sites.map((st, i) => { const [x, y] = xy(st.lat, st.lon); return (
             <button key={st.id} type="button" className={`mpin ${st.year !== null ? 'landed' : 'cand'}${i === selected ? ' sel' : ''}`} style={{ left: `${((x - vw.x0) * vw.z / W) * 100}%`, top: `${((y - vw.y0) * vw.z / H) * 100}%`, display: (x - vw.x0) * vw.z < 0 || (x - vw.x0) * vw.z > W || (y - vw.y0) * vw.z < 0 || (y - vw.y0) * vw.z > H ? 'none' : undefined, ['--c' as string]: GROUP_COLOR[st.group] ?? '#fff' }} onClick={() => onPickSite(i)} title={`${st.name} · ${st.mission}`} aria-label={st.name}>
