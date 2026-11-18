@@ -590,3 +590,8 @@ kbd{display:inline-block;min-width:20px;text-align:center;padding:2px 6px;border
   .panel-foot{padding:10px 14px;gap:6px;flex-wrap:wrap}
   .panel-foot .btn{padding:9px 12px;font-size:10px}
 }
+/* LULER: when a menu is taller than the frame, scroll it instead of clipping the title */
+.overlay{align-items:flex-start;overflow-y:auto;overscroll-behavior:contain}
+.overlay>*{margin-block:auto}
+.overlay::after{position:fixed}
+.title.big{font-size:clamp(40px,5.2vw,72px)}
