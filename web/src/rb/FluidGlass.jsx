@@ -149,6 +149,7 @@ uniform sampler2D uShadowMap;
 uniform vec4 uShadowBox;
 uniform vec2 uShadowSize;
 uniform float uOnlyGlass;
+uniform float uMagnify;
 out vec4 fragColor;
 
 float shapeA(vec3 p) ${SDF[a]}
@@ -179,6 +180,7 @@ vec3 normalAt(vec3 w) {
 }
 
 vec4 content(vec2 w, vec2 gx, vec2 gy) {
+  if (uMagnify > 1.0) { w = uCenter.xy + (w - uCenter.xy) / uMagnify; gx /= uMagnify; gy /= uMagnify; }
   vec2 uv = vec2(w.x, uView.y - w.y) / uView;
   vec2 dx = vec2(gx.x, -gx.y) / uView;
   vec2 dy = vec2(gy.x, -gy.y) / uView;
@@ -584,7 +586,8 @@ const FluidGlass = ({
   source,
   apiRef,
   onlyGlass = false,
-  hideOutside = false
+  hideOutside = false,
+  magnify = 1
 }) => {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
@@ -625,7 +628,8 @@ const FluidGlass = ({
     maxRatio: clamp(maxDevicePixelRatio, 0.5, 3),
     source,
     onlyGlass,
-    hideOutside
+    hideOutside,
+    magnify: Math.max(1, magnify)
   };
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
@@ -1227,6 +1231,7 @@ const FluidGlass = ({
       gl.uniform3f(u.uLight, light[0] / length, light[1] / length, light[2] / length);
       gl.uniform1f(u.uPresence, presence);
       gl.uniform1f(u.uOnlyGlass, s.onlyGlass ? 1 : 0);
+      gl.uniform1f(u.uMagnify, s.magnify);
       const footprint = bound * 1.6 * (SHADOW_SIZE / (SHADOW_SIZE - 6)) + 1;
       const footX = cx + (light[0] / light[2]) * height;
       const footY = cy + (light[1] / light[2]) * height;

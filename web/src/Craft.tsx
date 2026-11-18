@@ -8,6 +8,9 @@ import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js';
 import type { Site } from './data';
 import { decodeB64 } from './data';
 import { FACTS } from './events';
+import ModelViewer from './rb/ModelViewer.jsx';
+// .glb models shown in the React Bits ModelViewer; the Lunar Module, LRO, Orion (STL) and the Apollo stack keep the custom viewer
+const MV = new Set<string>(['llcd', 'vikram', 'chandrayaan2', 'sls', 'saturnv_full']);
 
 interface Props { site: Site; base: string; chrome?: ReactNode }
 type Which = 'lm' | 'lro' | 'llcd' | 'orion' | 'stack' | 'vikram' | 'chandrayaan2' | 'sls' | 'saturnv_full';
@@ -104,7 +107,7 @@ export default function Craft({ site, base, chrome }: Props) {
       setState(''); cam.position.set(15, 12, 28); controls.target.set(0, 11, 0); controls.minDistance = 6; controls.maxDistance = 90; cam.far = 600; cam.updateProjectionMatrix();
     }
     setState('Loading NASA 3D model…');
-    const mp = which === 'stack' ? new Promise<THREE.Object3D>(() => {}) : which === 'llcd' || SKETCHFAB.has(which) ? new Promise<THREE.Object3D>((res, rej) => new GLTFLoader().load(`${base}${which}.glb`, (g) => res(g.scene), undefined, rej)) : which === 'orion' ? new Promise<THREE.Object3D>((res, rej) => new STLLoader().load(`${base}orion.stl`, (geo) => { geo.computeVertexNormals(); res(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xd9dde6, metalness: 0.45, roughness: 0.4 }))); }, undefined, rej)) : loadGlb(`${base}${which}.glb.json`);
+    const mp = MV.has(which) ? new Promise<THREE.Object3D>(() => { setState(''); }) : which === 'stack' ? new Promise<THREE.Object3D>(() => {}) : which === 'llcd' || SKETCHFAB.has(which) ? new Promise<THREE.Object3D>((res, rej) => new GLTFLoader().load(`${base}${which}.glb`, (g) => res(g.scene), undefined, rej)) : which === 'orion' ? new Promise<THREE.Object3D>((res, rej) => new STLLoader().load(`${base}orion.stl`, (geo) => { geo.computeVertexNormals(); res(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xd9dde6, metalness: 0.45, roughness: 0.4 }))); }, undefined, rej)) : loadGlb(`${base}${which}.glb.json`);
     mp.then((m) => {
       if (!live) return;
       const box = new THREE.Box3().setFromObject(m);
@@ -128,6 +131,7 @@ export default function Craft({ site, base, chrome }: Props) {
   return (
     <div className="stage">
       <div ref={host} className="gl" />
+      {MV.has(which) && <div className="craft-mv"><ModelViewer key={which} url={`${base}${which}.glb`} width="100%" height="100%" environment="studio" environmentIntensity={0.9} exposure={1.1} autoRotate autoRotateSpeed={0.35} fit={which === 'sls' || which === 'saturnv_full' ? 0.92 : 0.78} minZoom={0.6} maxZoom={4} hoverTilt={0.12} float={0.25} shadow={false} tilt={which === 'sls' || which === 'saturnv_full' ? 4 : 12} /></div>}
       {chrome}
       {state && <p className="stage-msg">{state}</p>}
       <div className="hud-bottom">
@@ -145,7 +149,7 @@ export default function Craft({ site, base, chrome }: Props) {
           </div>
           {which === 'stack' && (<div className="simctl"><button type="button" onClick={() => setE(0)}>Assemble</button><input type="range" min={0} max={1} step={0.01} value={exp} onChange={(e) => setE(+e.target.value)} aria-label="Disassemble" style={{ flex: 1, minWidth: 160 }} /><button type="button" onClick={() => setE(1)}>Disassemble</button></div>)}
           <h2>{which === 'lm' && f && hasLm ? f.craft : MODEL[which].title}</h2>
-          <p className="meta">3D model: {MODEL[which].credit} · drag to rotate · scroll to zoom</p>
+          <p className="meta">3D model: {MODEL[which].credit} · drag to rotate · {MV.has(which) ? 'pinch or ⌘/Ctrl + scroll to zoom · double-click to reset' : 'scroll to zoom'}</p>
           <p className="stat"><span>{MODEL[which].text}</span></p>
           {f && (
             <div className="facts">

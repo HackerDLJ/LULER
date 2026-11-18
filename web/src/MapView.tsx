@@ -202,7 +202,7 @@ export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPic
         </div>
         <div className="mapcv">
         <DraftingCursor probe={mapProbe} distance={hav} hint="Click to analyse · shift-drag to measure" />
-        {mag && <FluidGlass className="mapglass" source={glassSrc} apiRef={glass} onlyGlass hideOutside text="" shape="lens" size={230} refraction={1.25} dispersion={0.12} reflection={0.7} shadow={0} elevation={1.6} interaction="follow" smoothness={0} wobble={0.15} spin={0} idle={false} intro={false} morphOnClick={false} maxDevicePixelRatio={2} {...glassTune} />}
+        {mag && <FluidGlass className="mapglass" source={glassSrc} apiRef={glass} onlyGlass hideOutside text="" shape="lens" size={230} magnify={2.5} refraction={0.8} dispersion={0.1} reflection={0.45} shadow={0} elevation={0.35} interaction="follow" smoothness={0} wobble={0.15} spin={0} idle={false} intro={false} morphOnClick={false} maxDevicePixelRatio={2} {...glassTune} />}
         <div className="map-pins" ref={pinsRef}>
           {sites.map((st, i) => { const [x, y] = xy(st.lat, st.lon); return (
             <button key={st.id} type="button" className={`mpin ${st.year !== null ? 'landed' : 'cand'}${i === selected ? ' sel' : ''}`} style={{ left: `${((x - vw.x0) * vw.z / W) * 100}%`, top: `${((y - vw.y0) * vw.z / H) * 100}%`, display: (x - vw.x0) * vw.z < 0 || (x - vw.x0) * vw.z > W || (y - vw.y0) * vw.z < 0 || (y - vw.y0) * vw.z > H ? 'none' : undefined, ['--c' as string]: GROUP_COLOR[st.group] ?? '#fff' }} onClick={() => onPickSite(i)} title={`${st.name} · ${st.mission}`} aria-label={st.name}>
