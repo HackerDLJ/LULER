@@ -18,6 +18,8 @@ import {
   Tick02Icon
 } from '@hugeicons/core-free-icons';
 import SlingButton from './SlingButton.jsx';
+import BorderGlow from './BorderGlow.jsx';
+import './BorderGlow.css';
 import './PromptBar.css';
 
 const ARROW_UP = [12, 4.5, 18.5, 11, 14.25, 11, 14.25, 19.5, 9.75, 19.5, 9.75, 11, 5.5, 11];
@@ -143,6 +145,7 @@ export default function PromptBar({
   tilt = 8,
   pressScale = 0.96,
   sling = {},
+  dictateLabel = '',
   className = ''
 }) {
   const reduce = useReducedMotion();
@@ -687,6 +690,20 @@ export default function PromptBar({
           ) : null}
           <span className="prompt-bar__spacer" />
           {onDictate ? (
+            dictateLabel ? (
+              <BorderGlow className="prompt-bar__voice-glow" backgroundColor="#141c30" borderRadius={999} glowRadius={16} glowColor="222 90 78" colors={['#8b5cf6', '#3b6cff', '#7fd8ff']} edgeSensitivity={10} glowIntensity={1.2} coneSpread={30}>
+                <button
+                  type="button"
+                  className="prompt-bar__voice"
+                  aria-label={dictateLabel}
+                  onMouseDown={e => e.preventDefault()}
+                  onClick={toggleListen}
+                >
+                  <HugeiconsIcon icon={Mic01Icon} size={15} strokeWidth={2} />
+                  <span>{dictateLabel}</span>
+                </button>
+              </BorderGlow>
+            ) : (
             <button
               type="button"
               className="prompt-bar__tool"
@@ -706,6 +723,7 @@ export default function PromptBar({
                 <HugeiconsIcon icon={Mic01Icon} size={15} strokeWidth={2} />
               )}
             </button>
+            )
           ) : null}
           {busy ? (
             <button

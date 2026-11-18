@@ -680,3 +680,11 @@ body.ui-hide .app .stage .nm-chip{opacity:0;filter:blur(10px);pointer-events:non
 .nm-go{font-size:18px;line-height:1;color:#a9c4ff;margin-left:2px}
 .app .nm-chip .nm-txt b{max-width:190px}
 @media (max-width:900px){.app .nm-chip .nm-txt b{max-width:150px}}
+/* "Live voice" pill in the prompt bar: same height and glass as the other pills, with its own BorderGlow */
+.prompt-bar__voice-glow{display:inline-grid!important;border:1px solid rgba(150,185,255,.22)!important;box-shadow:none!important;flex:none}
+.prompt-bar__voice-glow .border-glow-inner{overflow:visible}
+.ai-input-glow .prompt-bar__voice{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 13px 0 11px;border-radius:999px;cursor:pointer;color:#dfe7ff;font:500 12.5px var(--sans,system-ui,-apple-system,sans-serif);white-space:nowrap;transition:color .2s,background-color .2s}
+.ai-input-glow .prompt-bar__voice:hover{color:#fff;background:rgba(150,185,255,.08)}
+.ai-input-glow .prompt-bar__voice:focus-visible{outline:2px solid rgba(169,196,255,.7);outline-offset:2px}
+.ai-input-glow .prompt-bar__voice svg{width:15px!important;height:15px!important;color:#a9c4ff}
+@media (max-width:560px){.ai-input-glow .prompt-bar__voice span{display:none}.ai-input-glow .prompt-bar__voice{padding:0 9px}}

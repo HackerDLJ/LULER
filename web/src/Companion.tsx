@@ -329,7 +329,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
           <p className="ai-vstat" role="status">{voice === 'connecting' ? 'Connecting to Gemini Live…' : voice === 'speaking' ? 'LULER is speaking · just talk to interrupt' : voice === 'listening' ? 'Listening… ask about any site, date or score' : ''}</p>
           <button type="button" className="ai-vend" onClick={stopVoice} disabled={voice === 'off'}>End</button>
         </div>, document.body)}
-      <BorderGlow className="ai-input-glow" backgroundColor="#0e1321" borderRadius={20} glowRadius={30} glowColor="222 90 78" colors={['#8b5cf6', '#3b6cff', '#7fd8ff']} edgeSensitivity={22} glowIntensity={1.1} coneSpread={25}>
+      <BorderGlow className="ai-input-glow" animated backgroundColor="#0e1321" borderRadius={20} glowRadius={30} glowColor="222 90 78" colors={['#8b5cf6', '#3b6cff', '#7fd8ff']} edgeSensitivity={22} glowIntensity={1.1} coneSpread={25}>
         <PromptBar key={MODELS.map((m) => m.key).join('|') + st.aiModel}
           className="ai-prompt"
           placeholder={ready ? `Ask about ${ctx.site.name}…   @ adds context · / for commands` : hasKey ? (pickErr ? 'Choose a chat model in AI settings' : 'Picking a model for your key…') : 'Add your API key in AI settings to start'}
@@ -339,6 +339,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
           onSend={(text: string, o: { model?: { key: string } }) => { if (o?.model?.key && o.model.key !== st.aiModel) { mdl.current = o.model.key; setSettings({ aiModel: o.model.key }); } send(expand(text)); }}
           onStop={() => ctrl.current?.abort()}
           onDictate={() => { startVoice(); return Promise.resolve(''); }}
+          dictateLabel="Live voice"
           background="#0e1321" color="#eef2ff" menuBackground="#141c30" sparkColor="#8b5cf6" sparkBoost={1}
           width={2000} radius={20} maxRows={6}
           sling={{ size: 32, padColor: '#eef2ff', iconColor: '#0e1321', accentColor: '#a9c4ff', wellColor: 'rgba(120,150,255,.12)', bandColor: '#5b6b95' }} />
