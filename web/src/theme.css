@@ -563,3 +563,16 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 .ai-voice-orb{animation:orbIn .7s cubic-bezier(.2,.7,.2,1) both;filter:none}
 .ai-voice-orb.out{animation:orbOut .7s ease forwards}
 .ai-voice-orb .strands-container{filter:drop-shadow(0 20px 60px rgba(90,70,255,.35))}
+/* Live voice: the page blurs away and only the orb stays */
+.ai-vstage{position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:radial-gradient(55% 55% at 50% 44%,rgba(70,45,170,.30),rgba(3,5,14,.78) 70%);-webkit-backdrop-filter:blur(24px) saturate(1.25);backdrop-filter:blur(24px) saturate(1.25);animation:vIn .55s ease both}
+.ai-vstage.out{animation:vOut .7s ease forwards;pointer-events:none}
+@keyframes vIn{from{opacity:0}to{opacity:1}}
+@keyframes vOut{from{opacity:1}to{opacity:0}}
+.ai-vorb{position:relative;width:min(470px,62vmin);aspect-ratio:1;animation:orbIn .8s cubic-bezier(.2,.7,.2,1) both;filter:drop-shadow(0 30px 90px rgba(110,80,255,.45))}
+.ai-vorb::before{content:"";position:absolute;inset:-9%;border-radius:50%;z-index:-1;background:conic-gradient(from 0deg,rgba(139,92,246,0),rgba(139,92,246,.45),rgba(59,108,255,.45),rgba(127,216,255,.25),rgba(139,92,246,0));filter:blur(34px);animation:spin 9s linear infinite;opacity:.8}
+.ai-vstage.speaking .ai-vorb::before{opacity:1;animation-duration:4s}
+.ai-vstage.out .ai-vorb{animation:orbOut .7s ease forwards}
+.ai-vstat{margin:0;font:500 15px var(--sans,system-ui,-apple-system,sans-serif);letter-spacing:.02em;color:#e3e8ff;text-align:center;min-height:1.4em;text-shadow:0 2px 18px rgba(0,0,0,.6)}
+.app .ai-vend,.ai-vend{all:unset;cursor:pointer;padding:12px 30px;border-radius:999px;font:600 14px var(--sans,system-ui,-apple-system,sans-serif);color:#ffd5d9;background:rgba(255,80,95,.16);border:1px solid rgba(255,130,140,.42);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.ai-vend:hover{background:rgba(255,80,95,.3)}
+@keyframes spin{to{transform:rotate(360deg)}}

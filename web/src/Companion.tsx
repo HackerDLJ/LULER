@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Strands from './rb/Strands.jsx';
 import './rb/Strands.css';
 // blue and purple palette for the Strands orb (edge → core → deep)
@@ -147,6 +148,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
   /* ---- Live voice: Gemini Live API (bidirectional WebSocket audio) ---- */
   const [voice, setVoice] = useState<'off' | 'connecting' | 'listening' | 'speaking'>('off');
   const [orbShown, setOrbShown] = useState(false); // keeps the voice orb mounted while it blurs away
+  useEffect(() => { if (voice === 'off') return; const k = (e: KeyboardEvent) => { if (e.key === 'Escape') stopVoice(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, [voice]);
   useEffect(() => { if (voice !== 'off') { setOrbShown(true); return; } const t = setTimeout(() => setOrbShown(false), 750); return () => clearTimeout(t); }, [voice]);
   // live loudness for the orb: LULER's voice while it speaks, your microphone while it listens
   const getLevel = useCallback(() => {
@@ -267,8 +269,12 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
         {busy && <div className="ai-msg assistant ai-typing"><i /><i /><i /></div>}
         <div ref={endRef} />
       </div>
-      {orbShown && <div className={`ai-voice-orb ${voice}${voice === 'off' ? ' out' : ''}`} aria-hidden="true"><Strands colors={ORB} energy={voice === 'off' ? 0.2 : 0.5} listening={voice === 'connecting'} getLevel={voice === 'connecting' || voice === 'off' ? undefined : getLevel} glassSize={1.1} /></div>}
-      {voice !== 'off' && <div className={`ai-voice ${voice}`} role="status"><span className="ai-wave"><i /><i /><i /><i /><i /></span>{voice === 'connecting' ? 'Connecting to Gemini Live…' : voice === 'speaking' ? 'LULER is speaking… (just talk to interrupt)' : 'Listening… ask about any site, date or score'}<button type="button" onClick={stopVoice}>End</button></div>}
+      {orbShown && createPortal(
+        <div className={`ai-vstage ${voice}${voice === 'off' ? ' out' : ''}`} role="dialog" aria-modal="true" aria-label="Live voice with LULER">
+          <div className="ai-vorb"><Strands colors={ORB} energy={voice === 'off' ? 0.2 : 0.55} listening={voice === 'connecting'} getLevel={voice === 'connecting' || voice === 'off' ? undefined : getLevel} glassSize={1.12} intensity={1.1} /></div>
+          <p className="ai-vstat" role="status">{voice === 'connecting' ? 'Connecting to Gemini Live…' : voice === 'speaking' ? 'LULER is speaking · just talk to interrupt' : voice === 'listening' ? 'Listening… ask about any site, date or score' : ''}</p>
+          <button type="button" className="ai-vend" onClick={stopVoice} disabled={voice === 'off'}>End</button>
+        </div>, document.body)}
       <form className="ai-input" onSubmit={(e) => { e.preventDefault(); send(input); }}>
         <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={ready ? `Message LULER Intelligence about ${ctx.site.name}…` : hasKey ? (pickErr ? 'Choose a chat model in AI settings' : 'Picking a model for your key…') : 'Add your API key in AI settings to start'} aria-label="Message" />
         <button type="button" className={`ai-mic ${voice}`} onClick={startVoice} aria-label={voice === 'off' ? 'Talk to LULER (live voice)' : 'Stop voice'} title={voice === 'off' ? 'Talk (Gemini Live voice)' : 'Stop voice'}>{voice === 'off' ? <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1A7 7 0 0 0 19 12z"/></svg> : <i />}</button>
