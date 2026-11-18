@@ -4,6 +4,10 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.19.0 · 2026-11-18
+- Main tabs use the React Bits PillNav (MIT): raised pills with a rolling fill on hover and a dot under the open tab.
+- Mission timeline: every mission card is a React Bits TiltedCard (MIT) that tilts toward the cursor with glare, a soft shadow and the title floating above the photo.
+
 ## v7.18.1 · 2026-11-18
 - LULER Intelligence: when a Gemini model has no free quota left, LULER tries the key's other models and keeps the first one that answers. Auto-pick now prefers stable Flash models over previews. Quota errors are shown as one short sentence.
 

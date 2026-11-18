@@ -576,3 +576,9 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 .app .ai-vend,.ai-vend{all:unset;cursor:pointer;padding:12px 30px;border-radius:999px;font:600 14px var(--sans,system-ui,-apple-system,sans-serif);color:#ffd5d9;background:rgba(255,80,95,.16);border:1px solid rgba(255,130,140,.42);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .ai-vend:hover{background:rgba(255,80,95,.3)}
 @keyframes spin{to{transform:rotate(360deg)}}
+/* Main tabs: React Bits PillNav inside the old .modes slot (keeps its position and the hide-on-tap rules) */
+.app .modes.pnav,.modes.pnav{background:none!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:0!important;overflow:visible!important;gap:0!important}
+.modes.pnav .pill-nav{font-family:var(--sans,system-ui,-apple-system,sans-serif)}
+.modes.pnav button.pill-nav__item{border-radius:999px!important;background:var(--pn-tile)!important;box-shadow:var(--pn-tile-rim)!important;color:var(--pn-strong)!important;font-family:inherit!important;font-size:var(--pn-font)!important;font-weight:500!important;text-transform:none!important;letter-spacing:-.005em!important;padding:0 var(--pn-x)!important;min-height:0!important;height:100%!important;border:0!important;transition:color .25s ease!important}
+.modes.pnav button.pill-nav__item::after{display:none!important}
+.modes.pnav .pill-nav__item[aria-current] .pill-nav__face{color:#fff}

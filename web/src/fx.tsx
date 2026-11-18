@@ -1,3 +1,5 @@
+import TiltedCard, { TiltedCardLayer } from './rb/TiltedCard.jsx';
+import './rb/TiltedCard.css';
 import Topography from './rb/Topography.jsx';
 /* LULER effects — written for this project in the spirit of React Bits Pro (Depth Image, Depth Ribbon, Dolly Gallery,
    Passage Gallery, Pixel Sculpt, Parallax Pills, Drafting Cursor, Animated List, Orbital Type + Preloader). No dependencies. */
@@ -105,10 +107,13 @@ export function DepthRibbon({ items, onPick }: { items: RibbonItem[]; onPick?: (
       <div className="fx-ribbon-stage">
         {items.map((it, i) => (
           <button key={it.id} type="button" ref={(r) => { cards.current[i] = r; }} className={`fx-rcard${i === focus ? ' on' : ''}`} onClick={() => (i === focus ? onPick?.(it.id) : go(i))}>
-            <span className="fx-rimg" style={{ backgroundImage: it.img ? `url(${it.img})` : undefined }} />
-            <span className="fx-rmeta"><i style={{ background: it.color }} />{it.tag}</span>
-            <b>{it.title}</b><em>{it.sub}</em>
-            {i === focus && onPick && <span className="fx-rgo">Open site ▸</span>}
+            <TiltedCard imageSrc={it.img} altText={it.title} captionText={i === focus && onPick ? 'Open site ▸' : 'Bring to front'} containerWidth={300} containerHeight={340} imageWidth={300} imageHeight={340} radius={18} rotateAmplitude={13} scaleOnHover={1.04} glare={0.55} glareColor="#d6e4ff" shadow={0.55} parallax={1} intro={false} gyroscope={false}>
+              <TiltedCardLayer depth={0}><span className="fx-rshade" /></TiltedCardLayer>
+              <TiltedCardLayer depth={34}>
+                <span className="fx-rtext"><span className="fx-rmeta"><i style={{ background: it.color }} />{it.tag}</span><b>{it.title}</b><em>{it.sub}</em></span>
+              </TiltedCardLayer>
+              {i === focus && onPick && <TiltedCardLayer depth={46}><span className="fx-rgo">Open site ▸</span></TiltedCardLayer>}
+            </TiltedCard>
           </button>
         ))}
       </div>
