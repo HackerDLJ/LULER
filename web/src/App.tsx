@@ -43,6 +43,14 @@ import SpecularButton from './rb/SpecularButton.jsx';
 import PillNav from './rb/PillNav.jsx';
 import BorderGlow from './rb/BorderGlow.jsx';
 import NextMission from './NextMission';
+import JellyRadio from './rb/JellyRadio.jsx';
+import './rb/JellyRadio.css';
+// sub-tabs: React Bits JellyRadio inside the .subtabs glass bar
+const SubTabs = ({ items, value, onPick }: { items: [string, string][]; value: string; onPick: (v: string) => void }) => (
+  <div className="subtabs jr">
+    <JellyRadio items={items.map(([v, l]) => ({ value: v, label: l }))} value={value} onChange={(v: string) => onPick(v)} chipColor="transparent" activeColor="linear-gradient(180deg,rgba(120,170,255,.38),rgba(70,120,230,.22))" textColor="#c9d4ea" activeTextColor="#ffffff" size="md" gap={4} radius={999} swell={0.06} barge={3} shrink={0.02} jelly={1} bounce={0.25} ariaLabel="Section" />
+  </div>
+);
 import './rb/BorderGlow.css';
 import './rb/PillNav.css';
 // PillNav renders its links through this, so the tabs stay buttons and never change the URL
@@ -248,10 +256,10 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
       </div>
       <div className="pickers">{pickers}</div>
       {(view === 'globe' || view === 'map' || view === 'timeline') && (
-        <div className="subtabs"><button type="button" className={view === 'globe' ? 'on' : ''} onClick={() => setView('globe')}>3D globe</button><button type="button" className={view === 'map' ? 'on' : ''} onClick={() => setView('map')}>Flat map + coordinates</button><button type="button" className={view === 'timeline' ? 'on' : ''} onClick={() => setView('timeline')}>Mission timeline</button></div>
+        <SubTabs items={[['globe', '3D globe'], ['map', 'Flat map + coordinates'], ['timeline', 'Mission timeline']]} value={view} onPick={(v) => setView(v as typeof view)} />
       )}
       {(view === 'orbit' || view === 'descent' || view === 'craft' || view === 'cesium' || view === 'mission') && (
-        <div className="subtabs"><button type="button" className={view === 'orbit' ? 'on' : ''} onClick={() => setView('orbit')}>Terrain</button><button type="button" className={view === 'mission' || view === 'descent' ? 'on' : ''} onClick={() => setView('mission')}>Mission: launch → landing</button><button type="button" className={view === 'craft' ? 'on' : ''} onClick={() => setView('craft')}>Spacecraft</button></div>
+        <SubTabs items={[['orbit', 'Terrain'], ['mission', 'Mission: launch → landing'], ['craft', 'Spacecraft']]} value={view === 'descent' ? 'mission' : view} onPick={(v) => setView(v as typeof view)} />
       )}
     </>
   );

@@ -2,6 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Strands from './rb/Strands.jsx';
 import BorderGlow from './rb/BorderGlow.jsx';
+import PromptBar from './rb/PromptBar.jsx';
+import './rb/PromptBar.css';
+import './rb/SlingButton.css';
+import { AiVoiceIcon, Calendar03Icon, Location01Icon, StarIcon } from '@hugeicons/core-free-icons';
 import './rb/BorderGlow.css';
 import './rb/Strands.css';
 // blue and purple palette for the Strands orb (edge → core → deep)
@@ -39,16 +43,29 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
   const st = useSettings();
   const [lines, setLinesRaw] = useState<Line[]>(() => keep.lines);
   const setLines = (f: Line[] | ((x: Line[]) => Line[])) => setLinesRaw((x) => { const n = typeof f === 'function' ? f(x) : f; keep.lines = n; return n; });
-  const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const hist = useRef<any[]>(keep.hist);
   const endRef = useRef<HTMLDivElement>(null);
   const ready = !!st.aiModel && (!PROVIDERS[st.aiProvider].keyNeeded || !!st.aiKey.trim());
   const ctx = getContext();
+  const ctrl = useRef<AbortController | null>(null); // Stop button aborts the request in flight
+  const mdl = useRef(''); // model picked in the prompt bar for this turn
+  const EFFORTS = ['Brief', 'Normal', 'Detailed', 'Deep'];
+  const effortRef = useRef('Normal');
+  const EFFORT_NOTE: Record<string, string> = { Brief: 'Answer in one or two short sentences.', Normal: 'Answer concisely.', Detailed: 'Answer in detail, with the key numbers and a short explanation of each.', Deep: 'Think it through carefully and answer thoroughly: compare options, cite the numbers from the live data, and explain your reasoning step by step.' };
+  const sys = () => SYSTEM(getContext()) + '\n' + (EFFORT_NOTE[effortRef.current] ?? '');
+  const model = () => mdl.current || st.aiModel;
+  const [chatModels, setChatModels] = useState<string[]>([]);
   const hasKey = !PROVIDERS[st.aiProvider].keyNeeded || !!st.aiKey.trim();
   // a key but no chat model yet: pick one for the key automatically so typing works straight away
   const rankModels = (list: string[]) => list.filter((m) => !/(image|tts|live|audio|embed|vision|learnlm|aqa)/i.test(m)).map((m, i) => ({ m, r: (/flash/i.test(m) ? 0 : 2) + (/preview|exp/i.test(m) ? 1 : 0) + (/lite/i.test(m) ? 0.5 : 0) + i * 1e-4 })).sort((a, b) => a.r - b.r).map((x) => x.m);
   const isQuota = (m: string) => /quota|RESOURCE_EXHAUSTED|rate limit|limit: 0|HTTP 429/i.test(m);
+  useEffect(() => {
+    if (!hasKey) { setChatModels([]); return; }
+    let live = true;
+    fetchModels(st.aiProvider, st.aiBaseUrl, st.aiKey.trim()).then(({ chat }) => { if (live) setChatModels(rankModels(chat).slice(0, 12)); }).catch(() => { if (live) setChatModels([]); });
+    return () => { live = false; };
+  }, [st.aiProvider, st.aiBaseUrl, st.aiKey, hasKey]); // eslint-disable-line react-hooks/exhaustive-deps
   const picking = useRef('');
   const [pickErr, setPickErr] = useState('');
   useEffect(() => {
@@ -74,10 +91,10 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
 
   async function anthropicTurn() {
     for (let round = 0; round < 5; round++) {
-      const r = await fetch(`${trim(st.aiBaseUrl)}/messages`, {
+      const r = await fetch(`${trim(st.aiBaseUrl)}/messages`, { signal: ctrl.current?.signal,
         method: 'POST',
         headers: { 'content-type': 'application/json', 'x-api-key': st.aiKey.trim(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-        body: JSON.stringify({ model: st.aiModel, max_tokens: 1000, system: SYSTEM(getContext()), tools: TOOLS.map((t) => ({ name: t.name, description: t.description, input_schema: t.params })), messages: hist.current }),
+        body: JSON.stringify({ model: model(), max_tokens: effortRef.current === 'Deep' ? 2500 : effortRef.current === 'Detailed' ? 1600 : 1000, system: sys(), tools: TOOLS.map((t) => ({ name: t.name, description: t.description, input_schema: t.params })), messages: hist.current }),
       });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j?.error?.message ?? `HTTP ${r.status}`);
@@ -90,11 +107,11 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
     }
   }
 
-  async function googleTurn(model = st.aiModel) {
+  async function googleTurn(m = model()) {
     for (let round = 0; round < 5; round++) {
-      const r = await fetch(`${trim(st.aiBaseUrl)}/models/${model}:generateContent?key=${encodeURIComponent(st.aiKey.trim())}`, {
+      const r = await fetch(`${trim(st.aiBaseUrl)}/models/${m}:generateContent?key=${encodeURIComponent(st.aiKey.trim())}`, { signal: ctrl.current?.signal,
         method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM(getContext()) }] }, contents: hist.current, tools: [{ functionDeclarations: TOOLS.map((t) => ({ name: t.name, description: t.description, parameters: t.params })) }] }),
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: sys() }] }, contents: hist.current, tools: [{ functionDeclarations: TOOLS.map((t) => ({ name: t.name, description: t.description, parameters: t.params })) }] }),
       });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j?.error?.message ?? `HTTP ${r.status}`);
@@ -112,9 +129,9 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
   async function openaiTurn() {
     let tools = true;
     for (let round = 0; round < 5; round++) {
-      const body: any = { model: st.aiModel, messages: [{ role: 'system', content: SYSTEM(getContext()) }, ...hist.current] };
+      const body: any = { model: model(), messages: [{ role: 'system', content: sys() }, ...hist.current] };
       if (tools) body.tools = TOOLS.map((t) => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.params } }));
-      const r = await fetch(`${trim(st.aiBaseUrl)}/chat/completions`, { method: 'POST', headers: { 'content-type': 'application/json', ...(st.aiKey.trim() ? { Authorization: `Bearer ${st.aiKey.trim()}` } : {}) }, body: JSON.stringify(body) });
+      const r = await fetch(`${trim(st.aiBaseUrl)}/chat/completions`, { signal: ctrl.current?.signal, method: 'POST', headers: { 'content-type': 'application/json', ...(st.aiKey.trim() ? { Authorization: `Bearer ${st.aiKey.trim()}` } : {}) }, body: JSON.stringify(body) });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) {
         const m = j?.error?.message ?? j?.error ?? `HTTP ${r.status}`;
@@ -136,9 +153,9 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
   const send = async (text: string) => {
     const q = text.trim(); if (!q || busy) return;
     if (!ready) { add({ role: 'error', text: !hasKey ? 'Add your API key in AI settings (⚙ AI settings, top right) to chat.' : pickErr ? `Could not pick a model: ${pickErr} Choose one in AI settings.` : 'Picking a model for your key… send again in a moment.' }); return; }
-    setInput(''); add({ role: 'user', text: q });
+    add({ role: 'user', text: q });
     hist.current.push(st.aiProvider === 'google' ? { role: 'user', parts: [{ text: q }] } : { role: 'user', content: q });
-    setBusy(true);
+    setBusy(true); ctrl.current = new AbortController();
     try {
       if (st.aiProvider === 'google') {
         try { await googleTurn(); }
@@ -147,7 +164,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
           // this model has no free quota left: try the key's other models and keep the first that answers
           const { chat } = await fetchModels('google', st.aiBaseUrl, st.aiKey.trim());
           let done = false;
-          for (const m of rankModels(chat).filter((x) => x !== st.aiModel).slice(0, 6)) {
+          for (const m of rankModels(chat).filter((x) => x !== model()).slice(0, 6)) {
             try { await googleTurn(m); setSettings({ aiModel: m }); add({ role: 'tool', text: `Switched to ${m} (the previous model had no free quota left)` }); done = true; break; }
             catch (e2) { if (!isQuota((e2 as Error).message)) throw e2; }
           }
@@ -157,10 +174,11 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
     }
     catch (e) {
       const m = (e as Error).message;
+      if ((e as Error).name === 'AbortError') { add({ role: 'tool', text: 'Stopped.' }); hist.current.pop(); setBusy(false); mdl.current = ''; return; }
       add({ role: 'error', text: /Failed to fetch|NetworkError|Load failed/i.test(m) ? `Could not reach ${st.aiBaseUrl}. Is the server running and allowing browser requests (CORS)?` : m });
       hist.current.pop();
     }
-    setBusy(false);
+    setBusy(false); mdl.current = '';
   };
 
   /* ---- Live voice: Gemini Live API (bidirectional WebSocket audio) ---- */
@@ -250,6 +268,34 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
 
   const sc = ctx.score as { total?: number; grade?: string } | undefined;
   const best = [...ctx.sites].filter((x) => typeof x.score === 'number').sort((a, b) => (b.score ?? 0) - (a.score ?? 0))[0];
+  // "/" commands expand into full questions about the current site and date
+  const COMMANDS = [
+    { key: 'safety', name: '/safety', description: 'Why this site scores what it does', q: (c: CompanionCtx) => `Explain the safety score of ${c.site.name} on ${c.date}, factor by factor.` },
+    { key: 'best', name: '/best', description: 'Best site for this date window', q: () => 'Which site scores best for the current date window, and why?' },
+    { key: 'dates', name: '/dates', description: 'Best landing dates here', q: (c: CompanionCtx) => `When are the best dates to land at ${c.site.name}? Use the sunlight, Earth view and score data.` },
+    { key: 'compare', name: '/compare', description: 'This site against the best one', q: (c: CompanionCtx) => `Compare ${c.site.name} with the best-scoring site right now, side by side.` },
+    { key: 'goto', name: '/goto', description: 'Fly to a site (add its name)', q: () => 'Go to the site named: ' },
+    { key: 'explain', name: '/explain', description: 'How LULER picks a landing site', q: () => 'Explain in plain words how LULER scores a landing site and which NASA data it uses.' },
+  ];
+  const expand = (t: string) => { const m = /^\/(\w+)\s*(.*)$/s.exec(t.trim()); const c = m && COMMANDS.find((x) => x.key === m[1].toLowerCase()); return c ? (c.q(getContext()) + (m![2] ? ' ' + m![2] : '')).trim() : t; };
+  const top = [...ctx.sites].sort((a, b) => (b.score ?? -1) - (a.score ?? -1))[0];
+  const SOURCES = [
+    { key: 'site', name: ctx.site.name, description: 'The selected site', icon: Location01Icon },
+    ...(top && top.name !== ctx.site.name ? [{ key: 'best', name: top.name, description: `Best score now${top.score != null ? ` (${top.score})` : ''}`, icon: StarIcon }] : []),
+    { key: 'date', name: ctx.date, description: 'The selected date', icon: Calendar03Icon },
+    { key: 'voice', name: 'Talk live', description: 'Gemini Live voice conversation', icon: AiVoiceIcon, attach: true },
+  ];
+  const short = (m: string) => m.replace(/^models\//, '');
+  const MODELS = (chatModels.length ? chatModels : st.aiModel ? [st.aiModel] : []).map((m) => ({ key: m, name: short(m), tag: /pro/i.test(m) ? 'Pro' : /lite/i.test(m) ? 'Lite' : /flash/i.test(m) ? 'Fast' : '' }));
+  // the microphone in the prompt bar types what you say (browser speech recognition)
+  const dictate = () => new Promise<string>((res, rej) => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) { add({ role: 'error', text: 'This browser cannot type from speech. Use “Talk live” in the + menu, or Chrome, Edge or Safari.' }); rej(new Error('no speech')); return; }
+    const r = new SR(); r.lang = navigator.language || 'en-US'; r.interimResults = false; r.maxAlternatives = 1;
+    r.onresult = (e: any) => res(String(e.results?.[0]?.[0]?.transcript ?? ''));
+    r.onerror = (e: any) => rej(new Error(e.error)); r.onend = () => res('');
+    r.start();
+  });
   const suggestions = [
     `Is ${ctx.site.name} a safe place to land?`,
     'Which site scores best for this window, and why?',
@@ -293,12 +339,20 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
           <p className="ai-vstat" role="status">{voice === 'connecting' ? 'Connecting to Gemini Live…' : voice === 'speaking' ? 'LULER is speaking · just talk to interrupt' : voice === 'listening' ? 'Listening… ask about any site, date or score' : ''}</p>
           <button type="button" className="ai-vend" onClick={stopVoice} disabled={voice === 'off'}>End</button>
         </div>, document.body)}
-      <BorderGlow className="ai-input-glow" backgroundColor="#0e1321" borderRadius={999} glowRadius={30} glowColor="222 90 78" colors={['#8b5cf6', '#3b6cff', '#7fd8ff']} edgeSensitivity={22} glowIntensity={1.1} coneSpread={25}>
-      <form className="ai-input" onSubmit={(e) => { e.preventDefault(); send(input); }}>
-        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={ready ? `Message LULER Intelligence about ${ctx.site.name}…` : hasKey ? (pickErr ? 'Choose a chat model in AI settings' : 'Picking a model for your key…') : 'Add your API key in AI settings to start'} aria-label="Message" />
-        <button type="button" className={`ai-mic ${voice}`} onClick={startVoice} aria-label={voice === 'off' ? 'Talk to LULER (live voice)' : 'Stop voice'} title={voice === 'off' ? 'Talk (Gemini Live voice)' : 'Stop voice'}>{voice === 'off' ? <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1A7 7 0 0 0 19 12z"/></svg> : <i />}</button>
-        <button type="submit" disabled={busy || !input.trim()} aria-label="Send">↑</button>
-      </form>
+      <BorderGlow className="ai-input-glow" backgroundColor="#0e1321" borderRadius={20} glowRadius={30} glowColor="222 90 78" colors={['#8b5cf6', '#3b6cff', '#7fd8ff']} edgeSensitivity={22} glowIntensity={1.1} coneSpread={25}>
+        <PromptBar key={MODELS.map((m) => m.key).join('|') + st.aiModel}
+          className="ai-prompt"
+          placeholder={ready ? `Message LULER Intelligence about ${ctx.site.name}…  (@ for context, / for commands)` : hasKey ? (pickErr ? 'Choose a chat model in AI settings' : 'Picking a model for your key…') : 'Add your API key in AI settings to start'}
+          sources={SOURCES} commands={COMMANDS} models={MODELS} defaultModel={st.aiModel}
+          efforts={EFFORTS} defaultEffort={effortRef.current} onEffortChange={(e: string) => { effortRef.current = e; }}
+          busy={busy}
+          onSend={(text: string, o: { model?: { key: string } }) => { if (o?.model?.key && o.model.key !== st.aiModel) { mdl.current = o.model.key; setSettings({ aiModel: o.model.key }); } send(expand(text)); }}
+          onStop={() => ctrl.current?.abort()}
+          onAttach={() => { startVoice(); return undefined; }}
+          onDictate={dictate}
+          background="#0e1321" color="#eef2ff" menuBackground="#141c30" sparkColor="#8b5cf6" sparkBoost={1}
+          width={2000} radius={20} maxRows={6}
+          sling={{ size: 32, padColor: '#eef2ff', iconColor: '#0e1321', accentColor: '#a9c4ff', wellColor: 'rgba(120,150,255,.12)', bandColor: '#5b6b95' }} />
       </BorderGlow>
     </div>
   );

@@ -4,6 +4,11 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.21.0 · 2026-11-18
+- LULER Intelligence prompt bar is now the React Bits PromptBar (MIT): grows with your text, @ inserts the selected site, the best site or the date, / runs LULER commands (/safety, /best, /dates, /compare, /goto, /explain), a model picker lists the models your key can use, an answer-length slider (Brief to Deep, Deep adds sparks), a mic that types what you say, "Talk live" for Gemini Live voice, and a Stop button that cancels the answer.
+- Send is the React Bits SlingButton (MIT): tap or press Enter to send, or pull it back and let go to fling the message.
+- Sub-tabs use the React Bits JellyRadio (MIT) in the same glass bar and height as the main tabs.
+
 ## v7.20.0 · 2026-11-18
 - Next-mission countdown: a small chip under the LULER logo counts down (React Bits Counter, MIT) to the next Moon mission and moves on by itself when a launch window opens. Clicking it opens a full-screen page with every upcoming mission, their stated targets, places and sources, revealed with React Bits ScrollReveal (MIT). Status as of 18 Nov 2026.
 - Main tabs restyled to match the sub-tabs: same blue glass bar and the same blue active pill.
