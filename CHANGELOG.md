@@ -4,6 +4,9 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.16.1 · 2026-11-18
+- Surface: removed the "Walk the site · mark touchdown" mode. Surface opens the LULER Rover directly.
+
 ## v7.16.0 · 2026-11-18
 - Magnifying glass on the flat map: a liquid-glass lens (React Bits FluidGlass, MIT) follows the cursor over the map and bends the real map image, including the sharper LRO tiles when zoomed. 🔍 turns it on or off. The lens magnifies 2.5× and follows the cursor with no trailing.
 - Spacecraft: LLCD, Saturn V, SLS, Vikram and Chandrayaan-2 now open in the React Bits ModelViewer (MIT): studio lighting, drag with momentum, pinch or ⌘/Ctrl + scroll to zoom, double-click to reset.
