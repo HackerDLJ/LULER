@@ -4,6 +4,13 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.21.1 · 2026-11-18
+- Prompt bar: the model, answer-length and + menus no longer close the instant they open.
+- When LULER switches to another Gemini model for quota, the note now shows before the answer.
+- AI start screen stays at the top so the orb is not cut off.
+- Phones: the countdown chip sits under the tabs instead of over the timeline, the main tabs and sub-tabs fit the width, and the header keeps the AI and Settings buttons on screen.
+- Removed a stray luler.bundle file from the repository.
+
 ## v7.21.0 · 2026-11-18
 - LULER Intelligence prompt bar is now the React Bits PromptBar (MIT): grows with your text, @ inserts the selected site, the best site or the date, / runs LULER commands (/safety, /best, /dates, /compare, /goto, /explain), a model picker lists the models your key can use, an answer-length slider (Brief to Deep, Deep adds sparks), a mic that types what you say, "Talk live" for Gemini Live voice, and a Stop button that cancels the answer.
 - Send is the React Bits SlingButton (MIT): tap or press Enter to send, or pull it back and let go to fling the message.

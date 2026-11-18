@@ -553,7 +553,7 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 .app .mapzoom button.on{background:rgba(70,120,230,.6);border-color:rgba(160,200,255,.6)}
 .craft-mv{position:absolute;inset:0;z-index:1}
 .craft-mv canvas{touch-action:pan-y}
-.ai-strands{width:min(260px,60vw,32dvh);aspect-ratio:1;margin:0 auto 10px;flex:0 0 auto}
+.ai-strands{width:min(240px,60vw,25dvh);aspect-ratio:1;margin:0 auto 10px;flex:0 0 auto}
 .ai-voice-orb{grid-area:log;place-self:center;width:min(380px,70vw);aspect-ratio:1;z-index:2;pointer-events:none;filter:drop-shadow(0 20px 60px rgba(90,70,255,.35))}
 /* AI orb: blur in when it appears, blur away when voice stops */
 @keyframes orbIn{from{opacity:0;filter:blur(26px);transform:scale(.86)}to{opacity:1;filter:blur(0);transform:none}}
@@ -604,7 +604,9 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 .app .nm-chip .nm-part i{font-size:10px}
 body.ui-hide .app .stage .nm-chip{opacity:0;filter:blur(10px);pointer-events:none}
 .app .stage .nm-chip{transition:opacity .45s,filter .45s,border-color .2s,background .2s}
-@media (max-width:900px){.app .nm-chip .nm-txt{display:none}.app .nm-chip{top:auto;bottom:16px;left:16px}}
+@media (max-width:1200px){.app .nm-chip .nm-txt{display:none}}
+@media (max-width:900px){.app .nm-chip{top:116px;bottom:auto;left:auto;right:12px;padding:6px 12px 6px 9px}.app .stage:has(.subtabs) .nm-chip{top:168px}}
+.page-stage:has(.team-page) .nm-chip{display:none}
 .nm-stage{position:fixed;inset:0;z-index:9000;overflow-y:auto;overscroll-behavior:contain;background:radial-gradient(70% 50% at 50% 0%,rgba(60,90,200,.25),rgba(3,5,14,.82) 70%);-webkit-backdrop-filter:blur(24px) saturate(1.2);backdrop-filter:blur(24px) saturate(1.2);color:#e8ecf8;font-family:var(--sans,system-ui,-apple-system,sans-serif);animation:vIn .55s ease both}
 .nm-stage.out{animation:vOut .6s ease forwards;pointer-events:none}
 .nm-close{all:unset;position:fixed;top:22px;right:24px;z-index:2;width:44px;height:44px;display:grid;place-items:center;border-radius:999px;cursor:pointer;font-size:16px;color:#fff;background:rgba(20,28,48,.8);border:1px solid rgba(150,185,255,.3)}
@@ -646,3 +648,10 @@ body.ui-hide .app .stage .nm-chip{opacity:0;filter:blur(10px);pointer-events:non
 .prompt-bar__sling{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;margin-right:2px}
 .prompt-bar__sling .sling-button__pad{min-height:0;padding:0}
 .ai-input-glow .prompt-bar__send{width:32px;height:32px;border-radius:999px}
+
+/* Phones: main tabs and sub-tabs fit the width, header row fits (clock hidden, it is also in the timebar) */
+@media (max-width:560px){
+  .modes.pnav .pill-nav{--pn-x:11px!important;--pn-font:13px!important}
+  .subtabs.jr .jelly-radio{--jr-px:10px!important;--jr-font:12px!important;--jr-gap:2px!important}
+  .app .pickers .hdr-clock{display:none!important}
+}

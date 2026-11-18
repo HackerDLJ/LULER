@@ -190,7 +190,12 @@ export default function PromptBar({
   const level = efforts[effortIndex] ?? '';
   const maxed = efforts.length > 1 && effortIndex === efforts.length - 1;
 
-  const focusInput = () => inputRef.current?.focus({ preventScroll: true });
+  const quietFocus = useRef(false); // LULER: focusing the field from a menu button must not close that menu
+  const focusInput = () => {
+    quietFocus.current = true;
+    inputRef.current?.focus({ preventScroll: true });
+    quietFocus.current = false;
+  };
   const closeMenus = useCallback(() => {
     setPlusOpen(false);
     setModelOpen(false);
@@ -616,7 +621,9 @@ export default function PromptBar({
             closeMenus();
             setActive(0);
           }}
-          onFocus={closeMenus}
+          onFocus={() => {
+            if (!quietFocus.current) closeMenus();
+          }}
           onKeyDown={onKeyDown}
         />
 

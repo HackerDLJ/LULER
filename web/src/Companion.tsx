@@ -76,7 +76,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
       if (pick) setSettings({ aiModel: pick }); else setPickErr('No chat models are available for this key.');
     }).catch((e) => setPickErr((e as Error).message));
   }, [st.aiModel, st.aiProvider, st.aiBaseUrl, st.aiKey, hasKey]);
-  useEffect(() => { endRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' }); }, [lines, busy]);
+  useEffect(() => { if (lines.length || busy) endRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' }); }, [lines, busy]); // the empty start screen stays at the top so the orb is not cut off
   useEffect(() => { const k = st.aiProvider + st.aiBaseUrl; if (keep.key && keep.key !== k) { hist.current = []; keep.hist = hist.current; setLines([]); } keep.key = k; }, [st.aiProvider, st.aiBaseUrl]);
 
   const run = (name: string, a: any): string => {
@@ -165,7 +165,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
           const { chat } = await fetchModels('google', st.aiBaseUrl, st.aiKey.trim());
           let done = false;
           for (const m of rankModels(chat).filter((x) => x !== model()).slice(0, 6)) {
-            try { await googleTurn(m); setSettings({ aiModel: m }); add({ role: 'tool', text: `Switched to ${m} (the previous model had no free quota left)` }); done = true; break; }
+            const at = keep.lines.length; try { await googleTurn(m); setSettings({ aiModel: m }); keep.lines = [...keep.lines.slice(0, at), { role: 'tool', text: `Switched to ${m} (the previous model had no free quota left)` }, ...keep.lines.slice(at)]; setLinesRaw(keep.lines); done = true; break; }
             catch (e2) { if (!isQuota((e2 as Error).message)) throw e2; }
           }
           if (!done) { const w = /retry in ([\d.hms]+)/i.exec((e as Error).message)?.[1]; throw new Error(`The free Gemini quota for this key is used up on every model I tried.${w ? ` Google says to retry in ${w.replace(/\.\d+s$/, 's')}.` : ''} You can wait, use another key, or turn on billing in Google AI Studio.`); }
