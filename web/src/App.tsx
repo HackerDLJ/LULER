@@ -42,6 +42,7 @@ import About from './About';
 import SpecularButton from './rb/SpecularButton.jsx';
 import PillNav from './rb/PillNav.jsx';
 import BorderGlow from './rb/BorderGlow.jsx';
+import NextMission from './NextMission';
 import './rb/BorderGlow.css';
 import './rb/PillNav.css';
 // PillNav renders its links through this, so the tabs stay buttons and never change the URL
@@ -241,8 +242,9 @@ function Navigator({ ds, onHome }: { ds: Dataset; onHome: () => void }) {
   const chrome = (
     <>
       <div className="brand" role="button" tabIndex={0} title="Back to the front page" onClick={onHome} onKeyDown={(e) => e.key === 'Enter' && onHome()} style={{ cursor: 'pointer' }}><b>LULER</b><span><ShinyText text="LUNAR LANDING SITE NAVIGATOR" color="#8d8c86" shineColor="#ffffff" speed={3.2} delay={2.5} /></span></div>
+      <NextMission />
       <div className="modes pnav" role="tablist" aria-label="View">
-        <PillNav items={VIEWS.map(([id, label]) => ({ label, href: `#${id}` }))} activeHref={`#${activeTab}`} onItemClick={(it: { href: string }) => setView(it.href.slice(1) as typeof view)} linkComponent={TabLink} theme="dark" itemStyle="pill" hoverEffect="fill" indicator="dot" highlightColor="#a9c4ff" barColor="rgba(14,20,36,.62)" size="md" collapse="never" intro={false} ariaLabel="View" />
+        <PillNav items={VIEWS.map(([id, label]) => ({ label, href: `#${id}` }))} activeHref={`#${activeTab}`} onItemClick={(it: { href: string }) => setView(it.href.slice(1) as typeof view)} linkComponent={TabLink} theme="dark" itemStyle="plain" hoverEffect="fill" indicator="pill" size="md" collapse="never" intro={false} ariaLabel="View" />
       </div>
       <div className="pickers">{pickers}</div>
       {(view === 'globe' || view === 'map' || view === 'timeline') && (

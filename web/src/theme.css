@@ -576,12 +576,13 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 .app .ai-vend,.ai-vend{all:unset;cursor:pointer;padding:12px 30px;border-radius:999px;font:600 14px var(--sans,system-ui,-apple-system,sans-serif);color:#ffd5d9;background:rgba(255,80,95,.16);border:1px solid rgba(255,130,140,.42);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .ai-vend:hover{background:rgba(255,80,95,.3)}
 @keyframes spin{to{transform:rotate(360deg)}}
-/* Main tabs: React Bits PillNav inside the old .modes slot (keeps its position and the hide-on-tap rules) */
+/* Main tabs: React Bits PillNav inside the old .modes slot, styled like the sub-tabs (same glass, same blue active pill) */
 .app .modes.pnav,.modes.pnav{background:none!important;border:0!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:0!important;overflow:visible!important;gap:0!important}
-.modes.pnav .pill-nav{font-family:var(--sans,system-ui,-apple-system,sans-serif)}
-.modes.pnav button.pill-nav__item{border-radius:999px!important;background:var(--pn-tile)!important;box-shadow:var(--pn-tile-rim)!important;color:var(--pn-strong)!important;font-family:inherit!important;font-size:var(--pn-font)!important;font-weight:500!important;text-transform:none!important;letter-spacing:-.005em!important;padding:0 var(--pn-x)!important;min-height:0!important;height:100%!important;border:0!important;transition:color .25s ease!important}
+.modes.pnav .pill-nav{font-family:var(--sans,system-ui,-apple-system,sans-serif);--pn-surface:rgba(16,22,38,.9)!important;--pn-edge:rgba(150,185,255,.24)!important;--pn-rim:rgba(255,255,255,.06)!important;--pn-shadow:0 10px 30px rgba(0,8,30,.35)!important;--pn-blur:blur(18px) saturate(1.6)!important;--pn-text:#c9d4ea!important;--pn-strong:#ffffff!important;--pn-pill:linear-gradient(180deg,rgba(120,170,255,.38),rgba(70,120,230,.22))!important;--pn-pill-ink:#ffffff!important;--pn-pill-shadow:inset 0 1px 0 rgba(255,255,255,.18)!important;--pn-h:48px!important;--pn-pad:5px!important;--pn-inner:38px!important;--pn-x:18px!important;--pn-font:14px!important;--pn-item-gap:2px!important}
+.modes.pnav button.pill-nav__item{border-radius:999px!important;background:none!important;box-shadow:none!important;color:var(--pn-text)!important;font-family:inherit!important;font-size:var(--pn-font)!important;font-weight:500!important;text-transform:none!important;letter-spacing:0!important;padding:0 var(--pn-x)!important;min-height:0!important;height:100%!important;border:0!important;transition:color .25s ease!important}
+.modes.pnav button.pill-nav__item[aria-current]{color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.18)!important}
 .modes.pnav button.pill-nav__item::after{display:none!important}
-.modes.pnav .pill-nav__item[aria-current] .pill-nav__face{color:#fff}
+.modes.pnav .pill-nav__bar{border:1px solid rgba(150,185,255,.24);box-sizing:border-box}
 /* React Bits BorderGlow around the AI chat box and the AI button */
 .ai-input-glow{grid-area:input;align-self:end}
 .ai-input-glow .border-glow-inner{overflow:visible}
@@ -589,3 +590,43 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 .ai-btn-glow{display:inline-grid!important;border:0!important;box-shadow:none!important;background:transparent!important}
 .ai-btn-glow .border-glow-inner{overflow:visible}
 .ai-btn-glow::before{background:linear-gradient(#141c30 0 100%) padding-box,var(--gradient-one) border-box,var(--gradient-two) border-box,var(--gradient-three) border-box,var(--gradient-base) border-box!important}
+/* Next-mission countdown chip (under the LULER logo) and its full-screen details */
+.app .nm-chip{all:unset;position:absolute;z-index:6;top:74px;left:36px;display:flex;align-items:center;gap:10px;padding:7px 14px 7px 10px;border-radius:999px;cursor:pointer;background:rgba(16,22,38,.82);border:1px solid rgba(150,185,255,.22);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#e6ecff;font:500 12px var(--sans,system-ui,-apple-system,sans-serif);box-shadow:0 8px 24px rgba(0,8,30,.35);transition:border-color .2s,background .2s}
+.app .nm-chip:hover{border-color:rgba(160,200,255,.5);background:rgba(24,34,60,.9)}
+.nm-dot{width:8px;height:8px;border-radius:50%;background:#7fd8ff;box-shadow:0 0 10px #7fd8ff;animation:nmPulse 2s ease-in-out infinite}
+@keyframes nmPulse{50%{opacity:.35}}
+.nm-txt{display:flex;flex-direction:column;line-height:1.15}
+.nm-txt em{font-style:normal;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0cf}
+.nm-txt b{font-weight:600;font-size:12.5px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nm-clock{display:inline-flex;align-items:baseline;gap:6px;font-variant-numeric:tabular-nums}
+.nm-part{display:inline-flex;align-items:baseline;gap:1px}
+.nm-part i{font-style:normal;font-size:.72em;opacity:.6;margin-left:1px}
+.app .nm-chip .nm-part i{font-size:10px}
+body.ui-hide .app .stage .nm-chip{opacity:0;filter:blur(10px);pointer-events:none}
+.app .stage .nm-chip{transition:opacity .45s,filter .45s,border-color .2s,background .2s}
+@media (max-width:900px){.app .nm-chip .nm-txt{display:none}.app .nm-chip{top:auto;bottom:16px;left:16px}}
+.nm-stage{position:fixed;inset:0;z-index:9000;overflow-y:auto;overscroll-behavior:contain;background:radial-gradient(70% 50% at 50% 0%,rgba(60,90,200,.25),rgba(3,5,14,.82) 70%);-webkit-backdrop-filter:blur(24px) saturate(1.2);backdrop-filter:blur(24px) saturate(1.2);color:#e8ecf8;font-family:var(--sans,system-ui,-apple-system,sans-serif);animation:vIn .55s ease both}
+.nm-stage.out{animation:vOut .6s ease forwards;pointer-events:none}
+.nm-close{all:unset;position:fixed;top:22px;right:24px;z-index:2;width:44px;height:44px;display:grid;place-items:center;border-radius:999px;cursor:pointer;font-size:16px;color:#fff;background:rgba(20,28,48,.8);border:1px solid rgba(150,185,255,.3)}
+.nm-close:hover{background:rgba(60,90,170,.6)}
+.nm-body{max-width:880px;margin:0 auto;padding:12vh 24px 18vh;animation:orbIn .8s cubic-bezier(.2,.7,.2,1) both}
+.nm-stage.out .nm-body{animation:orbOut .6s ease forwards}
+.nm-kicker{margin:0;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#9fb6e8}
+.nm-title{margin:10px 0 18px;font-size:clamp(34px,6vw,64px);font-weight:600;letter-spacing:-.02em}
+.nm-big .nm-clock{gap:18px;color:#fff}
+.nm-big .nm-part i{font-size:20px;margin-left:4px}
+.nm-when{margin:18px 0 0;color:#b9c6e4;font-size:15px}
+.nm-lead{margin:34px 0 0}.nm-lead-t{font-size:clamp(20px,2.6vw,28px)!important;font-weight:500!important;line-height:1.45!important;color:#eef2ff}
+.nm-h2{margin:13vh 0 18px;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#9fb6e8;font-weight:600}
+.nm-item{margin:0 0 18px;padding:22px 24px;border-radius:22px;background:rgba(16,22,38,.7);border:1px solid rgba(150,185,255,.16)}
+.nm-item.on{border-color:rgba(150,190,255,.55);box-shadow:0 20px 60px rgba(40,70,200,.25)}
+.nm-item h3{margin:4px 0 0;font-size:24px;font-weight:600}
+.nm-row{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.nm-k{margin:0;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#93a6cf}
+.nm-mini{display:flex;flex-direction:column;align-items:flex-end;color:#fff}.nm-mini i{font-style:normal;font-size:11px;color:#93a6cf;margin-top:4px}
+.nm-meta{margin:10px 0 0;color:#c3cde6;font-size:14px}.nm-meta b{color:#fff}
+.nm-sr{margin:14px 0 0}.nm-sr-t{font-size:clamp(17px,2vw,21px)!important;font-weight:500!important;line-height:1.5!important;color:#e9eefc}
+.nm-src{margin:12px 0 0;font-size:12px;color:#8ea0c6}.nm-src a{color:#a9c4ff}
+.nm-item.nodate{opacity:.75}
+.nm-foot{margin:40px 0 0;font-size:12.5px;line-height:1.6;color:#8ea0c6}
+@media (max-width:640px){.nm-big .nm-clock{gap:10px}.nm-row{flex-direction:column}.nm-mini{align-items:flex-start}}

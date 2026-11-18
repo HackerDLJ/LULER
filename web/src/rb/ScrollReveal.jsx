@@ -1,5 +1,4 @@
-'use client';
-
+// ScrollReveal from React Bits (MIT), used in the next-mission countdown.
 import { Children, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -303,4 +302,3 @@ const ScrollReveal = ({
 };
 
 export default ScrollReveal;
-
