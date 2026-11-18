@@ -3,7 +3,7 @@ import Strands from './rb/Strands.jsx';
 import './rb/Strands.css';
 // blue and purple palette for the Strands orb (edge → core → deep)
 const ORB = ['#8b5cf6', '#a26bff', '#c4a1ff', '#eef1ff', '#7fd8ff', '#3b6cff', '#2b2a9e'];
-import { PROVIDERS, useSettings } from './settings';
+import { PROVIDERS, fetchModels, setSettings, useSettings } from './settings';
 
 /* LULER Intelligence: full-page AI companion. Works with Anthropic or any OpenAI-compatible server
    (OpenAI, Ollama on localhost, LM Studio, OpenRouter…). Answers from the app's live data and can drive the app. */
@@ -42,6 +42,19 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
   const endRef = useRef<HTMLDivElement>(null);
   const ready = !!st.aiModel && (!PROVIDERS[st.aiProvider].keyNeeded || !!st.aiKey.trim());
   const ctx = getContext();
+  const hasKey = !PROVIDERS[st.aiProvider].keyNeeded || !!st.aiKey.trim();
+  // a key but no chat model yet: pick one for the key automatically so typing works straight away
+  const picking = useRef('');
+  const [pickErr, setPickErr] = useState('');
+  useEffect(() => {
+    if (st.aiModel || !hasKey) return;
+    const k = st.aiProvider + st.aiBaseUrl + st.aiKey; if (picking.current === k) return; picking.current = k; setPickErr('');
+    fetchModels(st.aiProvider, st.aiBaseUrl, st.aiKey.trim()).then(({ chat }) => {
+      const ok = (m: string) => !/(lite|image|tts|live|audio|embed|vision|learnlm|aqa)/i.test(m);
+      const pick = chat.find((m) => /flash/i.test(m) && ok(m)) || chat.find(ok) || chat[0];
+      if (pick) setSettings({ aiModel: pick }); else setPickErr('No chat models are available for this key.');
+    }).catch((e) => setPickErr((e as Error).message));
+  }, [st.aiModel, st.aiProvider, st.aiBaseUrl, st.aiKey, hasKey]);
   useEffect(() => { endRef.current?.scrollIntoView({ block: 'end', behavior: 'smooth' }); }, [lines, busy]);
   useEffect(() => { const k = st.aiProvider + st.aiBaseUrl; if (keep.key && keep.key !== k) { hist.current = []; keep.hist = hist.current; setLines([]); } keep.key = k; }, [st.aiProvider, st.aiBaseUrl]);
 
@@ -118,7 +131,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
 
   const send = async (text: string) => {
     const q = text.trim(); if (!q || busy) return;
-    if (!ready) { onOpenSettings(); return; }
+    if (!ready) { add({ role: 'error', text: !hasKey ? 'Add your API key in AI settings (⚙ AI settings, top right) to chat.' : pickErr ? `Could not pick a model: ${pickErr} Choose one in AI settings.` : 'Picking a model for your key… send again in a moment.' }); return; }
     setInput(''); add({ role: 'user', text: q });
     hist.current.push(st.aiProvider === 'google' ? { role: 'user', parts: [{ text: q }] } : { role: 'user', content: q });
     setBusy(true);
@@ -133,6 +146,8 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
 
   /* ---- Live voice: Gemini Live API (bidirectional WebSocket audio) ---- */
   const [voice, setVoice] = useState<'off' | 'connecting' | 'listening' | 'speaking'>('off');
+  const [orbShown, setOrbShown] = useState(false); // keeps the voice orb mounted while it blurs away
+  useEffect(() => { if (voice !== 'off') { setOrbShown(true); return; } const t = setTimeout(() => setOrbShown(false), 750); return () => clearTimeout(t); }, [voice]);
   // live loudness for the orb: LULER's voice while it speaks, your microphone while it listens
   const getLevel = useCallback(() => {
     const L: any = live.current; if (!L) return 0;
@@ -241,7 +256,7 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
       <div className="ai-log">
         {!lines.length && (
           <div className="ai-empty">
-            {voice === 'off' && <div className="ai-strands"><Strands colors={ORB} energy={busy ? 0.95 : ready ? 0.6 : 0.45} listening={busy} glassSize={1.05} /></div>}
+            <div className={`ai-strands${voice !== 'off' ? ' hide' : ''}`}><Strands colors={ORB} energy={busy ? 0.95 : ready ? 0.6 : 0.45} listening={busy} glassSize={1.05} /></div>
             {!ready ? (
               <div className="ai-setup"><h2>Connect a model to start</h2><p>Use Google Gemini for free (key from Google AI Studio, also enables live voice), or Anthropic, OpenAI, a local Ollama or any OpenAI-compatible server. Add the key and fetch the models.</p><button type="button" className="ai-cta" onClick={onOpenSettings}>Open AI settings</button></div>
             ) : (<><h2>Ask anything about landing on the Moon</h2><p>I can read every site, date and score in LULER, and I can move the app for you.</p></>)}
@@ -252,10 +267,10 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
         {busy && <div className="ai-msg assistant ai-typing"><i /><i /><i /></div>}
         <div ref={endRef} />
       </div>
-      {voice !== 'off' && <div className={`ai-voice-orb ${voice}`} aria-hidden="true"><Strands colors={ORB} energy={0.5} listening={voice === 'connecting'} getLevel={voice === 'connecting' ? undefined : getLevel} glassSize={1.1} /></div>}
+      {orbShown && <div className={`ai-voice-orb ${voice}${voice === 'off' ? ' out' : ''}`} aria-hidden="true"><Strands colors={ORB} energy={voice === 'off' ? 0.2 : 0.5} listening={voice === 'connecting'} getLevel={voice === 'connecting' || voice === 'off' ? undefined : getLevel} glassSize={1.1} /></div>}
       {voice !== 'off' && <div className={`ai-voice ${voice}`} role="status"><span className="ai-wave"><i /><i /><i /><i /><i /></span>{voice === 'connecting' ? 'Connecting to Gemini Live…' : voice === 'speaking' ? 'LULER is speaking… (just talk to interrupt)' : 'Listening… ask about any site, date or score'}<button type="button" onClick={stopVoice}>End</button></div>}
       <form className="ai-input" onSubmit={(e) => { e.preventDefault(); send(input); }}>
-        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={ready ? `Message LULER Intelligence about ${ctx.site.name}…` : 'Connect a model in AI settings to start'} aria-label="Message" />
+        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={ready ? `Message LULER Intelligence about ${ctx.site.name}…` : hasKey ? 'Picking a model for your key…' : 'Add your API key in AI settings to start'} aria-label="Message" />
         <button type="button" className={`ai-mic ${voice}`} onClick={startVoice} aria-label={voice === 'off' ? 'Talk to LULER (live voice)' : 'Stop voice'} title={voice === 'off' ? 'Talk (Gemini Live voice)' : 'Stop voice'}>{voice === 'off' ? <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1A7 7 0 0 0 19 12z"/></svg> : <i />}</button>
         <button type="submit" disabled={busy || !input.trim()} aria-label="Send">↑</button>
       </form>

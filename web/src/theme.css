@@ -555,3 +555,11 @@ body.ui-hide .app .stage .hud2:has(.timebar)>:not(.timebar){opacity:0;pointer-ev
 .craft-mv canvas{touch-action:pan-y}
 .ai-strands{width:min(260px,60vw,32dvh);aspect-ratio:1;margin:0 auto 10px;flex:0 0 auto}
 .ai-voice-orb{grid-area:log;place-self:center;width:min(380px,70vw);aspect-ratio:1;z-index:2;pointer-events:none;filter:drop-shadow(0 20px 60px rgba(90,70,255,.35))}
+/* AI orb: blur in when it appears, blur away when voice stops */
+@keyframes orbIn{from{opacity:0;filter:blur(26px);transform:scale(.86)}to{opacity:1;filter:blur(0);transform:none}}
+@keyframes orbOut{from{opacity:1;filter:blur(0);transform:none}to{opacity:0;filter:blur(26px);transform:scale(.9)}}
+.ai-strands{animation:orbIn .7s cubic-bezier(.2,.7,.2,1) both;transition:opacity .6s ease,filter .6s ease,transform .6s ease}
+.ai-strands.hide{opacity:0;filter:blur(22px);transform:scale(.9);animation:none}
+.ai-voice-orb{animation:orbIn .7s cubic-bezier(.2,.7,.2,1) both;filter:none}
+.ai-voice-orb.out{animation:orbOut .7s ease forwards}
+.ai-voice-orb .strands-container{filter:drop-shadow(0 20px 60px rgba(90,70,255,.35))}
