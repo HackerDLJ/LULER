@@ -4,6 +4,9 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.17.1 · 2026-11-18
+- AI orb now shows on the LULER Intelligence page even before a model is connected, centred above the start card.
+
 ## v7.17.0 · 2026-11-18
 - LULER Intelligence: a blue and purple light orb (React Bits Strands, MIT) appears once a model is connected and stirs while LULER thinks. In live voice it reacts to the real audio: your voice while it listens, LULER's voice while it speaks.
 

@@ -241,9 +241,10 @@ export default function Companion({ getContext, actions, onOpenSettings }: { get
       <div className="ai-log">
         {!lines.length && (
           <div className="ai-empty">
+            {voice === 'off' && <div className="ai-strands"><Strands colors={ORB} energy={busy ? 0.95 : ready ? 0.6 : 0.45} listening={busy} glassSize={1.05} /></div>}
             {!ready ? (
               <div className="ai-setup"><h2>Connect a model to start</h2><p>Use Google Gemini for free (key from Google AI Studio, also enables live voice), or Anthropic, OpenAI, a local Ollama or any OpenAI-compatible server. Add the key and fetch the models.</p><button type="button" className="ai-cta" onClick={onOpenSettings}>Open AI settings</button></div>
-            ) : (<><div className="ai-strands"><Strands colors={ORB} energy={busy ? 0.95 : 0.55} listening={busy} glassSize={1.05} /></div><h2>Ask anything about landing on the Moon</h2><p>I can read every site, date and score in LULER, and I can move the app for you.</p></>)}
+            ) : (<><h2>Ask anything about landing on the Moon</h2><p>I can read every site, date and score in LULER, and I can move the app for you.</p></>)}
             <div className="ai-sugs">{suggestions.map((s) => <button type="button" key={s} onClick={() => send(s)} disabled={!ready}>{s}</button>)}</div>
           </div>
         )}
