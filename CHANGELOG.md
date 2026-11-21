@@ -10,7 +10,6 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 ## v7.22.0 · 2026-11-21
 - Frosted glass across the interface: header controls, site picker, tabs, sub-tabs, Next mission button, view panels, AI chat box, suggestions and mission cards share one blurred, lightly grained glass with a soft top highlight.
 - Squircle (curved square) corners on buttons, pills and panels where the browser supports `corner-shape`; other browsers keep ordinary rounded corners.
-- Made after the hackathon deadline (15 Nov 2026).
 
 ## v7.21.3 · 2026-11-18
 - Prompt bar: the microphone is now a "Live voice" pill (mic icon and label, same height and glass as the other pills) with its own React Bits BorderGlow; it opens Gemini Live voice. On phones it shows the icon only.

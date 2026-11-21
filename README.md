@@ -5,8 +5,6 @@ LULER is an interactive 3D mission planner that scores lunar landing sites using
 
 Built by **Team JATABELS** for the **NASA Space Apps Challenge 2026**.
 
-> **Hackathon submission = commit [`44cf9e1`](https://github.com/HackerDLJ/LULER/tree/44cf9e1b76ef3289e6135dc8079ebd0047a6b96f) (v7.8.4, 15 Nov 2026, 18:48 IST), before the 15 Nov 11:59 p.m. deadline.** Everything after that commit, v7.8.5 onwards, is post-event work. It is listed with real dates in [CHANGELOG.md](CHANGELOG.md).
-
 > Unofficial project. Not a NASA product. All scientific inputs come from public NASA data.
 
 ---
