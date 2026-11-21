@@ -721,3 +721,5 @@ body.ui-hide .app .stage .nm-chip{opacity:0;filter:blur(10px);pointer-events:non
   .app .ai-input-glow{border-radius:30px!important;--border-radius:30px!important}
   .app .viewpanel button{border-radius:18px!important;corner-shape:squircle}
 }
+/* site labels the globe hides (far side, off screen, overlapping) must stay hidden */
+.glabels button[style*="display: none"]{display:none!important}
