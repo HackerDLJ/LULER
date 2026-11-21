@@ -688,3 +688,36 @@ body.ui-hide .app .stage .nm-chip{opacity:0;filter:blur(10px);pointer-events:non
 .ai-input-glow .prompt-bar__voice:focus-visible{outline:2px solid rgba(169,196,255,.7);outline-offset:2px}
 .ai-input-glow .prompt-bar__voice svg{width:15px!important;height:15px!important;color:#a9c4ff}
 @media (max-width:560px){.ai-input-glow .prompt-bar__voice span{display:none}.ai-input-glow .prompt-bar__voice{padding:0 9px}}
+/* ---- Frosted glass (LULER's own recipe): one look for every floating surface ---- */
+:root{
+  --fg-noise:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --fg-bg:var(--fg-noise),linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.015) 60%),rgba(18,25,46,.40);
+  --fg-blur:blur(22px) saturate(1.7) brightness(1.04);
+  --fg-edge:rgba(255,255,255,.13);
+  --fg-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 -1px 0 rgba(255,255,255,.03),0 14px 36px rgba(0,6,24,.38);
+}
+.app .pickers>*:not(.hdr-icons):not(.sitepick),.app .sitepick>button,.app .sitepick-pop,.app .hdr-ic,.app .modes.pnav .pill-nav__bar,.app .subtabs.jr,.app .nm-chip,.app .viewpanel,.app .ai-ctx,.app .ai-sugs button{
+  background:var(--fg-bg)!important;-webkit-backdrop-filter:var(--fg-blur)!important;backdrop-filter:var(--fg-blur)!important;border:1px solid var(--fg-edge)!important;box-shadow:var(--fg-shadow)!important}
+.app .modes.pnav .pill-nav{--pn-surface:transparent!important;--pn-shadow:none!important}
+.app .ai-sugs button:hover,.app .nm-chip:hover,.app .hdr-ic:hover{border-color:rgba(190,210,255,.32)!important}
+.app .ai-input-glow{background:var(--fg-bg)!important;-webkit-backdrop-filter:var(--fg-blur);backdrop-filter:var(--fg-blur);box-shadow:var(--fg-shadow)!important;border-color:var(--fg-edge)!important}
+.app .ai-input-glow .prompt-bar__field{background:transparent!important}
+.nm-item{background:var(--fg-bg)!important;-webkit-backdrop-filter:var(--fg-blur);backdrop-filter:var(--fg-blur);border:1px solid var(--fg-edge)!important;box-shadow:var(--fg-shadow)}
+.nm-item.on{border-color:rgba(160,195,255,.5)!important}
+/* Curved squares (squircles) for the header controls and the small chips; tabs stay pills */
+.app .pickers>*:not(.hdr-icons):not(.sitepick),.app .sitepick>button,.app .hdr-ic,.app .nm-chip,.app .ai-ghost,.ai-input-glow .prompt-bar__pick,.ai-input-glow .prompt-bar__voice,.ai-input-glow .prompt-bar__tool{border-radius:13px!important}
+.app .ai-btn-glow,.prompt-bar__voice-glow{--border-radius:13px!important;border-radius:13px!important}
+.app .sitepick-pop{border-radius:16px!important}
+.app .ai-sugs button{border-radius:16px!important}
+@supports (corner-shape:squircle){
+  .app .pickers>*:not(.hdr-icons):not(.sitepick),.app .sitepick>button,.app .hdr-ic,.app .nm-chip,.app .ai-ghost,.ai-input-glow .prompt-bar__pick,.ai-input-glow .prompt-bar__voice,.ai-input-glow .prompt-bar__tool{border-radius:20px!important;corner-shape:squircle}
+  .app .ai-btn-glow,.prompt-bar__voice-glow{--border-radius:20px!important;border-radius:20px!important;corner-shape:squircle}
+  .app .viewpanel,.app .ai-ctx,.nm-item,.app .ai-input-glow{corner-shape:squircle}
+  .app .ai-sugs button,.app .sitepick-pop{border-radius:26px!important;corner-shape:squircle}
+}
+.app .viewpanel button{border-radius:12px!important}
+@supports (corner-shape:squircle){
+  .app .viewpanel,.app .ai-ctx,.nm-item{border-radius:32px!important}
+  .app .ai-input-glow{border-radius:30px!important;--border-radius:30px!important}
+  .app .viewpanel button{border-radius:18px!important;corner-shape:squircle}
+}
