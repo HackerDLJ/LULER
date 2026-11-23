@@ -595,3 +595,54 @@ kbd{display:inline-block;min-width:20px;text-align:center;padding:2px 6px;border
 .overlay>*{margin-block:auto}
 .overlay::after{position:fixed}
 .title.big{font-size:clamp(40px,5.2vw,72px)}
+
+/* ============================================================
+   LULER: phone touch layout
+   Right thumb: the four actions you use while driving (DRILL, SCAN, ARM,
+   BRAKE) in a 2×2 pad beside the LOOK stick. Left thumb: everything else
+   folds behind MORE, so the ground ahead stays visible.
+   ============================================================ */
+#touch .tm{display:none}
+#touch .tb,#touch .tm{-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+@media (max-width:700px), (max-height:520px){
+  #touch{--stick:118px}
+  #touch .stick{bottom:max(16px,env(safe-area-inset-bottom));background:rgba(8,11,17,.42);border-color:rgba(216,210,198,.22)}
+  #touch .stick.left{left:max(16px,env(safe-area-inset-left))}
+  #touch .stick.right{right:max(16px,env(safe-area-inset-right))}
+  #touch .stick span{display:block;bottom:-14px;font-size:8px;color:rgba(216,210,198,.5)}
+  #touch .tb,#touch .tm{
+    min-width:0;width:60px;height:46px;padding:0;border-radius:14px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:10px;letter-spacing:.12em;font-weight:600;
+    background:rgba(8,11,17,.6);border:1px solid rgba(216,210,198,.22);color:var(--bone);
+    -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);touch-action:none;
+    transition:transform .08s,background .12s,border-color .12s}
+  #touch .tb.on,#touch .tm[aria-expanded=true]{transform:scale(.94);border-color:var(--cyan);color:var(--cyan);background:rgba(111,227,245,.18)}
+  #touch .tb.act{border-color:var(--cyan-dim);color:var(--cyan)}
+
+  /* right: 2×2 action pad right above the LOOK stick */
+  #touch .tbtns{display:grid;grid-template-columns:repeat(2,60px);gap:8px;
+    right:max(16px,env(safe-area-inset-right));bottom:calc(max(16px,env(safe-area-inset-bottom)) + var(--stick) + 22px);
+    flex-direction:unset;align-items:unset}
+  #touch .tbtns .tb[data-k=Space]{grid-column:span 1}
+
+  /* left: MORE above the DRIVE stick, the rest opens upwards from it */
+  #touch .tm{display:flex}
+  #touch .tbtns2{display:flex;flex-direction:column-reverse;align-items:flex-start;gap:8px;
+    left:max(16px,env(safe-area-inset-left));bottom:calc(max(16px,env(safe-area-inset-bottom)) + var(--stick) + 22px)}
+  #touch .tbtns2:not(.open) .tb{display:none}
+  #touch .tbtns2.open{display:grid;grid-template-columns:repeat(2,60px);grid-auto-flow:row}
+  #touch .tbtns2.open .tm{grid-column:1 / span 2;width:128px;order:99}
+}
+/* landscape phone: smaller sticks, pads sit beside them in the free strip */
+@media (max-height:520px){
+  #touch{--stick:96px}
+  #touch .stick{bottom:max(12px,env(safe-area-inset-bottom))}
+  #touch .stick span{display:none}
+  #touch .tb,#touch .tm{width:56px;height:40px;border-radius:12px;font-size:9.5px}
+  #touch .tbtns{grid-template-columns:repeat(2,56px);gap:6px;
+    right:calc(max(16px,env(safe-area-inset-right)) + var(--stick) + 16px);bottom:max(12px,env(safe-area-inset-bottom))}
+  #touch .tbtns2{left:calc(max(16px,env(safe-area-inset-left)) + var(--stick) + 16px);bottom:max(12px,env(safe-area-inset-bottom));gap:6px}
+  #touch .tbtns2.open{grid-template-columns:repeat(4,56px)}
+  #touch .tbtns2.open .tm{grid-column:auto;width:56px}
+}

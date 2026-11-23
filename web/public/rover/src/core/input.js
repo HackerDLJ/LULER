@@ -69,18 +69,19 @@ export class Input {
       <div class="stick left"><div class="nub"></div><span>DRIVE</span></div>
       <div class="stick right"><div class="nub"></div><span>LOOK</span></div>
       <div class="tbtns">
+        <button class="tb act" data-lmb="1">DRILL</button>
         <button class="tb" data-k="KeyG">SCAN</button>
         <button class="tb" data-k="KeyR">ARM</button>
-        <button class="tb" data-lmb="1">DRILL</button>
-        <button class="tb" data-k="KeyB">RELAY</button>
+        <button class="tb" data-k="Space" data-hold="1">BRAKE</button>
       </div>
       <div class="tbtns2">
+        <button class="tm" type="button" aria-expanded="false">MORE</button>
         <button class="tb" data-k="KeyC">CAM</button>
         <button class="tb" data-k="KeyF">LAMP</button>
         <button class="tb" data-k="KeyT">ARRAY</button>
+        <button class="tb" data-k="KeyB">RELAY</button>
         <button class="tb" data-k="KeyH">HUD</button>
         <button class="tb" data-k="KeyK">SHOT</button>
-        <button class="tb wide" data-k="Space" data-hold="1">BRAKE</button>
       </div>`;
     document.body.appendChild(wrap);
     // the stylesheet keeps the HUD clear of the thumb zone off this class, so
@@ -88,6 +89,15 @@ export class Input {
     document.body.classList.add('touch-controls');
     this.touchEl = wrap;
     this.touch.active = true;
+
+    // phones fold the less-used buttons behind MORE so the view stays clear
+    const more = wrap.querySelector('.tm'), tray = wrap.querySelector('.tbtns2');
+    more.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const open = tray.classList.toggle('open');
+      more.textContent = open ? 'CLOSE' : 'MORE';
+      more.setAttribute('aria-expanded', String(open));
+    }, { passive: false });
 
     wrap.querySelectorAll('.stick').forEach((s, i) => {
       const nub = s.querySelector('.nub');
