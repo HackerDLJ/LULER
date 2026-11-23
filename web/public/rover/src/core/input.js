@@ -65,79 +65,108 @@ export class Input {
   buildTouch() {
     if (!matchMedia('(pointer: coarse)').matches && !('ontouchstart' in window)) return;
     const wrap = document.createElement('div'); wrap.id = 'touch'; wrap.className = 'hidden';
+    // Floating sticks, as in most mobile games: put a thumb down anywhere in
+    // the lower part of either half and the stick centres itself under it.
+    // Between touches it rests, faded, at its home position.
     wrap.innerHTML = `
-      <div class="stick left"><div class="nub"></div><span>DRIVE</span></div>
-      <div class="stick right"><div class="nub"></div><span>LOOK</span></div>
-      <div class="tbtns">
-        <button class="tb act" data-lmb="1">DRILL</button>
+      <div class="tzone left"><div class="stick"><div class="ring"></div><div class="nub"></div><span>DRIVE</span></div></div>
+      <div class="tzone right"><div class="stick"><div class="ring"></div><div class="nub"></div><span>LOOK</span></div></div>
+      <div class="tact">
+        <button class="tb big act" data-lmb="1">DRILL</button>
+        <button class="tb mid" data-k="Space" data-hold="1">BRAKE</button>
         <button class="tb" data-k="KeyG">SCAN</button>
         <button class="tb" data-k="KeyR">ARM</button>
-        <button class="tb" data-k="Space" data-hold="1">BRAKE</button>
       </div>
       <div class="tbtns2">
-        <button class="tm" type="button" aria-expanded="false">MORE</button>
-        <button class="tb" data-k="KeyC">CAM</button>
-        <button class="tb" data-k="KeyF">LAMP</button>
-        <button class="tb" data-k="KeyT">ARRAY</button>
-        <button class="tb" data-k="KeyB">RELAY</button>
-        <button class="tb" data-k="KeyH">HUD</button>
-        <button class="tb" data-k="KeyK">SHOT</button>
+        <button class="tm" type="button" aria-expanded="false" aria-label="More controls">&#8943;</button>
+        <div class="tray">
+          <button class="tb" data-k="KeyC">CAM</button>
+          <button class="tb" data-k="KeyF">LAMP</button>
+          <button class="tb" data-k="KeyT">ARRAY</button>
+          <button class="tb" data-k="KeyB">RELAY</button>
+          <button class="tb" data-k="KeyH">HUD</button>
+          <button class="tb" data-k="KeyK">SHOT</button>
+          <button class="tb" data-k="Escape">MENU</button>
+        </div>
       </div>`;
     document.body.appendChild(wrap);
-    // the stylesheet keeps the HUD clear of the thumb zone off this class, so
-    // it is set by the code that puts the sticks on screen and nothing else
     document.body.classList.add('touch-controls');
     this.touchEl = wrap;
     this.touch.active = true;
 
-    // phones fold the less-used buttons behind MORE so the view stays clear
     const more = wrap.querySelector('.tm'), tray = wrap.querySelector('.tbtns2');
-    more.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const open = tray.classList.toggle('open');
-      more.textContent = open ? 'CLOSE' : 'MORE';
+    const setTray = (open) => {
+      tray.classList.toggle('open', open);
       more.setAttribute('aria-expanded', String(open));
-    }, { passive: false });
+      more.innerHTML = open ? '&#10005;' : '&#8943;';
+    };
+    more.addEventListener('touchstart', (e) => { e.preventDefault(); setTray(!tray.classList.contains('open')); }, { passive: false });
+    this._closeTray = () => setTray(false);
 
-    wrap.querySelectorAll('.stick').forEach((s, i) => {
-      const nub = s.querySelector('.nub');
-      let id = null;
-      const set = (x, y) => {
-        const r = s.getBoundingClientRect();
-        let dx = (x - r.left - r.width / 2) / (r.width / 2);
-        let dy = (y - r.top - r.height / 2) / (r.height / 2);
-        const l = Math.hypot(dx, dy); if (l > 1) { dx /= l; dy /= l; }
-        nub.style.transform = `translate(${dx * 32}px, ${dy * 32}px)`;
-        if (i === 0) { this.touch.lx = dx; this.touch.ly = dy; }
-        else { this.touch.rx = dx; this.touch.ry = dy; }
+    // dead zone + curve: small thumb movements give fine control, full
+    // deflection still reaches 1
+    const shape = (v) => { const a = Math.abs(v); if (a < 0.1) return 0; const t = (a - 0.1) / 0.9; return Math.sign(v) * (0.35 * t + 0.65 * t * t); };
+
+    wrap.querySelectorAll('.tzone').forEach((zone, i) => {
+      const stick = zone.querySelector('.stick'), nub = zone.querySelector('.nub');
+      let id = null, cx = 0, cy = 0;
+      const R = () => stick.offsetWidth * 0.42;          // how far the nub travels
+      const write = (dx, dy) => {
+        if (i === 0) { this.touch.lx = shape(dx); this.touch.ly = shape(dy); }
+        else { this.touch.rx = shape(dx); this.touch.ry = shape(dy); }
       };
-      const clear = () => {
-        id = null; nub.style.transform = '';
-        if (i === 0) { this.touch.lx = this.touch.ly = 0; } else { this.touch.rx = this.touch.ry = 0; }
+      const move = (x, y) => {
+        const r = R();
+        let dx = x - cx, dy = y - cy;
+        const l = Math.hypot(dx, dy);
+        // drag past the rim and the base follows the thumb, so you never
+        // run out of stick mid-turn
+        if (l > r) { const k = (l - r) / l; cx += dx * k; cy += dy * k; dx = x - cx; dy = y - cy; place(); }
+        nub.style.transform = `translate(${dx}px, ${dy}px)`;
+        write(dx / r, dy / r);
       };
-      s.addEventListener('touchstart', (e) => {
-        const t = e.changedTouches[0]; id = t.identifier; set(t.clientX, t.clientY); e.preventDefault();
-      }, { passive: false });
-      s.addEventListener('touchmove', (e) => {
-        for (const t of e.changedTouches) if (t.identifier === id) set(t.clientX, t.clientY);
+      const place = () => {
+        const zr = zone.getBoundingClientRect();
+        stick.style.left = `${cx - zr.left}px`; stick.style.top = `${cy - zr.top}px`;
+      };
+      const start = (e) => {
+        if (id !== null) return;
+        const t = e.changedTouches[0]; id = t.identifier;
+        const zr = zone.getBoundingClientRect(), h = stick.offsetWidth / 2;
+        cx = Math.min(Math.max(t.clientX, zr.left + h), zr.right - h);
+        cy = Math.min(Math.max(t.clientY, zr.top + h), zr.bottom - h);
+        zone.classList.add('held'); place(); move(t.clientX, t.clientY);
+        this._closeTray?.();
+        e.preventDefault();
+      };
+      const end = (e) => {
+        for (const t of e.changedTouches) if (t.identifier === id) {
+          id = null; zone.classList.remove('held');
+          stick.style.left = stick.style.top = ''; nub.style.transform = '';
+          write(0, 0);
+        }
+      };
+      zone.addEventListener('touchstart', start, { passive: false });
+      zone.addEventListener('touchmove', (e) => {
+        for (const t of e.changedTouches) if (t.identifier === id) move(t.clientX, t.clientY);
         e.preventDefault();
       }, { passive: false });
-      s.addEventListener('touchend', clear);
-      s.addEventListener('touchcancel', clear);
+      zone.addEventListener('touchend', end);
+      zone.addEventListener('touchcancel', end);
     });
 
     wrap.querySelectorAll('.tb').forEach((b) => {
-      const k = b.dataset.k, lmb = b.dataset.lmb, hold = b.dataset.hold;
+      const k = b.dataset.k, lmb = b.dataset.lmb;
       const down = (e) => {
         e.preventDefault(); b.classList.add('on');
+        navigator.vibrate?.(8);
         if (lmb) { this.mouse.down = true; this.mouse.clicked = true; }
         else { this.keys.add(k); this.pressed.add(k); }
+        if (k === 'Escape' || k === 'KeyK' || k === 'KeyH') this._closeTray?.();
       };
       const up = () => {
         b.classList.remove('on');
-        if (lmb) this.mouse.down = false;
-        else if (hold || !k) this.keys.delete(k);
-        else this.keys.delete(k);          // momentary: the edge already fired
+        if (lmb) this.mouse.down = false; else this.keys.delete(k);
       };
       b.addEventListener('touchstart', down, { passive: false });
       b.addEventListener('touchend', up);
@@ -180,8 +209,8 @@ export class Input {
       out.throttle += -this.touch.ly;
       out.steer += this.touch.lx;
       // rate, not position: hold it over and the view keeps turning
-      out.lookX += this.touch.rx * Math.abs(this.touch.rx) * 17;
-      out.lookY += this.touch.ry * Math.abs(this.touch.ry) * 14;
+      out.lookX += this.touch.rx * 18;
+      out.lookY += this.touch.ry * 13;
       if (Math.hypot(this.touch.rx, this.touch.ry) > 0.06) out.looking = true;
     }
 

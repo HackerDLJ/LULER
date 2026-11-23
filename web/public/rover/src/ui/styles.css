@@ -597,52 +597,81 @@ kbd{display:inline-block;min-width:20px;text-align:center;padding:2px 6px;border
 .title.big{font-size:clamp(40px,5.2vw,72px)}
 
 /* ============================================================
-   LULER: phone touch layout
-   Right thumb: the four actions you use while driving (DRILL, SCAN, ARM,
-   BRAKE) in a 2×2 pad beside the LOOK stick. Left thumb: everything else
-   folds behind MORE, so the ground ahead stays visible.
+   LULER: game-style touch controls (all touch devices)
+   Floating sticks: a thumb anywhere in the lower part of either half
+   centres the stick under it; between touches each stick rests, faded,
+   in its corner. Actions sit in an arc around the right thumb, the way
+   mobile games place jump/fire; the rest folds behind the ⋯ button.
    ============================================================ */
-#touch .tm{display:none}
-#touch .tb,#touch .tm{-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
-@media (max-width:700px), (max-height:520px){
-  #touch{--stick:118px}
-  #touch .stick{bottom:max(16px,env(safe-area-inset-bottom));background:rgba(8,11,17,.42);border-color:rgba(216,210,198,.22)}
-  #touch .stick.left{left:max(16px,env(safe-area-inset-left))}
-  #touch .stick.right{right:max(16px,env(safe-area-inset-right))}
-  #touch .stick span{display:block;bottom:-14px;font-size:8px;color:rgba(216,210,198,.5)}
-  #touch .tb,#touch .tm{
-    min-width:0;width:60px;height:46px;padding:0;border-radius:14px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:10px;letter-spacing:.12em;font-weight:600;
-    background:rgba(8,11,17,.6);border:1px solid rgba(216,210,198,.22);color:var(--bone);
-    -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);touch-action:none;
-    transition:transform .08s,background .12s,border-color .12s}
-  #touch .tb.on,#touch .tm[aria-expanded=true]{transform:scale(.94);border-color:var(--cyan);color:var(--cyan);background:rgba(111,227,245,.18)}
-  #touch .tb.act{border-color:var(--cyan-dim);color:var(--cyan)}
+#touch{
+  --stick:136px;--k:1;
+  --pl:max(22px,env(safe-area-inset-left));--pr:max(22px,env(safe-area-inset-right));--pb:max(20px,env(safe-area-inset-bottom));
+  padding:0}
+#touch .tzone{position:absolute;bottom:0;height:64%;width:50%;pointer-events:auto;touch-action:none}
+#touch .tzone.left{left:0}
+#touch .tzone.right{right:0}
+#touch .tzone .stick{position:absolute;inset:auto;bottom:auto;border:0;background:none;backdrop-filter:none;
+  width:var(--stick);height:var(--stick);transform:translate(-50%,-50%);opacity:.68;transition:opacity .15s;pointer-events:none}
+#touch .tzone.left .stick{left:calc(var(--pl) + var(--stick) / 2);top:calc(100% - var(--pb) - var(--stick) / 2)}
+#touch .tzone.right .stick{left:calc(100% - var(--pr) - var(--stick) / 2);top:calc(100% - var(--pb) - var(--stick) / 2)}
+#touch .tzone.held .stick{opacity:1;transition:none}
+#touch .ring{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(8,11,17,.18) 0 55%,rgba(8,11,17,.5) 100%);
+  border:2px solid rgba(216,210,198,.28);box-shadow:inset 0 0 18px rgba(111,227,245,.08)}
+#touch .tzone.held .ring{border-color:rgba(111,227,245,.55)}
+#touch .tzone .nub{left:50%;top:50%;width:44%;height:44%;margin:-22% 0 0 -22%;
+  background:radial-gradient(circle at 40% 35%,rgba(160,240,252,.55),rgba(111,227,245,.22));border:2px solid rgba(111,227,245,.7);
+  box-shadow:0 4px 14px rgba(0,0,0,.45)}
+#touch .tzone .stick span{display:block;position:absolute;left:0;right:0;bottom:-16px;text-align:center;font-size:8px;letter-spacing:.24em;color:rgba(216,210,198,.55)}
+#touch .tzone.held .stick span{opacity:0}
 
-  /* right: 2×2 action pad right above the LOOK stick */
-  #touch .tbtns{display:grid;grid-template-columns:repeat(2,60px);gap:8px;
-    right:max(16px,env(safe-area-inset-right));bottom:calc(max(16px,env(safe-area-inset-bottom)) + var(--stick) + 22px);
-    flex-direction:unset;align-items:unset}
-  #touch .tbtns .tb[data-k=Space]{grid-column:span 1}
+/* round action buttons, placed around the LOOK stick's home position */
+#touch .tact{position:absolute;width:0;height:0;pointer-events:none;
+  left:calc(100% - var(--pr) - var(--stick) / 2);top:calc(100% - var(--pb) - var(--stick) / 2)}
+#touch .tb,#touch .tm{-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:none;pointer-events:auto}
+#touch .tact .tb{position:absolute;left:0;top:0;--d:54px;width:var(--d);height:var(--d);min-width:0;padding:0;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:9.5px;letter-spacing:.1em;font-weight:700;color:var(--bone);
+  background:radial-gradient(circle at 50% 30%,rgba(40,48,62,.72),rgba(8,11,17,.78));border:2px solid rgba(216,210,198,.3);
+  box-shadow:0 4px 14px rgba(0,0,0,.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  transform:translate(calc(var(--x) * var(--k) - 50%),calc(var(--y) * var(--k) * -1 - 50%));transition:transform .06s,background .1s}
+#touch .tact .tb.big{--d:76px;font-size:11px;color:#bff4fb;border-color:rgba(111,227,245,.75);
+  background:radial-gradient(circle at 50% 30%,rgba(60,150,170,.6),rgba(10,40,52,.85))}
+#touch .tact .tb.mid{--d:64px;font-size:10px;border-color:rgba(245,170,90,.6);color:#ffd3a3}
+#touch .tact .tb.on{transform:translate(calc(var(--x) * var(--k) - 50%),calc(var(--y) * var(--k) * -1 - 50%)) scale(.9);
+  border-color:var(--cyan);background:rgba(111,227,245,.3)}
+/* landscape positions (px from the LOOK stick centre, up is +y) */
+#touch .tact .tb[data-lmb]{--x:-74px;--y:96px}
+#touch .tact .tb[data-k=Space]{--x:-116px;--y:0px}
+#touch .tact .tb[data-k=KeyG]{--x:18px;--y:110px}
+#touch .tact .tb[data-k=KeyR]{--x:-182px;--y:74px}
 
-  /* left: MORE above the DRIVE stick, the rest opens upwards from it */
-  #touch .tm{display:flex}
-  #touch .tbtns2{display:flex;flex-direction:column-reverse;align-items:flex-start;gap:8px;
-    left:max(16px,env(safe-area-inset-left));bottom:calc(max(16px,env(safe-area-inset-bottom)) + var(--stick) + 22px)}
-  #touch .tbtns2:not(.open) .tb{display:none}
-  #touch .tbtns2.open{display:grid;grid-template-columns:repeat(2,60px);grid-auto-flow:row}
-  #touch .tbtns2.open .tm{grid-column:1 / span 2;width:128px;order:99}
+/* ⋯ tray above the DRIVE stick */
+#touch .tbtns2{position:absolute;display:block;flex-direction:unset;gap:0;
+  left:calc(var(--pl) + var(--stick) / 2 - 24px);top:auto;bottom:calc(var(--pb) + var(--stick) + 14px);pointer-events:none}
+#touch .tm{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;font-size:20px;line-height:1;color:var(--bone);
+  background:rgba(8,11,17,.62);border:2px solid rgba(216,210,198,.28);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+#touch .tm[aria-expanded=true]{border-color:var(--cyan);color:var(--cyan);font-size:16px}
+#touch .tray{position:absolute;left:60px;bottom:0;display:none;grid-template-columns:repeat(4,58px);gap:8px}
+#touch .tbtns2.open .tray{display:grid}
+#touch .tray .tb{min-width:0;width:58px;height:42px;padding:0;border-radius:13px;font-size:9.5px;letter-spacing:.1em;font-weight:600;
+  display:flex;align-items:center;justify-content:center;color:var(--bone);background:rgba(8,11,17,.72);border:1px solid rgba(216,210,198,.28);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+#touch .tray .tb.on{border-color:var(--cyan);color:var(--cyan);background:rgba(111,227,245,.18)}
+
+/* portrait phone: buttons climb up the right edge instead of reaching into the left stick */
+@media (orientation:portrait) and (max-width:700px){
+  #touch{--stick:132px}
+  #touch .tzone{height:58%}
+  #touch .tact .tb[data-lmb]{--x:-10px;--y:126px}
+  #touch .tact .tb[data-k=Space]{--x:-98px;--y:66px}
+  #touch .tact .tb[data-k=KeyG]{--x:-118px;--y:152px}
+  #touch .tact .tb[data-k=KeyR]{--x:-48px;--y:206px}
+  #touch .tray{left:0;bottom:60px;grid-template-columns:repeat(2,58px)}
 }
-/* landscape phone: smaller sticks, pads sit beside them in the free strip */
-@media (max-height:520px){
-  #touch{--stick:96px}
-  #touch .stick{bottom:max(12px,env(safe-area-inset-bottom))}
-  #touch .stick span{display:none}
-  #touch .tb,#touch .tm{width:56px;height:40px;border-radius:12px;font-size:9.5px}
-  #touch .tbtns{grid-template-columns:repeat(2,56px);gap:6px;
-    right:calc(max(16px,env(safe-area-inset-right)) + var(--stick) + 16px);bottom:max(12px,env(safe-area-inset-bottom))}
-  #touch .tbtns2{left:calc(max(16px,env(safe-area-inset-left)) + var(--stick) + 16px);bottom:max(12px,env(safe-area-inset-bottom));gap:6px}
-  #touch .tbtns2.open{grid-template-columns:repeat(4,56px)}
-  #touch .tbtns2.open .tm{grid-column:auto;width:56px}
+/* tablets: more room, bigger thumbs-worth of stick */
+@media (min-width:701px) and (min-height:521px){
+  #touch{--stick:156px;--k:1.12}
+}
+/* a short landscape phone (SE): pull everything in a little */
+@media (max-height:400px){
+  #touch{--stick:124px;--k:.92}
 }
