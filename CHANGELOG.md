@@ -4,6 +4,14 @@ All notable versions of LULER. Releases are tagged in git (`vX.Y.Z`).
 
 > **Versions 1 to 6** were built before the project was under version control, so their source code was not saved separately. Each of them is preserved as the **actual compiled website from that milestone**, with its real build date, on the [`history`](../../tree/history) branch, tagged `v1.0.0` to `v6.0.0`. To run one: `git checkout v3.0.0 && python3 -m http.server 8080`. The source code for every feature is on `main` from v7.0.0 on, where every change is its own commit and every release its own tag.
 
+## v7.23.0 · 2026-11-23
+Phones only (desktop unchanged):
+- Lighter glass blur, so scrolling and dragging stay smooth.
+- The 3D view fits the visible screen, so the bottom controls never hide under the browser bar.
+- No tap flash or double-tap zoom delay on buttons; scroll areas no longer drag the page behind them.
+- Bigger finger targets on the flat map pins; the map hint says "Pinch to zoom" on touch screens.
+- The Next mission button no longer covers the spacecraft picker; mission stage titles fit on one line.
+
 ## v7.22.1 · 2026-11-21
 - 3D globe: site labels that should be hidden (far side, behind the pole, or covered by the interface) no longer stack in the top-left corner. A style rule from v7.2.0 was forcing them visible.
 

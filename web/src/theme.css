@@ -723,3 +723,24 @@ body.ui-hide .app .stage .nm-chip{opacity:0;filter:blur(10px);pointer-events:non
 }
 /* site labels the globe hides (far side, off screen, overlapping) must stay hidden */
 .glabels button[style*="display: none"]{display:none!important}
+
+/* ===== Phones only: smoother touch experience (desktop unchanged) ===== */
+@media (max-width:760px){
+  /* lighter glass: a smaller blur is much cheaper to repaint while scrolling and dragging */
+  :root{--fg-blur:blur(12px) saturate(1.35)}
+  /* the 3D view fits the visible screen, so the bottom controls never hide under the browser bar */
+  .app .stage{height:100vh;height:100svh}
+  /* no grey tap flash, no double-tap zoom delay on controls */
+  .app{-webkit-tap-highlight-color:transparent}
+  .app button,.app a,.app select,.app label,.app input[type=range],.app [role=tab],.app [role=radio]{touch-action:manipulation}
+  /* scroll areas keep momentum and don't drag the page behind them */
+  .app .sitepick-pop,.app .viewpanel,.app .simctl.stages,.app .page-stage{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+  /* the Next mission button no longer covers the spacecraft picker */
+  .app .stage:has(.hud2.craft) .nm-chip{display:none}
+  /* mission stage titles fit on one line */
+  .app .hud2.mission h2{font-size:22px!important;line-height:1.2!important}
+}
+@media (max-width:760px) and (pointer:coarse){
+  /* bigger finger targets on the flat map pins, same look */
+  .app .mpin::before{content:'';position:absolute;inset:-11px;border-radius:50%}
+}

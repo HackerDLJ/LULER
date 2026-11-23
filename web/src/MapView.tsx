@@ -222,7 +222,7 @@ export default function MapView({ sites, selected, t, globe, mapUrl, busy, onPic
           <button type="button" onClick={() => zoomAt(0.5)} title="Zoom out">−</button>
           <button type="button" onClick={() => setVw({ z: 1, x0: 0, y0: 0 })} title="Show the whole Moon">⤢</button>
           <button type="button" className={mag ? 'on' : ''} onClick={() => setMag((m) => !m)} title={mag ? 'Turn the magnifying glass off' : 'Turn the magnifying glass on'} aria-pressed={mag}>🔍</button>
-          <span>{vw.z > 1 ? `${vw.z.toFixed(1)}×` : 'Pinch or ⌘/Ctrl + scroll to zoom · drag to pan'}</span>
+          <span>{vw.z > 1 ? `${vw.z.toFixed(1)}×` : (typeof matchMedia !== 'undefined' && matchMedia('(pointer:coarse)').matches ? 'Pinch to zoom · drag to pan' : 'Pinch or ⌘/Ctrl + scroll to zoom · drag to pan')}</span>
         </div>
         <canvas ref={cv} width={W * S} height={H * S} onClick={click}
           onPointerDown={(e) => { if (e.shiftKey || e.button !== 0) return; drag.current = { x: e.clientX, y: e.clientY, x0: vw.x0, y0: vw.y0, moved: false }; }}
